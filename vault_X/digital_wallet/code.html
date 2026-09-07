@@ -1,0 +1,1493 @@
+<!DOCTYPE html><html class="dark" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Wallet</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&amp;family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500;700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+  tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        colors: {
+          "tertiary-fixed": "#d3e4fe",
+          "on-background": "#e0e3e5",
+          "tertiary-container": "#06182b",
+          "primary-fixed": "#dae2fd",
+          "outline": "#909097",
+          "on-primary-fixed-variant": "#3f465c",
+          "tertiary-fixed-dim": "#b7c8e1",
+          "background": "#101415",
+          "surface-tint": "#bec6e0",
+          "secondary": "#a9c7ff",
+          "on-primary-fixed": "#131b2e",
+          "on-surface-variant": "#c6c6cd",
+          "primary-fixed-dim": "#bec6e0",
+          "surface-container-highest": "#323537",
+          "on-error": "#690005",
+          "error": "#ffb4ab",
+          "on-primary": "#283044",
+          "secondary-container": "#3c90ff",
+          "surface-container-lowest": "#0b0f10",
+          "inverse-on-surface": "#2d3133",
+          "on-primary-container": "#798098",
+          "secondary-fixed-dim": "#a9c7ff",
+          "on-tertiary-fixed-variant": "#38485d",
+          "surface-dim": "#101415",
+          "on-secondary": "#003063",
+          "inverse-surface": "#e0e3e5",
+          "surface-bright": "#363a3b",
+          "error-container": "#93000a",
+          "surface-variant": "#323537",
+          "secondary-fixed": "#d6e3ff",
+          "on-error-container": "#ffdad6",
+          "surface": "#101415",
+          "surface-container-high": "#272a2c",
+          "on-secondary-container": "#002957",
+          "on-tertiary": "#213145",
+          "outline-variant": "#45464d",
+          "on-secondary-fixed-variant": "#00468c",
+          "on-secondary-fixed": "#001b3d",
+          "surface-container-low": "#191c1e",
+          "tertiary": "#b7c8e1",
+          "primary": "#bec6e0",
+          "inverse-primary": "#565e74",
+          "on-tertiary-fixed": "#0b1c30",
+          "primary-container": "#0f172a",
+          "on-tertiary-container": "#728299",
+          "surface-container": "#1d2022",
+          "on-surface": "#e0e3e5"
+        },
+        borderRadius: {
+          "DEFAULT": "0.5rem",
+          "lg": "1rem",
+          "xl": "1.5rem",
+          "full": "9999px"
+        },
+        spacing: {
+          "lg": "24px",
+          "md": "16px",
+          "unit": "4px",
+          "container-max": "1200px",
+          "xs": "4px",
+          "xl": "40px",
+          "sm": "8px",
+          "gutter": "20px"
+        },
+        fontFamily: {
+          "headline-lg": ["Hanken Grotesk"],
+          "body-sm": ["Inter"],
+          "button": ["Inter"],
+          "headline-xl": ["Hanken Grotesk"],
+          "label-mono": ["JetBrains Mono"],
+          "headline-lg-mobile": ["Hanken Grotesk"],
+          "body-md": ["Inter"]
+        }
+      }
+    }
+  };
+</script>
+<style>
+  .glass-card {
+    background: rgba(30, 41, 59, 0.7);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(71, 85, 105, 0.5);
+  }
+  .scrollbar-none::-webkit-scrollbar {
+    display: none;
+  }
+  .scrollbar-none {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  body {
+    min-height: max(884px, 100dvh);
+  }
+  /* Physical realistic credit card styling */
+  .physical-card {
+    aspect-ratio: 1.586 / 1;
+    position: relative;
+    border-radius: 1.25rem;
+    overflow: hidden;
+    box-shadow: 0 16px 36px -10px rgba(0, 0, 0, 0.75), 0 0 0 1px rgba(255, 255, 255, 0.1) inset;
+    transition: transform 0.25s cubic-bezier(0.2, 0, 0, 1), box-shadow 0.25s ease;
+  }
+  .physical-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.85), 0 0 0 1px rgba(255, 255, 255, 0.16) inset;
+  }
+  .card-sheen {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.18) 0%, rgba(255, 255, 255, 0.03) 45%, rgba(0, 0, 0, 0.4) 100%);
+  }
+  .card-chip {
+    width: 44px;
+    height: 34px;
+    border-radius: 6px;
+    background: linear-gradient(135deg, #e5c365 0%, #d4af37 40%, #b8860b 70%, #ffd700 100%);
+    box-shadow: inset 0 1px 1px rgba(255,255,255,0.6), 0 1px 3px rgba(0,0,0,0.5);
+    position: relative;
+    overflow: hidden;
+  }
+  .card-chip::before {
+    content: '';
+    position: absolute;
+    inset: 3px;
+    border: 1px solid rgba(0,0,0,0.35);
+    border-radius: 3px;
+  }
+  .card-chip::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: rgba(0,0,0,0.3);
+  }
+  .embossed-text {
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8), 0 -1px 0 rgba(255, 255, 255, 0.2);
+    letter-spacing: 0.14em;
+  }
+</style>
+</head>
+<body class="bg-[#0b0f10] text-white selection:bg-[#0080ff] selection:text-white relative font-['Inter']">
+<!-- TopAppBar -->
+<header class="w-full top-0 sticky bg-[#0b0f10]/90 backdrop-blur-md z-40 border-b border-white/5">
+<div class="flex justify-between items-center px-4 py-3.5 w-full max-w-[1200px] mx-auto">
+<div class="flex items-center">
+<h1 class="text-[28px] font-bold text-white tracking-tight leading-none font-['Hanken_Grotesk']">Wallet</h1>
+</div>
+<div class="hidden md:flex flex-1 max-w-md mx-6">
+<div class="relative w-full">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-[20px]">search</span>
+<input class="w-full bg-[#161a1d] border border-white/10 rounded-full py-2 pl-10 pr-4 text-white placeholder:text-gray-400 focus:outline-none focus:border-[#0080ff] focus:ring-1 focus:ring-[#0080ff] transition-all text-sm" id="desktop-search" placeholder="Search cards..." type="text">
+</div>
+</div>
+<div class="flex items-center">
+<button class="w-10 h-10 bg-[#0080ff] text-white rounded-full flex items-center justify-center hover:bg-[#0070e0] active:scale-95 transition-all shadow-md" id="add-card-top-btn" title="Add Card">
+<span class="material-symbols-outlined text-white text-[22px]" style="font-variation-settings: 'FILL' 1;">add</span>
+</button>
+</div>
+</div>
+<!-- Mobile Search -->
+<div class="px-4 pb-3 md:hidden">
+<div class="relative w-full">
+<span class="material-symbols-outlined absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-[20px]">search</span>
+<input class="w-full bg-[#161a1d] border border-white/10 rounded-full py-2.5 pl-10 pr-4 text-white placeholder:text-gray-400 focus:outline-none focus:border-[#0080ff] focus:ring-1 focus:ring-[#0080ff] transition-all text-sm" id="mobile-search" placeholder="Search wallet" type="text">
+</div>
+</div>
+</header>
+<!-- Main Canvas -->
+<main class="flex-1 w-full max-w-[1200px] mx-auto px-4 py-4 md:flex md:gap-6 pb-28 md:pb-6">
+<!-- SideNav (Desktop) -->
+<aside class="hidden md:flex flex-col w-64 glass-card rounded-2xl p-4 h-[calc(100vh-120px)] sticky top-24">
+<nav class="space-y-1.5 flex-1">
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:bg-surface-container-high rounded-xl text-sm font-medium transition-colors" href="#">
+<span class="material-symbols-outlined text-[20px]">password</span>
+        Passwords
+      </a>
+<a class="flex items-center gap-3 px-3 py-2 bg-[#0080ff] text-white rounded-xl text-sm font-semibold transition-colors" href="#">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">account_balance_wallet</span>
+        Wallet
+      </a>
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:bg-surface-container-high rounded-xl text-sm font-medium transition-colors" href="#">
+<span class="material-symbols-outlined text-[20px]">vpn_key</span>
+        Generator
+      </a>
+</nav>
+<div class="mt-auto pt-4 border-t border-white/10">
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:bg-surface-container-high rounded-xl text-sm font-medium transition-colors" href="#">
+<span class="material-symbols-outlined text-[20px]">settings</span>
+        Settings
+      </a>
+</div>
+</aside>
+<!-- Content Area -->
+<section class="flex-1 min-w-0">
+<!-- Category Filter Pills -->
+<div class="flex gap-2 overflow-x-auto pb-2 mb-3 scrollbar-none" id="filter-pills">
+<button class="filter-btn font-medium rounded-full px-4 py-1.5 text-sm whitespace-nowrap transition-all cursor-pointer bg-[#0080ff] text-white shadow-sm" data-category="all">All</button>
+<button class="filter-btn rounded-full px-4 py-1.5 text-sm whitespace-nowrap transition-all cursor-pointer bg-[#191c1e] border border-white/10 text-on-surface-variant hover:text-white" data-category="visa">Visa</button>
+<button class="filter-btn rounded-full px-4 py-1.5 text-sm whitespace-nowrap transition-all cursor-pointer bg-[#191c1e] border border-white/10 text-on-surface-variant hover:text-white" data-category="mastercard">Mastercard</button>
+<button class="filter-btn rounded-full px-4 py-1.5 text-sm whitespace-nowrap transition-all cursor-pointer bg-[#191c1e] border border-white/10 text-on-surface-variant hover:text-white" data-category="plexee">Plexee</button>
+<button class="filter-btn rounded-full px-4 py-1.5 text-sm whitespace-nowrap transition-all cursor-pointer bg-[#191c1e] border border-white/10 text-on-surface-variant hover:text-white" data-category="amex">Amex</button>
+</div>
+<!-- Items Counter -->
+<div class="flex justify-between items-center mb-4">
+<span class="text-on-surface-variant text-sm font-medium" id="card-count">3 Cards</span>
+<span class="text-xs text-on-surface-variant/70 font-label-mono">TAP TO VIEW • HOLD FOR MENU</span>
+</div>
+<!-- Physical Cards List Container -->
+<div class="flex flex-col gap-5 max-w-md mx-auto md:max-w-none md:grid md:grid-cols-2 lg:grid-cols-3" id="cards-container">
+      <div class="physical-card bg-gradient-to-br from-[#0a192f] via-[#0d2238] to-[#040d1a] border border-white/10 p-5 flex flex-col justify-between text-white select-none cursor-pointer" data-card-id="card_default_1" data-category="visa">
+        <!-- Subtle Realistic Sheen Overlay -->
+        <div class="card-sheen absolute inset-0 pointer-events-none"></div>
+
+        <!-- Card Top Row -->
+        <div class="relative z-10 flex items-start justify-between gap-3">
+          <div class="min-w-0 flex-1">
+            <h3 class="font-bold text-base md:text-lg text-white truncate tracking-tight leading-tight">Chase Sapphire Reserve</h3>
+            <p class="text-[11px] font-medium text-white/60 tracking-wider uppercase">Infinite Credit</p>
+          </div>
+          <div class="flex items-center gap-1.5 shrink-0">
+            <div class="px-2 py-1 flex items-center justify-center">
+              <span class="italic font-extrabold text-[17px] tracking-wider text-blue-200 select-none font-label-mono">VISA</span>
+            </div>
+            
+            <button class="card-share-quick-btn w-8 h-8 rounded-full bg-black/25 hover:bg-white/20 active:scale-95 text-white/80 hover:text-white flex items-center justify-center transition-all" title="Share Card" data-card-id="card_default_1">
+              <span class="material-symbols-outlined text-[17px]">share</span>
+            </button>
+            <button class="card-options-trigger w-8 h-8 rounded-full bg-black/25 hover:bg-white/20 active:scale-95 text-white/80 hover:text-white flex items-center justify-center transition-all" title="Card Menu" data-card-id="card_default_1">
+              <span class="material-symbols-outlined text-[18px]">more_vert</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Middle Elements: EMV Chip & Contactless NFC wave -->
+        <div class="relative z-10 flex items-center justify-between my-auto py-1">
+          <div class="flex items-center gap-3">
+            <div class="card-chip"></div>
+            <!-- Contactless NFC Icon -->
+            <span class="material-symbols-outlined text-white/60 text-[22px] rotate-90" title="Contactless">contactless</span>
+          </div>
+          <div class="text-[10px] font-label-mono text-white/40 tracking-widest uppercase">
+            SECURE VAULT
+          </div>
+        </div>
+
+        <!-- Card Number & Reveal Eye Toggle -->
+        <div class="relative z-10 mb-1 flex items-center justify-between">
+          <div class="font-label-mono text-[16px] sm:text-[18px] font-bold text-white tracking-widest embossed-text truncate">
+            •••• •••• •••• 7890
+          </div>
+          
+          <button class="card-reveal-btn text-white/60 hover:text-white p-1 transition-colors" title="Show digits" data-card-id="card_default_1">
+            <span class="material-symbols-outlined text-[19px]">visibility</span>
+          </button>
+        </div>
+
+        <!-- Card Bottom Row: Cardholder Name & Expiry -->
+        <div class="relative z-10 flex items-end justify-between text-xs tracking-wider uppercase pt-1 border-t border-white/10">
+          <div class="min-w-0 pr-3">
+            <div class="text-[9px] text-white/50 tracking-widest font-semibold leading-none mb-1">CARDHOLDER</div>
+            <div class="font-label-mono font-semibold text-white/90 text-[12px] truncate">ALEXANDER DRAFT</div>
+          </div>
+          <div class="text-right shrink-0">
+            <div class="text-[9px] text-white/50 tracking-widest font-semibold leading-none mb-1">EXPIRES</div>
+            <div class="font-label-mono font-semibold text-white/90 text-[12px]">EXP 08/28</div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="physical-card bg-gradient-to-br from-[#2c2f33] via-[#1e2124] to-[#121316] border border-white/10 p-5 flex flex-col justify-between text-white select-none cursor-pointer" data-card-id="card_default_2" data-category="mastercard">
+        <!-- Subtle Realistic Sheen Overlay -->
+        <div class="card-sheen absolute inset-0 pointer-events-none"></div>
+
+        <!-- Card Top Row -->
+        <div class="relative z-10 flex items-start justify-between gap-3">
+          <div class="min-w-0 flex-1">
+            <h3 class="font-bold text-base md:text-lg text-white truncate tracking-tight leading-tight">Apple Card Titanium</h3>
+            <p class="text-[11px] font-medium text-white/60 tracking-wider uppercase">World Elite</p>
+          </div>
+          <div class="flex items-center gap-1.5 shrink-0">
+            <div class="px-2 py-1 flex items-center justify-center">
+              <div class="flex items-center -space-x-2"><div class="w-5 h-5 rounded-full bg-red-500/90 shadow-sm"></div><div class="w-5 h-5 rounded-full bg-amber-400/90 shadow-sm"></div></div>
+            </div>
+            
+            <button class="card-share-quick-btn w-8 h-8 rounded-full bg-black/25 hover:bg-white/20 active:scale-95 text-white/80 hover:text-white flex items-center justify-center transition-all" title="Share Card" data-card-id="card_default_2">
+              <span class="material-symbols-outlined text-[17px]">share</span>
+            </button>
+            <button class="card-options-trigger w-8 h-8 rounded-full bg-black/25 hover:bg-white/20 active:scale-95 text-white/80 hover:text-white flex items-center justify-center transition-all" title="Card Menu" data-card-id="card_default_2">
+              <span class="material-symbols-outlined text-[18px]">more_vert</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Middle Elements: EMV Chip & Contactless NFC wave -->
+        <div class="relative z-10 flex items-center justify-between my-auto py-1">
+          <div class="flex items-center gap-3">
+            <div class="card-chip"></div>
+            <!-- Contactless NFC Icon -->
+            <span class="material-symbols-outlined text-white/60 text-[22px] rotate-90" title="Contactless">contactless</span>
+          </div>
+          <div class="text-[10px] font-label-mono text-white/40 tracking-widest uppercase">
+            SECURE VAULT
+          </div>
+        </div>
+
+        <!-- Card Number & Reveal Eye Toggle -->
+        <div class="relative z-10 mb-1 flex items-center justify-between">
+          <div class="font-label-mono text-[16px] sm:text-[18px] font-bold text-white tracking-widest embossed-text truncate">
+            •••• •••• •••• 2345
+          </div>
+          
+          <button class="card-reveal-btn text-white/60 hover:text-white p-1 transition-colors" title="Show digits" data-card-id="card_default_2">
+            <span class="material-symbols-outlined text-[19px]">visibility</span>
+          </button>
+        </div>
+
+        <!-- Card Bottom Row: Cardholder Name & Expiry -->
+        <div class="relative z-10 flex items-end justify-between text-xs tracking-wider uppercase pt-1 border-t border-white/10">
+          <div class="min-w-0 pr-3">
+            <div class="text-[9px] text-white/50 tracking-widest font-semibold leading-none mb-1">CARDHOLDER</div>
+            <div class="font-label-mono font-semibold text-white/90 text-[12px] truncate">ALEXANDER DRAFT</div>
+          </div>
+          <div class="text-right shrink-0">
+            <div class="text-[9px] text-white/50 tracking-widest font-semibold leading-none mb-1">EXPIRES</div>
+            <div class="font-label-mono font-semibold text-white/90 text-[12px]">EXP 11/27</div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="physical-card bg-gradient-to-br from-[#2a1b02] via-[#3d2703] to-[#150d01] border border-white/10 p-5 flex flex-col justify-between text-white select-none cursor-pointer" data-card-id="card_default_3" data-category="plexee">
+        <!-- Subtle Realistic Sheen Overlay -->
+        <div class="card-sheen absolute inset-0 pointer-events-none"></div>
+
+        <!-- Card Top Row -->
+        <div class="relative z-10 flex items-start justify-between gap-3">
+          <div class="min-w-0 flex-1">
+            <h3 class="font-bold text-base md:text-lg text-white truncate tracking-tight leading-tight">Plexee Sovereign Gold</h3>
+            <p class="text-[11px] font-medium text-white/60 tracking-wider uppercase">Decentralized Vault</p>
+          </div>
+          <div class="flex items-center gap-1.5 shrink-0">
+            <div class="px-2 py-1 flex items-center justify-center">
+              <div class="flex items-center gap-1 text-amber-400 font-bold text-xs tracking-wider uppercase"><span class="material-symbols-outlined text-[16px]">token</span>PLEXEE</div>
+            </div>
+            
+            <button class="card-share-quick-btn w-8 h-8 rounded-full bg-black/25 hover:bg-white/20 active:scale-95 text-white/80 hover:text-white flex items-center justify-center transition-all" title="Share Card" data-card-id="card_default_3">
+              <span class="material-symbols-outlined text-[17px]">share</span>
+            </button>
+            <button class="card-options-trigger w-8 h-8 rounded-full bg-black/25 hover:bg-white/20 active:scale-95 text-white/80 hover:text-white flex items-center justify-center transition-all" title="Card Menu" data-card-id="card_default_3">
+              <span class="material-symbols-outlined text-[18px]">more_vert</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Middle Elements: EMV Chip & Contactless NFC wave -->
+        <div class="relative z-10 flex items-center justify-between my-auto py-1">
+          <div class="flex items-center gap-3">
+            <div class="card-chip"></div>
+            <!-- Contactless NFC Icon -->
+            <span class="material-symbols-outlined text-white/60 text-[22px] rotate-90" title="Contactless">contactless</span>
+          </div>
+          <div class="text-[10px] font-label-mono text-white/40 tracking-widest uppercase">
+            SECURE VAULT
+          </div>
+        </div>
+
+        <!-- Card Number & Reveal Eye Toggle -->
+        <div class="relative z-10 mb-1 flex items-center justify-between">
+          <div class="font-label-mono text-[16px] sm:text-[18px] font-bold text-white tracking-widest embossed-text truncate">
+            •••• •••• •••• 5519
+          </div>
+          
+          <button class="card-reveal-btn text-white/60 hover:text-white p-1 transition-colors" title="Show digits" data-card-id="card_default_3">
+            <span class="material-symbols-outlined text-[19px]">visibility</span>
+          </button>
+        </div>
+
+        <!-- Card Bottom Row: Cardholder Name & Expiry -->
+        <div class="relative z-10 flex items-end justify-between text-xs tracking-wider uppercase pt-1 border-t border-white/10">
+          <div class="min-w-0 pr-3">
+            <div class="text-[9px] text-white/50 tracking-widest font-semibold leading-none mb-1">CARDHOLDER</div>
+            <div class="font-label-mono font-semibold text-white/90 text-[12px] truncate">ALEXANDER DRAFT</div>
+          </div>
+          <div class="text-right shrink-0">
+            <div class="text-[9px] text-white/50 tracking-widest font-semibold leading-none mb-1">EXPIRES</div>
+            <div class="font-label-mono font-semibold text-white/90 text-[12px]">EXP 05/30</div>
+          </div>
+        </div>
+      </div>
+      </div>
+<!-- Empty State -->
+<div class="hidden flex-col items-center justify-center py-16 px-4 text-center rounded-2xl border border-white/5 bg-[#191c1e]/60 mt-3" id="empty-state">
+<div class="w-14 h-14 rounded-full bg-surface-container-high flex items-center justify-center text-on-surface-variant mb-3">
+<span class="material-symbols-outlined text-[28px]">credit_card_off</span>
+</div>
+<h4 class="text-base font-semibold text-white mb-1">No cards found</h4>
+<p class="text-on-surface-variant text-xs max-w-xs" id="empty-state-message">Try changing your search or selected filter</p>
+</div>
+</section>
+</main>
+<!-- Floating Capsule Bottom Navigation Bar (Mobile) -->
+<nav class="md:hidden fixed bottom-6 left-1/2 -translate-x-1/2 z-40 flex items-center justify-center bg-[#1d2022]/95 backdrop-blur-md px-3 py-2 rounded-full shadow-2xl border border-white/10 gap-2">
+<a class="text-[#a0a5aa] hover:text-white p-2.5 flex items-center justify-center transition-colors" href="#" title="Passwords">
+<span class="material-symbols-outlined text-[22px]">vpn_key</span>
+</a>
+<a class="bg-[#0080ff] text-white px-5 py-2.5 rounded-full flex items-center justify-center shadow-md transition-all" href="#" title="Wallet">
+<span class="material-symbols-outlined text-[22px]" style="font-variation-settings: 'FILL' 1;">account_balance_wallet</span>
+</a>
+<a class="text-[#a0a5aa] hover:text-white p-2.5 flex items-center justify-center transition-colors" href="#" title="Generator">
+<span class="material-symbols-outlined text-[22px]">grid_view</span>
+</a>
+<a class="text-[#a0a5aa] hover:text-white p-2.5 flex items-center justify-center transition-colors" href="#" title="Settings">
+<span class="material-symbols-outlined text-[22px]">settings</span>
+</a>
+</nav>
+<!-- Dedicated Share Card Modal -->
+<div class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 transition-all duration-300" id="detail-modal-container"><div class="absolute inset-0 bg-black/85 backdrop-blur-md opacity-0 transition-opacity duration-300" id="detail-modal-backdrop"></div><div class="relative w-full max-w-lg bg-[#191c1e] border border-white/10 rounded-3xl p-5 shadow-2xl z-10 flex flex-col max-h-[92vh] overflow-y-auto scrollbar-none transform scale-95 opacity-0 transition-all duration-300" id="detail-modal-content"><div class="w-full flex items-center justify-between pb-3 mb-3 border-b border-white/5"><div><div class="flex items-center gap-2"><h3 class="text-white font-bold text-lg" id="detail-modal-card-title">Card Details</h3><span class="px-2 py-0.5 rounded-full text-[11px] font-semibold bg-[#0080ff]/20 text-[#0080ff] border border-[#0080ff]/30 uppercase tracking-wider" id="detail-modal-badge">Visa</span></div><div class="flex items-center gap-1.5 mt-1 text-emerald-400 text-xs font-label-mono"><span class="material-symbols-outlined text-[14px]">schedule</span><span id="detail-modal-last-edited-time" class="">Last edited: 2 minutes ago</span></div></div><button class="w-8 h-8 rounded-full bg-white/5 hover:bg-white/10 flex items-center justify-center text-on-surface-variant hover:text-white transition-colors" id="detail-modal-close-btn"><span class="material-symbols-outlined text-[18px]">close</span></button></div><div class="w-full mb-4" id="detail-modal-card-preview"></div><div class="space-y-2.5 w-full text-left"><div class="w-full px-4 py-3 rounded-2xl bg-white/[0.04] border border-white/5 flex items-center justify-between"><div class="flex items-center gap-3"><div class="w-8 h-8 rounded-xl bg-[#0080ff]/15 text-[#0080ff] flex items-center justify-center"><span class="material-symbols-outlined text-[18px]">credit_card</span></div><div><div class="text-[11px] text-white/50 uppercase tracking-wider font-semibold">Card Number</div><div class="text-white font-label-mono font-bold text-sm tracking-wider mt-0.5" id="detail-modal-card-number">•••• •••• •••• 7890</div></div></div><button class="flex items-center gap-1 text-xs text-[#0080ff] hover:text-[#3c90ff] font-medium px-2.5 py-1.5 rounded-lg bg-[#0080ff]/10 hover:bg-[#0080ff]/20 transition-colors" id="detail-modal-copy-number-btn"><span class="material-symbols-outlined text-[14px]">content_copy</span><span class="">Copy</span></button></div><div class="grid grid-cols-2 gap-2.5"><div class="px-4 py-3 rounded-2xl bg-white/[0.04] border border-white/5"><div class="text-[11px] text-white/50 uppercase tracking-wider font-semibold mb-1">Cardholder</div><div class="text-white text-xs font-semibold uppercase truncate font-label-mono" id="detail-modal-holder">ALEXANDER DRAFT</div></div><div class="px-4 py-3 rounded-2xl bg-white/[0.04] border border-white/5"><div class="text-[11px] text-white/50 uppercase tracking-wider font-semibold mb-1">Expires</div><div class="text-white text-xs font-semibold font-label-mono" id="detail-modal-expiry">08/28</div></div></div><div class="grid grid-cols-2 gap-2.5"><div class="px-4 py-3 rounded-2xl bg-white/[0.04] border border-white/5 flex items-center justify-between"><div><div class="text-[11px] text-white/50 uppercase tracking-wider font-semibold mb-0.5">CVV / PIN</div><div class="text-white text-xs font-semibold font-label-mono" id="detail-modal-pin">4921</div></div><button class="text-xs text-[#0080ff] hover:text-[#3c90ff] px-2 py-1 rounded bg-[#0080ff]/10" id="detail-modal-copy-pin-btn" title="Copy PIN"><span class="material-symbols-outlined text-[14px]">content_copy</span></button></div><div class="px-4 py-3 rounded-2xl bg-white/[0.04] border border-white/5"><div class="text-[11px] text-white/50 uppercase tracking-wider font-semibold mb-0.5">Card Tier</div><div class="text-white text-xs font-semibold truncate" id="detail-modal-tier">Infinite Credit</div></div></div><div class="px-4 py-3 rounded-2xl bg-white/[0.04] border border-white/5"><div class="text-[11px] text-white/50 uppercase tracking-wider font-semibold mb-1">Notes &amp; Details</div><p class="text-xs text-on-surface-variant leading-relaxed" id="detail-modal-notes">Preferred travel card. $300 annual travel credit and priority pass lounge access.</p></div></div><div class="grid grid-cols-2 gap-3 mt-4 w-full"><button class="flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-white text-sm font-semibold transition-colors" id="detail-modal-edit-btn"><span class="material-symbols-outlined text-[18px]">edit</span><span class="">Edit Card</span></button><button class="flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-[#0080ff] hover:bg-[#0070e0] text-white text-sm font-semibold shadow-md transition-colors" id="detail-modal-done-btn"><span class="material-symbols-outlined text-[18px]">check</span><span class="">Done</span></button></div></div></div><div class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 transition-all duration-300" id="share-modal-container">
+<div class="absolute inset-0 bg-black/85 backdrop-blur-md opacity-0 transition-opacity duration-300" id="share-modal-backdrop"></div>
+<div class="relative w-full max-w-md bg-[#191c1e] border border-white/10 rounded-3xl p-5 shadow-2xl z-10 flex flex-col items-center transform scale-95 opacity-0 transition-all duration-300" id="share-modal-content">
+<div class="w-full flex items-center justify-between pb-3 mb-2 border-b border-white/5">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[#0080ff] text-[20px]">share</span>
+<h3 class="text-white font-bold text-base">Share Card</h3>
+</div>
+<button class="w-8 h-8 rounded-full bg-white/5 hover:bg-white/10 flex items-center justify-center text-on-surface-variant hover:text-white transition-colors" id="share-close-btn">
+<span class="material-symbols-outlined text-[18px]">close</span>
+</button>
+</div>
+<!-- Live Card Replica Container -->
+<div class="w-full my-3" id="share-card-preview-target"></div>
+<p class="text-xs text-on-surface-variant text-center my-2">Card details ready for secure encrypted export &amp; sharing</p>
+<!-- Share Quick Action Buttons -->
+<div class="w-full grid grid-cols-2 gap-2 mt-3">
+<button class="flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl bg-white/5 hover:bg-white/10 border border-white/5 text-white text-xs font-medium transition-colors" id="share-copy-details-btn">
+<span class="material-symbols-outlined text-[18px] text-[#0080ff]">copy_all</span>
+<span class="">Copy Details</span>
+</button>
+<button class="flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl bg-[#0080ff] hover:bg-[#0070e0] text-white text-xs font-semibold shadow-md transition-colors" id="share-system-btn">
+<span class="material-symbols-outlined text-[18px]">send</span>
+<span class="">Send Card</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Card Options Bottom Sheet -->
+<div class="fixed inset-0 z-50 hidden flex items-end justify-center transition-all duration-300" id="card-options-sheet-container">
+<!-- Backdrop -->
+<div class="absolute inset-0 bg-black/80 backdrop-blur-sm opacity-0 transition-opacity duration-300" id="card-sheet-backdrop"></div>
+<!-- Bottom Sheet Content -->
+<div class="relative w-full max-w-lg bg-[#191c1e] border-t border-x border-white/10 rounded-t-3xl shadow-2xl overflow-hidden flex flex-col max-h-[85vh] transform translate-y-full transition-all duration-300 ease-out z-10" id="card-sheet-content">
+<!-- Drag Handle -->
+<div class="w-full flex items-center justify-center pt-3 pb-1 cursor-grab">
+<div class="w-10 h-1 rounded-full bg-white/20"></div>
+</div>
+<!-- Header with Card Quick Info -->
+<div class="px-5 py-3 flex items-center justify-between border-b border-white/5">
+<div class="flex items-center gap-3 min-w-0">
+<div class="w-11 h-11 rounded-xl bg-white/10 flex items-center justify-center shrink-0 text-white/90 shadow-sm" id="sheet-card-icon-wrap">
+<span class="material-symbols-outlined text-[22px]" id="sheet-card-icon">credit_card</span>
+</div>
+<div class="min-w-0">
+<div class="flex items-center gap-2">
+<h3 class="text-white font-bold text-base truncate leading-tight" id="sheet-card-title">Chase Sapphire</h3>
+<span class="px-2 py-0.5 rounded-full text-[11px] font-semibold bg-[#0080ff]/20 text-[#0080ff] border border-[#0080ff]/30 uppercase tracking-wider" id="sheet-card-badge">Visa</span>
+</div>
+<div class="flex items-center gap-2 mt-0.5 flex-wrap"><p class="text-on-surface-variant text-xs truncate font-label-mono" id="sheet-card-sub">Visa •••• 7890</p><span class="text-white/30 text-[10px]">•</span><span class="inline-flex items-center gap-1 text-[11px] text-emerald-400 font-label-mono" id="sheet-card-time-badge"><span class="material-symbols-outlined text-[12px]">schedule</span><span id="sheet-card-time-text" class="">Edited 2m ago</span></span></div>
+</div>
+</div>
+<button class="w-8 h-8 rounded-full bg-white/5 hover:bg-white/10 flex items-center justify-center text-on-surface-variant hover:text-white transition-colors" id="sheet-close-btn">
+<span class="material-symbols-outlined text-[18px]">close</span>
+</button>
+</div>
+<!-- Action Options List -->
+<div class="p-4 space-y-2 overflow-y-auto scrollbar-none"><div class="w-full px-3.5 py-2.5 rounded-xl bg-white/[0.04] border border-white/5 flex items-center justify-between" id="sheet-card-last-edited-container"><div class="flex items-center gap-3"><div class="w-8 h-8 rounded-lg bg-[#0080ff]/10 text-[#0080ff] flex items-center justify-center"><span class="material-symbols-outlined text-[18px]">schedule</span></div><span class="text-xs text-on-surface-variant font-medium">Last Edited</span></div><span class="text-white/90 font-label-mono text-xs font-semibold" id="sheet-card-last-edited-val">2m ago</span></div>
+<!-- Item 1: Card Network Info -->
+<div class="w-full px-3.5 py-2.5 rounded-xl bg-white/[0.03] border border-white/5 flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-lg bg-surface-container-high flex items-center justify-center text-on-surface-variant">
+<span class="material-symbols-outlined text-[18px]">credit_card</span>
+</div>
+<span class="text-xs text-on-surface-variant font-medium">Card Type</span>
+</div>
+<span class="text-white text-xs font-semibold uppercase tracking-wider" id="sheet-card-type-val">Visa Credit</span>
+</div>
+<!-- Item 2: Cardholder Name -->
+<div class="w-full px-3.5 py-2.5 rounded-xl bg-white/[0.03] border border-white/5 flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-lg bg-surface-container-high flex items-center justify-center text-on-surface-variant">
+<span class="material-symbols-outlined text-[18px]">person</span>
+</div>
+<span class="text-xs text-on-surface-variant font-medium">Cardholder Name</span>
+</div>
+<span class="text-white text-xs font-medium uppercase truncate max-w-[200px]" id="sheet-card-holder-val">ALEXANDER DRAFT</span>
+</div>
+<div class="grid grid-cols-2 gap-2"><div class="px-3.5 py-2.5 rounded-xl bg-white/[0.03] border border-white/5 flex items-center justify-between"><div class="flex items-center gap-2"><div class="w-7 h-7 rounded-lg bg-surface-container-high flex items-center justify-center text-on-surface-variant"><span class="material-symbols-outlined text-[16px]">calendar_today</span></div><span class="text-xs text-on-surface-variant font-medium">Expires</span></div><span class="text-white text-xs font-semibold font-label-mono" id="sheet-card-expiry-val">08/28</span></div><div class="px-3.5 py-2.5 rounded-xl bg-white/[0.03] border border-white/5 flex items-center justify-between"><div class="flex items-center gap-2"><div class="w-7 h-7 rounded-lg bg-surface-container-high flex items-center justify-center text-on-surface-variant"><span class="material-symbols-outlined text-[16px]">key</span></div><span class="text-xs text-on-surface-variant font-medium">CVV</span></div><span class="text-white text-xs font-semibold font-label-mono" id="sheet-card-cvv-val">891</span></div></div><div class="my-1 border-t border-white/5"></div>
+<!-- Item 3: Copy Card Number -->
+<button class="w-full px-3.5 py-3 rounded-xl hover:bg-surface-container-high text-white flex items-center justify-between transition-colors group text-left active:scale-[0.99]" id="sheet-btn-copy-number">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-lg bg-white/5 group-hover:bg-[#0080ff]/20 text-on-surface-variant group-hover:text-[#0080ff] flex items-center justify-center transition-colors">
+<span class="material-symbols-outlined text-[18px]">content_copy</span>
+</div>
+<div>
+<div class="text-sm font-medium text-white">Copy Card Number</div>
+<div class="text-[11px] text-on-surface-variant font-label-mono mt-0.5" id="sheet-card-number-sub">•••• 7890</div>
+</div>
+</div>
+<span class="text-[11px] text-on-surface-variant group-hover:text-[#0080ff] font-medium transition-colors">Copy</span>
+</button>
+<!-- Item 4: Copy PIN -->
+<button class="w-full px-3.5 py-3 rounded-xl hover:bg-surface-container-high text-white flex items-center justify-between transition-colors group text-left active:scale-[0.99]" id="sheet-btn-copy-pin">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-lg bg-white/5 group-hover:bg-[#0080ff]/20 text-on-surface-variant group-hover:text-[#0080ff] flex items-center justify-center transition-colors">
+<span class="material-symbols-outlined text-[18px]">lock</span>
+</div>
+<div>
+<div class="text-sm font-medium text-white">Copy PIN</div>
+<div class="text-[11px] text-on-surface-variant font-label-mono mt-0.5">••••</div>
+</div>
+</div>
+<span class="text-[11px] text-on-surface-variant group-hover:text-[#0080ff] font-medium transition-colors">Copy</span>
+</button>
+<!-- Item 5: Share Card -->
+<button class="w-full px-3.5 py-3 rounded-xl hover:bg-surface-container-high text-white flex items-center justify-between transition-colors group text-left active:scale-[0.99]" id="sheet-btn-share-card">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-lg bg-white/5 group-hover:bg-[#0080ff]/20 text-on-surface-variant group-hover:text-[#0080ff] flex items-center justify-center transition-colors">
+<span class="material-symbols-outlined text-[18px]">share</span>
+</div>
+<div>
+<div class="text-sm font-medium text-white">Share Card</div>
+<div class="text-[11px] text-on-surface-variant mt-0.5">Export visual pass or card details</div>
+</div>
+</div>
+<span class="material-symbols-outlined text-[18px] text-on-surface-variant group-hover:text-white transition-colors">chevron_right</span>
+</button>
+<!-- Item 6: Edit Card -->
+<button class="w-full px-3.5 py-3 rounded-xl hover:bg-surface-container-high text-white flex items-center justify-between transition-colors group text-left active:scale-[0.99]" id="sheet-btn-edit-card">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-lg bg-white/5 group-hover:bg-[#0080ff]/20 text-on-surface-variant group-hover:text-[#0080ff] flex items-center justify-center transition-colors">
+<span class="material-symbols-outlined text-[18px]">edit</span>
+</div>
+<div>
+<div class="text-sm font-medium text-white">Edit Card</div>
+<div class="text-[11px] text-on-surface-variant mt-0.5">Update bank name, number, or details</div>
+</div>
+</div>
+<span class="material-symbols-outlined text-[18px] text-on-surface-variant group-hover:text-white transition-colors">chevron_right</span>
+</button>
+<!-- Item 7: Delete Card -->
+<button class="w-full px-3.5 py-3 rounded-xl hover:bg-red-500/10 text-red-500 border border-red-500/20 flex items-center justify-between transition-colors group text-left active:scale-[0.99] mt-2" id="sheet-btn-delete-card">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-lg bg-red-500/15 text-red-400 flex items-center justify-center transition-colors">
+<span class="material-symbols-outlined text-[18px]">delete</span>
+</div>
+<div>
+<div class="text-sm font-semibold text-red-400">Delete Card</div>
+<div class="text-[11px] text-red-400/70 mt-0.5">Remove this card from your wallet</div>
+</div>
+</div>
+<span class="material-symbols-outlined text-[18px] text-red-400">close</span>
+</button>
+</div>
+<div class="h-6"></div>
+</div>
+</div>
+<!-- Edit Card Modal Dialog -->
+<div class="fixed inset-0 z-50 hidden flex items-end md:items-center justify-center transition-all duration-300" id="edit-card-modal-container">
+<!-- Backdrop -->
+<div class="absolute inset-0 bg-black/80 backdrop-blur-sm opacity-0 transition-opacity duration-300" id="edit-modal-backdrop"></div>
+<!-- Modal Content / Sheet View -->
+<div class="relative w-full max-w-lg bg-[#191c1e] border-t md:border border-white/10 rounded-t-3xl md:rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[92vh] transform translate-y-full md:translate-y-6 opacity-0 md:opacity-100 transition-all duration-300 ease-out z-10" id="edit-modal-content">
+<!-- Mobile Drag Handle -->
+<div class="w-full flex md:hidden items-center justify-center pt-3 pb-1">
+<div class="w-10 h-1 rounded-full bg-white/20"></div>
+</div>
+<!-- Header -->
+<div class="px-5 py-3.5 flex items-center justify-between border-b border-white/10">
+<button class="text-sm font-medium text-on-surface-variant hover:text-white transition-colors" id="edit-modal-cancel-btn" type="button">Cancel</button>
+<h2 class="text-base font-bold text-white tracking-tight" id="edit-modal-title">Edit Card</h2>
+<button class="text-sm font-semibold text-[#0080ff] hover:text-[#3c90ff] transition-colors" id="edit-modal-save-btn" type="button">Save</button>
+</div>
+<!-- Form Body -->
+<form class="p-5 space-y-4 overflow-y-auto scrollbar-none flex-1 text-left" id="edit-card-form" onsubmit="return false;">
+<input id="edit-card-id" type="hidden" value="">
+<!-- Card Type / Network Selector -->
+<div>
+<label class="block text-xs font-semibold text-on-surface-variant mb-2 tracking-wide uppercase">Card Network</label>
+<div class="grid grid-cols-4 gap-2" id="edit-network-group">
+<button class="edit-net-btn flex flex-col items-center justify-center py-2.5 px-2 rounded-xl border border-white/10 bg-[#111827] text-white text-xs font-medium transition-all" data-network="Visa" type="button">
+<span class="text-sm font-bold tracking-wider">VISA</span>
+</button>
+<button class="edit-net-btn flex flex-col items-center justify-center py-2.5 px-2 rounded-xl border border-white/10 bg-[#111827] text-white text-xs font-medium transition-all" data-network="Mastercard" type="button">
+<span class="text-sm font-bold tracking-wider">MC</span>
+</button>
+<button class="edit-net-btn flex flex-col items-center justify-center py-2.5 px-2 rounded-xl border border-white/10 bg-[#111827] text-white text-xs font-medium transition-all" data-network="Amex" type="button">
+<span class="text-sm font-bold tracking-wider">AMEX</span>
+</button>
+<button class="edit-net-btn flex flex-col items-center justify-center py-2.5 px-2 rounded-xl border border-white/10 bg-[#111827] text-white text-xs font-medium transition-all" data-network="Plexee" type="button">
+<span class="text-sm font-bold tracking-wider">PLEXEE</span>
+</button>
+</div>
+</div>
+<!-- Card Name / Bank -->
+<div>
+<label class="block text-xs font-semibold text-on-surface-variant mb-1.5" for="edit-bank-name">Card Title &amp; Bank</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-3.5 top-1/2 -translate-y-1/2 text-on-surface-variant text-[19px]">account_balance</span>
+<input class="w-full bg-[#111827] border border-white/10 rounded-xl py-2.5 pl-10 pr-3.5 text-white placeholder:text-gray-500 focus:outline-none focus:border-[#0080ff] focus:ring-1 focus:ring-[#0080ff] transition-all text-sm font-medium" id="edit-bank-name" placeholder="e.g. Chase Sapphire Reserve" required="" type="text">
+</div>
+</div>
+<!-- Cardholder Name -->
+<div>
+<label class="block text-xs font-semibold text-on-surface-variant mb-1.5" for="edit-cardholder-name">Cardholder Name</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-3.5 top-1/2 -translate-y-1/2 text-on-surface-variant text-[19px]">person</span>
+<input class="w-full bg-[#111827] border border-white/10 rounded-xl py-2.5 pl-10 pr-3.5 text-white placeholder:text-gray-500 focus:outline-none focus:border-[#0080ff] focus:ring-1 focus:ring-[#0080ff] transition-all text-sm font-medium uppercase font-label-mono" id="edit-cardholder-name" placeholder="e.g. ALEXANDER DRAFT" type="text">
+</div>
+</div>
+<!-- Card Number -->
+<div>
+<label class="block text-xs font-semibold text-on-surface-variant mb-1.5" for="edit-card-number">Card Number</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-3.5 top-1/2 -translate-y-1/2 text-on-surface-variant text-[19px]">credit_card</span>
+<input class="w-full bg-[#111827] border border-white/10 rounded-xl py-2.5 pl-10 pr-10 text-white placeholder:text-gray-500 focus:outline-none focus:border-[#0080ff] focus:ring-1 focus:ring-[#0080ff] transition-all text-sm font-label-mono tracking-wider" id="edit-card-number" maxlength="19" placeholder="4532 8901 2345 7890" required="" type="text">
+<button class="absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant hover:text-white p-1" id="edit-toggle-cardnumber-visibility" title="Toggle visibility" type="button">
+<span class="material-symbols-outlined text-[18px]">visibility</span>
+</button>
+</div>
+</div>
+<!-- Expiry Date & Security PIN / CVV -->
+<div class="grid grid-cols-2 gap-3">
+<div>
+<label class="block text-xs font-semibold text-on-surface-variant mb-1.5" for="edit-expiry-date">Expiry Date</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-3.5 top-1/2 -translate-y-1/2 text-on-surface-variant text-[19px]">calendar_today</span>
+<input class="w-full bg-[#111827] border border-white/10 rounded-xl py-2.5 pl-10 pr-3.5 text-white placeholder:text-gray-500 focus:outline-none focus:border-[#0080ff] focus:ring-1 focus:ring-[#0080ff] transition-all text-sm font-label-mono" id="edit-expiry-date" maxlength="5" placeholder="MM/YY" type="text">
+</div>
+</div>
+<div>
+<label class="block text-xs font-semibold text-on-surface-variant mb-1.5" for="edit-pin">Security PIN / CVV</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-3.5 top-1/2 -translate-y-1/2 text-on-surface-variant text-[19px]">lock</span>
+<input class="w-full bg-[#111827] border border-white/10 rounded-xl py-2.5 pl-10 pr-10 text-white placeholder:text-gray-500 focus:outline-none focus:border-[#0080ff] focus:ring-1 focus:ring-[#0080ff] transition-all text-sm font-label-mono" id="edit-pin" maxlength="6" placeholder="4921" type="password">
+<button class="absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant hover:text-white p-1" id="edit-toggle-pin-visibility" title="Toggle visibility" type="button">
+<span class="material-symbols-outlined text-[18px]">visibility</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Notes / Additional Details -->
+<div>
+<label class="block text-xs font-semibold text-on-surface-variant mb-1.5" for="edit-notes">Notes / Emergency Details</label>
+<textarea class="w-full bg-[#111827] border border-white/10 rounded-xl py-2.5 px-3.5 text-white placeholder:text-gray-500 focus:outline-none focus:border-[#0080ff] focus:ring-1 focus:ring-[#0080ff] transition-all text-sm resize-none h-20" id="edit-notes" placeholder="Billing zip, hotline, concierge perk details..."></textarea>
+</div>
+<!-- Primary Save Button at Bottom -->
+<div class="pt-2 pb-1">
+<button class="w-full bg-[#0080ff] hover:bg-[#0070e0] active:scale-[0.99] text-white font-semibold py-3 rounded-xl transition-all shadow-md flex items-center justify-center gap-2" id="edit-modal-save-primary-btn" type="submit">
+<span class="material-symbols-outlined text-[19px]">save</span>
+<span class="">Save Card</span>
+</button>
+</div>
+</form>
+</div>
+</div>
+<!-- Toast Feedback Notification -->
+<div class="fixed bottom-24 left-1/2 -translate-x-1/2 z-50 bg-[#1e293b] border border-white/10 text-white text-xs font-medium px-4 py-2 rounded-full shadow-2xl flex items-center gap-2 pointer-events-none opacity-0 transition-opacity duration-200" id="toast">
+<span class="material-symbols-outlined text-emerald-400 text-[16px]">check_circle</span>
+<span id="toast-text" class="">Copied to clipboard</span>
+</div>
+<script>
+  (function() {
+    const STORAGE_KEY = 'neurokey_wallet_cards';
+    const container = document.getElementById('cards-container');
+    const emptyState = document.getElementById('empty-state');
+    const emptyMsg = document.getElementById('empty-state-message');
+    const countBadge = document.getElementById('card-count');
+
+    // Bottom Sheet elements
+    const sheetContainer = document.getElementById('card-options-sheet-container');
+    const sheetBackdrop = document.getElementById('card-sheet-backdrop');
+    const sheetContent = document.getElementById('card-sheet-content');
+    const sheetCloseBtn = document.getElementById('sheet-close-btn');
+
+    const sheetCardIcon = document.getElementById('sheet-card-icon');
+    const sheetCardTitle = document.getElementById('sheet-card-title');
+    const sheetCardBadge = document.getElementById('sheet-card-badge');
+    const sheetCardSub = document.getElementById('sheet-card-sub');
+    const sheetCardTypeVal = document.getElementById('sheet-card-type-val');
+    const sheetCardHolderVal = document.getElementById('sheet-card-holder-val');
+    const sheetCardNumberSub = document.getElementById('sheet-card-number-sub');
+
+    const btnCopyNumber = document.getElementById('sheet-btn-copy-number');
+    const btnCopyPin = document.getElementById('sheet-btn-copy-pin');
+    const btnShareCard = document.getElementById('sheet-btn-share-card');
+    const btnEditCard = document.getElementById('sheet-btn-edit-card');
+    const btnDeleteCard = document.getElementById('sheet-btn-delete-card');
+
+    // Share Modal elements
+    const shareModalContainer = document.getElementById('share-modal-container');
+    const shareModalBackdrop = document.getElementById('share-modal-backdrop');
+    const shareModalContent = document.getElementById('share-modal-content');
+    const shareCloseBtn = document.getElementById('share-close-btn');
+    const sharePreviewTarget = document.getElementById('share-card-preview-target');
+    const shareCopyDetailsBtn = document.getElementById('share-copy-details-btn');
+    const shareSystemBtn = document.getElementById('share-system-btn');
+
+    // Edit Card Modal elements
+    const editModalContainer = document.getElementById('edit-card-modal-container');
+    const editModalBackdrop = document.getElementById('edit-modal-backdrop');
+    const editModalContent = document.getElementById('edit-modal-content');
+    const editModalCancelBtn = document.getElementById('edit-modal-cancel-btn');
+    const editModalSaveBtn = document.getElementById('edit-modal-save-btn');
+    const editModalSavePrimaryBtn = document.getElementById('edit-modal-save-primary-btn');
+    const editModalTitle = document.getElementById('edit-modal-title');
+
+    const editCardId = document.getElementById('edit-card-id');
+    const editBankName = document.getElementById('edit-bank-name');
+    const editCardholderName = document.getElementById('edit-cardholder-name');
+    const editCardNumber = document.getElementById('edit-card-number');
+    const editExpiryDate = document.getElementById('edit-expiry-date');
+    const editPin = document.getElementById('edit-pin');
+    const editNotes = document.getElementById('edit-notes');
+    const editNetBtns = document.querySelectorAll('.edit-net-btn');
+    const toggleCardNumVis = document.getElementById('edit-toggle-cardnumber-visibility');
+    const togglePinVis = document.getElementById('edit-toggle-pin-visibility');
+
+    const toast = document.getElementById('toast');
+    const toastText = document.getElementById('toast-text');
+
+    let activeFilter = 'all';
+    let searchQuery = '';
+    let currentSelectedCard = null;
+    let toastTimeout = null;
+    let selectedEditNetwork = 'Visa';
+    // State to store which card numbers are temporarily revealed
+    const revealedCards = new Set();
+
+    function showToast(msg) {
+      if (toast && toastText) {
+        toastText.textContent = msg;
+        toast.classList.remove('opacity-0');
+        toast.classList.add('opacity-100');
+        if (toastTimeout) clearTimeout(toastTimeout);
+        toastTimeout = setTimeout(() => {
+          toast.classList.remove('opacity-100');
+          toast.classList.add('opacity-0');
+        }, 2000);
+      }
+    }
+
+    function copyToClipboard(text, successMsg) {
+      if (!text) return;
+      if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(text).then(() => {
+          showToast(successMsg);
+        }).catch(() => {
+          fallbackCopyText(text, successMsg);
+        });
+      } else {
+        fallbackCopyText(text, successMsg);
+      }
+    }
+
+    function fallbackCopyText(text, successMsg) {
+      try {
+        const textArea = document.createElement('textarea');
+        textArea.value = text;
+        textArea.style.position = 'fixed';
+        textArea.style.left = '-999999px';
+        textArea.style.top = '-999999px';
+        document.body.appendChild(textArea);
+        textArea.focus();
+        textArea.select();
+        const successful = document.execCommand('copy');
+        document.body.removeChild(textArea);
+        if (successful) {
+          showToast(successMsg);
+        } else {
+          showToast('Failed to copy');
+        }
+      } catch (err) {
+        showToast('Failed to copy');
+      }
+    }
+
+    const defaultCards = [
+      { 
+        id: 'card_default_1', 
+        bankName: 'Chase Sapphire Reserve', 
+        cardholderName: 'ALEXANDER DRAFT', 
+        cardNumber: '4532 8901 2345 7890', 
+        pin: '4921', 
+        expiryDate: '08/28', 
+        cvv: '891', 
+        cardType: 'visa', 
+        network: 'Visa', 
+        tier: 'Infinite Credit',
+        gradient: 'from-[#0a192f] via-[#0d2238] to-[#040d1a]',
+        accent: '#38bdf8',
+        notes: 'Preferred travel card. $300 annual travel credit and priority pass lounge access.' 
+      },
+      { 
+        id: 'card_default_2', 
+        bankName: 'Apple Card Titanium', 
+        cardholderName: 'ALEXANDER DRAFT', 
+        cardNumber: '5412 7534 8901 2345', 
+        pin: '1839', 
+        expiryDate: '11/27', 
+        cvv: '432', 
+        cardType: 'mastercard', 
+        network: 'Mastercard', 
+        tier: 'World Elite',
+        gradient: 'from-[#2c2f33] via-[#1e2124] to-[#121316]',
+        accent: '#e2e8f0',
+        notes: '2% daily cash back on Apple Pay purchases. Titanium card offline.' 
+      },
+      { 
+        id: 'card_default_3', 
+        bankName: 'Plexee Sovereign Gold', 
+        cardholderName: 'ALEXANDER DRAFT', 
+        cardNumber: '6011 4820 9942 5519', 
+        pin: '9021', 
+        expiryDate: '05/30', 
+        cvv: '662', 
+        cardType: 'plexee', 
+        network: 'Plexee', 
+        tier: 'Decentralized Vault',
+        gradient: 'from-[#2a1b02] via-[#3d2703] to-[#150d01]',
+        accent: '#f59e0b',
+        notes: 'Zero-knowledge hardware encrypted ledger pass with auto-rotating seed verification.' 
+      }
+    ];
+
+    function getStoredCards() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+        }
+      } catch (e) {
+        // fallback
+      }
+      return defaultCards;
+    }
+
+    function saveStoredCards(cards) {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(cards));
+      } catch (e) {}
+      window.dispatchEvent(new CustomEvent('neurokey_wallet_updated', { detail: { cards } }));
+    }
+
+    function maskNumber(num) {
+      if (!num) return '•••• •••• •••• 7890';
+      const clean = num.replace(/\s+/g, '');
+      const last4 = clean.slice(-4);
+      return '•••• •••• •••• ' + last4;
+    }
+
+    function formatFullNumber(num) {
+      if (!num) return '•••• •••• •••• 7890';
+      const clean = num.replace(/\s+/g, '');
+      return clean.replace(/(\d{4})/g, '$1 ').trim();
+    }
+
+    function formatCardNumberInput(val) {
+      const v = val.replace(/\s+/g, '').replace(/[^0-9]/gi, '');
+      const parts = [];
+      for (let i = 0, len = v.length; i < len; i += 4) {
+        parts.push(v.substring(i, i + 4));
+      }
+      return parts.join(' ');
+    }
+
+    function formatExpiryInput(val) {
+      const v = val.replace(/\D/g, '');
+      if (v.length >= 2) {
+        return v.substring(0, 2) + '/' + v.substring(2, 4);
+      }
+      return v;
+    }
+
+    function getCardGradient(net) {
+      const n = (net || '').toLowerCase();
+      if (n.includes('visa')) return 'from-[#0b192c] via-[#10233d] to-[#050b14]';
+      if (n.includes('mastercard')) return 'from-[#1e1e24] via-[#2a2428] to-[#121217]';
+      if (n.includes('plexee')) return 'from-[#281b05] via-[#382607] to-[#120b02]';
+      if (n.includes('amex')) return 'from-[#062426] via-[#0b383b] to-[#041314]';
+      return 'from-[#1e232a] via-[#242c36] to-[#0f1318]';
+    }
+
+    function getNetworkBadgeSvg(network) {
+      const net = (network || '').toLowerCase();
+      if (net === 'visa') {
+        return '<span class="italic font-extrabold text-[17px] tracking-wider text-blue-200 select-none font-label-mono">VISA</span>';
+      } else if (net === 'mastercard') {
+        return '<div class="flex items-center -space-x-2"><div class="w-5 h-5 rounded-full bg-red-500/90 shadow-sm"></div><div class="w-5 h-5 rounded-full bg-amber-400/90 shadow-sm"></div></div>';
+      } else if (net === 'amex') {
+        return '<span class="font-extrabold text-[12px] bg-cyan-500/20 text-cyan-300 px-2 py-0.5 rounded border border-cyan-400/30 tracking-widest uppercase">AMEX</span>';
+      } else if (net === 'plexee') {
+        return '<div class="flex items-center gap-1 text-amber-400 font-bold text-xs tracking-wider uppercase"><span class="material-symbols-outlined text-[16px]">token</span>PLEXEE</div>';
+      }
+      return '<span class="font-bold text-xs tracking-wider text-white uppercase">' + (network || 'CARD') + '</span>';
+    }
+
+    function generateCardHtml(card, isPreview = false) {
+      const net = card.network || card.cardType || 'Visa';
+      const name = card.bankName || 'Premium Card';
+      const holder = (card.cardholderName || 'ALEXANDER DRAFT').toUpperCase();
+      const expiry = card.expiryDate || '12/28';
+      const grad = card.gradient || getCardGradient(net);
+      const isRevealed = revealedCards.has(card.id);
+      const displayNum = isRevealed ? (card.cardNumber || '4532 8901 2345 7890') : maskNumber(card.cardNumber);
+      const eyeIcon = isRevealed ? 'visibility_off' : 'visibility';
+      const tierText = card.tier || (net + ' Credit');
+
+      return `
+      <div class="physical-card bg-gradient-to-br ${grad} border border-white/10 p-5 flex flex-col justify-between text-white select-none ${isPreview ? 'pointer-events-none' : 'cursor-pointer'}" data-card-id="${card.id}" data-category="${net.toLowerCase()}">
+        <!-- Subtle Realistic Sheen Overlay -->
+        <div class="card-sheen absolute inset-0 pointer-events-none"></div>
+
+        <!-- Card Top Row -->
+        <div class="relative z-10 flex items-start justify-between gap-3">
+          <div class="min-w-0 flex-1">
+            <h3 class="font-bold text-base md:text-lg text-white truncate tracking-tight leading-tight">${name}</h3>
+            <p class="text-[11px] font-medium text-white/60 tracking-wider uppercase">${tierText}</p>
+          </div>
+          <div class="flex items-center gap-1.5 shrink-0">
+            <div class="px-2 py-1 flex items-center justify-center">
+              ${getNetworkBadgeSvg(net)}
+            </div>
+            ${!isPreview ? `
+            <button class="card-share-quick-btn w-8 h-8 rounded-full bg-black/25 hover:bg-white/20 active:scale-95 text-white/80 hover:text-white flex items-center justify-center transition-all" title="Share Card" data-card-id="${card.id}">
+              <span class="material-symbols-outlined text-[17px]">share</span>
+            </button>
+            <button class="card-options-trigger w-8 h-8 rounded-full bg-black/25 hover:bg-white/20 active:scale-95 text-white/80 hover:text-white flex items-center justify-center transition-all" title="Card Menu" data-card-id="${card.id}">
+              <span class="material-symbols-outlined text-[18px]">more_vert</span>
+            </button>` : ''}
+          </div>
+        </div>
+
+        <!-- Middle Elements: EMV Chip & Contactless NFC wave -->
+        <div class="relative z-10 flex items-center justify-between my-auto py-1">
+          <div class="flex items-center gap-3">
+            <div class="card-chip"></div>
+            <!-- Contactless NFC Icon -->
+            <span class="material-symbols-outlined text-white/60 text-[22px] rotate-90" title="Contactless">contactless</span>
+          </div>
+          <div class="text-[10px] font-label-mono text-white/40 tracking-widest uppercase">
+            SECURE VAULT
+          </div>
+        </div>
+
+        <!-- Card Number & Reveal Eye Toggle -->
+        <div class="relative z-10 mb-1 flex items-center justify-between">
+          <div class="font-label-mono text-[16px] sm:text-[18px] font-bold text-white tracking-widest embossed-text truncate">
+            ${displayNum}
+          </div>
+          ${!isPreview ? `
+          <button class="card-reveal-btn text-white/60 hover:text-white p-1 transition-colors" title="${isRevealed ? 'Mask digits' : 'Show digits'}" data-card-id="${card.id}">
+            <span class="material-symbols-outlined text-[19px]">${eyeIcon}</span>
+          </button>` : ''}
+        </div>
+
+        <!-- Card Bottom Row: Cardholder Name & Expiry -->
+        <div class="relative z-10 flex items-end justify-between text-xs tracking-wider uppercase pt-1 border-t border-white/10">
+          <div class="min-w-0 pr-3">
+            <div class="text-[9px] text-white/50 tracking-widest font-semibold leading-none mb-1">CARDHOLDER</div>
+            <div class="font-label-mono font-semibold text-white/90 text-[12px] truncate">${holder}</div>
+          </div>
+          <div class="text-right shrink-0">
+            <div class="text-[9px] text-white/50 tracking-widest font-semibold leading-none mb-1">EXPIRES</div>
+            <div class="font-label-mono font-semibold text-white/90 text-[12px]">EXP ${expiry}</div>
+          </div>
+        </div>
+      </div>
+      `;
+    }
+
+    function openCardSheet(card) {
+      currentSelectedCard = card;
+      const net = card.network || card.cardType || 'Visa';
+      const name = card.bankName || (net + ' Card');
+      const holder = card.cardholderName || 'ALEXANDER DRAFT';
+      const masked = maskNumber(card.cardNumber);
+
+      if (sheetCardTitle) sheetCardTitle.textContent = name;
+      if (sheetCardBadge) sheetCardBadge.textContent = net;
+      if (sheetCardSub) sheetCardSub.textContent = net + ' ' + masked;
+      if (sheetCardTypeVal) sheetCardTypeVal.textContent = card.tier || (net + ' Credit');
+      if (sheetCardHolderVal) sheetCardHolderVal.textContent = holder;
+      if (sheetCardNumberSub) sheetCardNumberSub.textContent = masked;
+
+      if (sheetContainer && sheetBackdrop && sheetContent) {
+        sheetContainer.classList.remove('hidden');
+        requestAnimationFrame(() => {
+          sheetBackdrop.classList.remove('opacity-0');
+          sheetBackdrop.classList.add('opacity-100');
+          sheetContent.classList.remove('translate-y-full');
+          sheetContent.classList.add('translate-y-0');
+        });
+      }
+    }
+
+    function closeCardSheet(cb) {
+      if (sheetBackdrop && sheetContent) {
+        sheetBackdrop.classList.remove('opacity-100');
+        sheetBackdrop.classList.add('opacity-0');
+        sheetContent.classList.remove('translate-y-0');
+        sheetContent.classList.add('translate-y-full');
+        setTimeout(() => {
+          if (sheetContainer) sheetContainer.classList.add('hidden');
+          if (cb) cb();
+        }, 280);
+      } else {
+        if (cb) cb();
+      }
+    }
+
+    // Share Modal
+    function openShareModal(card) {
+      if (!card) return;
+      currentSelectedCard = card;
+      if (sharePreviewTarget) {
+        sharePreviewTarget.innerHTML = generateCardHtml(card, true);
+      }
+      if (shareModalContainer && shareModalBackdrop && shareModalContent) {
+        shareModalContainer.classList.remove('hidden');
+        requestAnimationFrame(() => {
+          shareModalBackdrop.classList.remove('opacity-0');
+          shareModalBackdrop.classList.add('opacity-100');
+          shareModalContent.classList.remove('scale-95', 'opacity-0');
+          shareModalContent.classList.add('scale-100', 'opacity-100');
+        });
+      }
+    }
+
+    function closeShareModal() {
+      if (shareModalBackdrop && shareModalContent) {
+        shareModalBackdrop.classList.remove('opacity-100');
+        shareModalBackdrop.classList.add('opacity-0');
+        shareModalContent.classList.remove('scale-100', 'opacity-100');
+        shareModalContent.classList.add('scale-95', 'opacity-0');
+        setTimeout(() => {
+          if (shareModalContainer) shareModalContainer.classList.add('hidden');
+        }, 280);
+      }
+    }
+
+    function setEditNetwork(network) {
+      selectedEditNetwork = network;
+      editNetBtns.forEach(b => {
+        const net = b.getAttribute('data-network');
+        if (net.toLowerCase() === network.toLowerCase()) {
+          b.classList.remove('border-white/10', 'bg-[#111827]', 'text-white');
+          b.classList.add('border-[#0080ff]', 'bg-[#0080ff]/20', 'text-[#0080ff]', 'ring-1', 'ring-[#0080ff]');
+        } else {
+          b.classList.remove('border-[#0080ff]', 'bg-[#0080ff]/20', 'text-[#0080ff]', 'ring-1', 'ring-[#0080ff]');
+          b.classList.add('border-white/10', 'bg-[#111827]', 'text-white');
+        }
+      });
+    }
+
+    function openEditModal(card, isNew = false) {
+      if (!card) return;
+      currentSelectedCard = card;
+
+      if (editModalTitle) {
+        editModalTitle.textContent = isNew ? 'Add Card' : 'Edit Card';
+      }
+      if (editCardId) editCardId.value = card.id || '';
+      if (editBankName) editBankName.value = card.bankName || '';
+      if (editCardholderName) editCardholderName.value = card.cardholderName || '';
+      if (editCardNumber) {
+        editCardNumber.value = card.cardNumber || '';
+        editCardNumber.type = 'text';
+      }
+      if (editExpiryDate) editExpiryDate.value = card.expiryDate || '';
+      if (editPin) {
+        editPin.value = card.pin || card.cvv || '';
+        editPin.type = 'password';
+      }
+      if (editNotes) editNotes.value = card.notes || '';
+
+      const net = card.network || card.cardType || 'Visa';
+      setEditNetwork(net);
+
+      if (editModalContainer && editModalBackdrop && editModalContent) {
+        editModalContainer.classList.remove('hidden');
+        requestAnimationFrame(() => {
+          editModalBackdrop.classList.remove('opacity-0');
+          editModalBackdrop.classList.add('opacity-100');
+          editModalContent.classList.remove('translate-y-full', 'md:translate-y-6', 'opacity-0');
+          editModalContent.classList.add('translate-y-0', 'opacity-100');
+        });
+      }
+    }
+
+    function closeEditModal() {
+      if (editModalBackdrop && editModalContent) {
+        editModalBackdrop.classList.remove('opacity-100');
+        editModalBackdrop.classList.add('opacity-0');
+        editModalContent.classList.remove('translate-y-0');
+        editModalContent.classList.add('translate-y-full');
+        setTimeout(() => {
+          if (editModalContainer) editModalContainer.classList.add('hidden');
+        }, 280);
+      }
+    }
+
+    function saveCardFromModal() {
+      if (!currentSelectedCard) return;
+      const bankNameVal = (editBankName.value || '').trim();
+      if (!bankNameVal) {
+        showToast('Please enter a card name');
+        editBankName.focus();
+        return;
+      }
+
+      const numVal = (editCardNumber.value || '').trim();
+      const holderVal = (editCardholderName.value || '').trim();
+      const expVal = (editExpiryDate.value || '').trim();
+      const pinVal = (editPin.value || '').trim();
+      const notesVal = (editNotes.value || '').trim();
+
+      const allCards = getStoredCards();
+      const cardIndex = allCards.findIndex(c => c.id === currentSelectedCard.id);
+
+      const updatedCard = {
+        ...currentSelectedCard,
+        bankName: bankNameVal,
+        network: selectedEditNetwork,
+        cardType: selectedEditNetwork.toLowerCase(),
+        cardholderName: holderVal || currentSelectedCard.cardholderName || 'ALEXANDER DRAFT',
+        cardNumber: numVal || currentSelectedCard.cardNumber,
+        expiryDate: expVal || currentSelectedCard.expiryDate || '12/28',
+        pin: pinVal || currentSelectedCard.pin || '1234',
+        cvv: pinVal.length <= 4 ? pinVal : (currentSelectedCard.cvv || '123'),
+        tier: currentSelectedCard.tier || (selectedEditNetwork + ' Credit'),
+        gradient: currentSelectedCard.gradient || getCardGradient(selectedEditNetwork),
+        notes: notesVal
+      };
+
+      if (cardIndex >= 0) {
+        allCards[cardIndex] = updatedCard;
+      } else {
+        allCards.unshift(updatedCard);
+      }
+
+      saveStoredCards(allCards);
+      currentSelectedCard = updatedCard;
+      closeEditModal();
+      showToast('Card saved successfully!');
+      renderCards();
+    }
+
+    // Modal listeners
+    if (editModalCancelBtn) editModalCancelBtn.addEventListener('click', closeEditModal);
+    if (editModalBackdrop) editModalBackdrop.addEventListener('click', closeEditModal);
+    if (editModalSaveBtn) editModalSaveBtn.addEventListener('click', saveCardFromModal);
+    if (editModalSavePrimaryBtn) editModalSavePrimaryBtn.addEventListener('click', saveCardFromModal);
+
+    // Share listeners
+    if (shareCloseBtn) shareCloseBtn.addEventListener('click', closeShareModal);
+    if (shareModalBackdrop) shareModalBackdrop.addEventListener('click', closeShareModal);
+    if (shareCopyDetailsBtn) {
+      shareCopyDetailsBtn.onclick = function() {
+        if (!currentSelectedCard) return;
+        const details = `Card: ${currentSelectedCard.bankName}\nNetwork: ${currentSelectedCard.network}\nNumber: ${currentSelectedCard.cardNumber}\nHolder: ${currentSelectedCard.cardholderName}\nExpiry: ${currentSelectedCard.expiryDate}`;
+        copyToClipboard(details, 'Card details copied to clipboard!');
+      };
+    }
+    if (shareSystemBtn) {
+      shareSystemBtn.onclick = function() {
+        if (!currentSelectedCard) return;
+        if (navigator.share) {
+          navigator.share({
+            title: currentSelectedCard.bankName,
+            text: `Cardholder: ${currentSelectedCard.cardholderName}\nCard: ${maskNumber(currentSelectedCard.cardNumber)}`
+          }).catch(() => {});
+        } else {
+          showToast('Card export payload generated!');
+        }
+      };
+    }
+
+    // Network selector buttons inside edit modal
+    editNetBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const net = btn.getAttribute('data-network') || 'Visa';
+        setEditNetwork(net);
+      });
+    });
+
+    // Formatting inputs
+    if (editCardNumber) {
+      editCardNumber.addEventListener('input', (e) => {
+        const cur = e.target.value;
+        e.target.value = formatCardNumberInput(cur);
+      });
+    }
+
+    if (editExpiryDate) {
+      editExpiryDate.addEventListener('input', (e) => {
+        e.target.value = formatExpiryInput(e.target.value);
+      });
+    }
+
+    if (toggleCardNumVis && editCardNumber) {
+      toggleCardNumVis.addEventListener('click', () => {
+        const isPassword = editCardNumber.type === 'password';
+        editCardNumber.type = isPassword ? 'text' : 'password';
+        const iconSpan = toggleCardNumVis.querySelector('span');
+        if (iconSpan) iconSpan.textContent = isPassword ? 'visibility' : 'visibility_off';
+      });
+    }
+
+    if (togglePinVis && editPin) {
+      togglePinVis.addEventListener('click', () => {
+        const isPassword = editPin.type === 'password';
+        editPin.type = isPassword ? 'text' : 'password';
+        const iconSpan = togglePinVis.querySelector('span');
+        if (iconSpan) iconSpan.textContent = isPassword ? 'visibility_off' : 'visibility';
+      });
+    }
+
+    // Bottom sheet interactions
+    if (sheetBackdrop) sheetBackdrop.addEventListener('click', () => closeCardSheet());
+    if (sheetCloseBtn) sheetCloseBtn.addEventListener('click', () => closeCardSheet());
+
+    if (btnCopyNumber) {
+      btnCopyNumber.onclick = function() {
+        if (!currentSelectedCard) return;
+        const num = currentSelectedCard.cardNumber || '';
+        copyToClipboard(num, 'Card Number copied!');
+        closeCardSheet();
+      };
+    }
+
+    if (btnCopyPin) {
+      btnCopyPin.onclick = function() {
+        if (!currentSelectedCard) return;
+        const pin = currentSelectedCard.pin || currentSelectedCard.cvv || '1234';
+        copyToClipboard(pin, 'Card PIN copied!');
+        closeCardSheet();
+      };
+    }
+
+    if (btnShareCard) {
+      btnShareCard.onclick = function() {
+        if (!currentSelectedCard) return;
+        const c = { ...currentSelectedCard };
+        closeCardSheet(() => {
+          openShareModal(c);
+        });
+      };
+    }
+
+    if (btnEditCard) {
+      btnEditCard.onclick = function() {
+        if (!currentSelectedCard) return;
+        const cardToEdit = { ...currentSelectedCard };
+        closeCardSheet(() => {
+          openEditModal(cardToEdit, false);
+        });
+      };
+    }
+
+    if (btnDeleteCard) {
+      btnDeleteCard.onclick = function() {
+        if (!currentSelectedCard) return;
+        const cardName = currentSelectedCard.bankName || 'Card';
+        const allCards = getStoredCards();
+        const updated = allCards.filter(c => c.id !== currentSelectedCard.id);
+        saveStoredCards(updated);
+        closeCardSheet();
+        showToast(cardName + ' deleted');
+        renderCards();
+      };
+    }
+
+    function attachCardInteractions() {
+      const allCards = getStoredCards();
+
+      // Quick share buttons
+      document.querySelectorAll('.card-share-quick-btn').forEach(btn => {
+        btn.onclick = function(e) {
+          e.stopPropagation();
+          e.preventDefault();
+          const id = btn.getAttribute('data-card-id');
+          const card = allCards.find(c => c.id === id);
+          if (card) openShareModal(card);
+        };
+      });
+
+      // 3-dot options triggers
+      document.querySelectorAll('.card-options-trigger').forEach(btn => {
+        btn.onclick = function(e) {
+          e.stopPropagation();
+          e.preventDefault();
+          const id = btn.getAttribute('data-card-id');
+          const card = allCards.find(c => c.id === id);
+          if (card) openCardSheet(card);
+        };
+      });
+
+      // Number reveal toggles
+      document.querySelectorAll('.card-reveal-btn').forEach(btn => {
+        btn.onclick = function(e) {
+          e.stopPropagation();
+          e.preventDefault();
+          const id = btn.getAttribute('data-card-id');
+          if (revealedCards.has(id)) {
+            revealedCards.delete(id);
+          } else {
+            revealedCards.add(id);
+          }
+          renderCards();
+        };
+      });
+
+      // Card tap and long-press
+      document.querySelectorAll('.physical-card').forEach(el => {
+        const id = el.getAttribute('data-card-id');
+        const cardData = allCards.find(c => c.id === id);
+        if (!cardData) return;
+
+        let pressTimer = null;
+        let isLongPress = false;
+
+        function startPress(e) {
+          if (e.target.closest('button')) return;
+          isLongPress = false;
+          pressTimer = setTimeout(() => {
+            isLongPress = true;
+            if (navigator.vibrate) navigator.vibrate(40);
+            openCardSheet(cardData);
+          }, 500);
+        }
+
+        function cancelPress() {
+          if (pressTimer) {
+            clearTimeout(pressTimer);
+            pressTimer = null;
+          }
+        }
+
+        el.addEventListener('touchstart', startPress, { passive: true });
+        el.addEventListener('touchend', cancelPress);
+        el.addEventListener('touchmove', cancelPress);
+
+        el.addEventListener('mousedown', startPress);
+        el.addEventListener('mouseup', cancelPress);
+        el.addEventListener('mouseleave', cancelPress);
+
+        el.onclick = function(e) {
+          if (isLongPress) {
+            e.preventDefault();
+            e.stopPropagation();
+            return;
+          }
+          if (e.target.closest('button')) return;
+          openCardSheet(cardData);
+        };
+      });
+    }
+
+    function renderCards() {
+      if (!container) return;
+      const allCards = getStoredCards();
+      const filtered = allCards.filter(card => {
+        const net = (card.cardType || card.network || '').toLowerCase();
+        const matchesFilter = (activeFilter === 'all') || net.includes(activeFilter);
+        const q = searchQuery.toLowerCase();
+        const matchesSearch = !q ||
+          (card.bankName || '').toLowerCase().includes(q) ||
+          (card.cardholderName || '').toLowerCase().includes(q) ||
+          (card.cardNumber || '').includes(q);
+        return matchesFilter && matchesSearch;
+      });
+
+      if (countBadge) {
+        countBadge.textContent = filtered.length === 1 ? '1 Card' : filtered.length + ' Cards';
+      }
+
+      if (filtered.length === 0) {
+        container.innerHTML = '';
+        if (emptyState) {
+          emptyState.classList.remove('hidden');
+          emptyState.classList.add('flex');
+          if (emptyMsg) {
+            emptyMsg.textContent = searchQuery
+              ? "No cards matching '" + searchQuery + "'"
+              : "No cards found in " + (activeFilter.charAt(0).toUpperCase() + activeFilter.slice(1));
+          }
+        }
+        return;
+      }
+
+      if (emptyState) {
+        emptyState.classList.remove('flex');
+        emptyState.classList.add('hidden');
+      }
+
+      container.innerHTML = filtered.map(card => generateCardHtml(card, false)).join('');
+      attachCardInteractions();
+    }
+
+    // Filter Buttons setup
+    const pills = document.querySelectorAll('.filter-btn');
+    pills.forEach(btn => {
+      btn.addEventListener('click', () => {
+        pills.forEach(p => {
+          p.classList.remove('bg-[#0080ff]', 'text-white', 'shadow-sm');
+          p.classList.add('bg-[#191c1e]', 'border', 'border-white/10', 'text-on-surface-variant');
+        });
+        btn.classList.remove('bg-[#191c1e]', 'border', 'border-white/10', 'text-on-surface-variant');
+        btn.classList.add('bg-[#0080ff]', 'text-white', 'shadow-sm');
+
+        activeFilter = (btn.dataset.category || 'all').toLowerCase();
+        renderCards();
+      });
+    });
+
+    // Search input setup
+    const mSearch = document.getElementById('mobile-search');
+    const dSearch = document.getElementById('desktop-search');
+
+    function onSearch(e) {
+      searchQuery = e.target.value.trim();
+      if (mSearch && e.target !== mSearch) mSearch.value = searchQuery;
+      if (dSearch && e.target !== dSearch) dSearch.value = searchQuery;
+      renderCards();
+    }
+
+    if (mSearch) mSearch.addEventListener('input', onSearch);
+    if (dSearch) dSearch.addEventListener('input', onSearch);
+
+    // Add card button listener
+    const addCardBtn = document.getElementById('add-card-top-btn');
+    if (addCardBtn) {
+      addCardBtn.addEventListener('click', () => {
+        const cards = getStoredCards();
+        const nextIdx = cards.length + 1;
+        const newCard = {
+          id: 'card_user_' + Date.now(),
+          bankName: 'Card ' + nextIdx,
+          cardholderName: 'ALEXANDER DRAFT',
+          cardNumber: '4242 8820 1944 ' + String(1000 + Math.floor(Math.random() * 9000)),
+          pin: '5819',
+          expiryDate: '09/29',
+          cvv: '392',
+          cardType: 'visa',
+          network: 'Visa',
+          tier: 'Signature Card',
+          gradient: getCardGradient('visa'),
+          notes: ''
+        };
+        openEditModal(newCard, true);
+      });
+    }
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        closeCardSheet();
+        closeEditModal();
+        closeShareModal();
+      }
+    });
+
+    window.addEventListener('neurokey_wallet_updated', () => {
+      renderCards();
+    });
+
+    renderCards();
+  })();
+</script>
+
+
+</body></html>

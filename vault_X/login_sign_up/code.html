@@ -1,0 +1,467 @@
+<!DOCTYPE html><html class="dark" lang="en" style=""><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>NeuroKey - Sign Up</title><style>
+  input:-webkit-autofill,
+  input:-webkit-autofill:hover,
+  input:-webkit-autofill:focus,
+  input:-webkit-autofill:active {
+    -webkit-box-shadow: 0 0 0 1000px #2a2a2a inset !important;
+    -webkit-text-fill-color: #ffffff !important;
+    caret-color: #ffffff !important;
+    transition: background-color 5000s ease-in-out 0s !important;
+  }
+</style>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;700&amp;family=Inter:wght@400;500;700&amp;family=Jetbrains+Mono:wght@400;500;700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">tailwind.config = {darkMode: "class", theme: {extend: {colors: {secondary: "#a9c7ff", "on-secondary-fixed": "#001b3d", "on-primary-fixed-variant": "#3f465c", "on-error-container": "#ffdad6", surface: "#101415", "on-surface": "#e0e3e5", "inverse-on-surface": "#2d3133", "secondary-container": "#3c90ff", "surface-container-high": "#272a2c", "tertiary-container": "#06182b", "on-primary-fixed": "#131b2e", "primary-fixed": "#dae2fd", "surface-container": "#1d2022", "on-secondary-fixed-variant": "#00468c", "secondary-fixed": "#d6e3ff", "surface-dim": "#101415", "on-secondary-container": "#002957", outline: "#909097", "error-container": "#93000a", "outline-variant": "#45464d", "secondary-fixed-dim": "#a9c7ff", "inverse-surface": "#e0e3e5", "on-primary": "#283044", "on-tertiary": "#213145", background: "#101415", "surface-variant": "#323537", "tertiary-fixed-dim": "#b7c8e1", "on-secondary": "#003063", "primary-container": "#0f172a", "surface-container-lowest": "#0b0f10", "surface-bright": "#363a3b", "on-tertiary-fixed-variant": "#38485d", "surface-tint": "#bec6e0", "on-tertiary-container": "#728299", "surface-container-highest": "#323537", "primary-fixed-dim": "#bec6e0", "on-tertiary-fixed": "#0b1c30", "on-primary-container": "#798098", "surface-container-low": "#191c1e", "inverse-primary": "#565e74", "on-surface-variant": "#c6c6cd", primary: "#bec6e0", tertiary: "#b7c8e1", "on-background": "#e0e3e5", "on-error": "#690005", "tertiary-fixed": "#d3e4fe", error: "#ffb4ab", "brand-blue": "#0088ff", "brand-purple": "#a855f7"}, borderRadius: {DEFAULT: "0.5rem", lg: "1rem", xl: "1.5rem", full: "9999px"}, spacing: {md: "16px", lg: "24px", sm: "8px", "container-max": "1200px", xl: "32px", xs: "4px", unit: "4px", gutter: "20px"}, fontFamily: {"headline-xl": ["Hanken Grotesk"], "body-md": ["Inter"], "headline-lg-mobile": ["Hanken Grotesk"], "label-mono": ["JetBrains Mono"], "body-sm": ["Inter"], button: ["Inter"], "headline-lg": ["Hanken Grotesk"], headline: ["Hanken Grotesk"], display: ["Hanken Grotesk"], body: ["Inter"], label: ["Jetbrains Mono"]}, fontSize: {"headline-xl": ["40px", {lineHeight: "48px", letterSpacing: "-0.02em", fontWeight: "700"}], "body-md": ["16px", {lineHeight: "24px", fontWeight: "400"}], "headline-lg-mobile": ["24px", {lineHeight: "32px", fontWeight: "600"}], "label-mono": ["14px", {lineHeight: "16px", letterSpacing: "0.05em", fontWeight: "500"}], "body-sm": ["14px", {lineHeight: "20px", fontWeight: "400"}], button: ["16px", {lineHeight: "24px", fontWeight: "600"}], "headline-lg": ["32px", {lineHeight: "40px", letterSpacing: "-0.01em", fontWeight: "600"}]}}}};</script>
+<style>
+        .input-glow:focus-within {
+            border-color: #007BFF;
+        }
+        .text-gradient {
+            background: linear-gradient(90deg, #0088ff, #a855f7);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .logo-gradient {
+            background: linear-gradient(135deg, #0088ff, #a855f7);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-6px); }
+            40%, 80% { transform: translateX(6px); }
+        }
+        .shake {
+            animation: shake 0.35s ease-in-out;
+        }
+        .input-error {
+            border-color: #ff5252 !important;
+            background-color: rgba(255, 82, 82, 0.05);
+        }
+        .input-error:focus-within {
+            border-color: #ff5252 !important;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+</head>
+<body class="bg-background text-on-background min-h-screen flex flex-col justify-center items-center p-md md:p-lg relative overflow-hidden font-body-md">
+<!-- Toast Notification -->
+<div class="fixed top-5 z-50 transition-all duration-300 transform -translate-y-16 opacity-0 pointer-events-none flex items-center gap-2 bg-emerald-950/90 text-emerald-300 border border-emerald-500/40 px-4 py-2.5 rounded-full shadow-lg backdrop-blur-md text-sm font-medium" id="toast-banner">
+<span class="material-symbols-outlined text-[20px] text-emerald-400">check_circle</span>
+<span id="toast-message" class="">Authenticated successfully. Accessing vault...</span>
+</div>
+<!-- Header -->
+<header class="flex flex-col items-center mb-lg z-10"><div class="w-full flex justify-end mb-2"></div>
+<div class="mb-sm text-center">
+<span class="material-symbols-outlined text-[64px] logo-gradient" style="font-variation-settings: &quot;FILL&quot; 0, &quot;wght&quot; 300;">lock_person</span>
+</div>
+<h1 class="font-headline-lg-mobile text-headline-lg-mobile md:font-headline-lg md:text-headline-lg text-center font-bold tracking-tight mb-xs">
+<span class="text-gradient">NeuroKey</span>
+</h1>
+<p class="font-body-md text-on-surface-variant text-center">Your mind, secured.</p>
+</header>
+<!-- Form Container -->
+<main class="w-full max-w-md z-10 bg-[#1a1a1a] rounded-[32px] p-md md:p-lg shadow-xl relative border border-[#2a2a2a]">
+<!-- Tabs -->
+<div class="flex bg-[#2a2a2a] rounded-xl p-xs mb-lg tab-container-bg">
+<button class="flex-1 py-sm font-button bg-[#1a1a1a] text-white rounded-lg shadow-sm transition-colors" id="tab-login" type="button">Log In</button>
+<button class="flex-1 py-sm font-button text-on-surface-variant hover:text-white transition-colors rounded-lg" id="tab-signup" type="button">Sign Up</button>
+</div>
+<!-- Top Error Summary Banner (hidden initially) -->
+<div class="hidden mb-md p-3 rounded-xl bg-red-950/40 border border-red-500/40 text-red-200 text-xs flex items-center gap-2 transition-all" id="form-error-banner">
+<span class="material-symbols-outlined text-[18px] text-red-400 shrink-0">error</span>
+<span id="form-error-text" class="">Please resolve the issues below to proceed.</span>
+</div>
+<!-- Form -->
+<form class="flex flex-col space-y-md" id="auth-form" novalidate="">
+<!-- Email Input Block -->
+<div>
+<div class="relative flex items-center bg-[#2a2a2a] rounded-xl px-md py-sm border border-transparent input-glow transition-all field-input-box" id="email-container">
+<span class="material-symbols-outlined text-on-surface-variant mr-md transition-colors" id="email-icon">mail</span>
+<input autocomplete="email" class="w-full bg-transparent border-none p-0 font-body-md text-white placeholder:text-on-surface-variant focus:ring-0" id="email-input" placeholder="Email Address" type="email">
+</div>
+<p class="hidden mt-1.5 ml-2 text-xs text-red-400 flex items-center gap-1" id="email-error">
+<span class="material-symbols-outlined text-[14px]">info</span>
+<span id="email-error-text" class="">Please enter a valid email address.</span>
+</p>
+</div>
+<!-- Password Input Block -->
+<div>
+<div class="relative flex items-center bg-[#2a2a2a] rounded-xl px-md py-sm border border-transparent input-glow transition-all field-input-box" id="password-container">
+<span class="material-symbols-outlined text-on-surface-variant mr-md transition-colors" id="password-icon">lock</span>
+<input autocomplete="current-password" class="w-full bg-transparent border-none p-0 font-body-md text-white placeholder:text-on-surface-variant focus:ring-0" id="password-input" placeholder="Password" type="password">
+<button aria-label="Toggle password visibility" class="text-on-surface-variant hover:text-white transition-colors flex items-center justify-center ml-sm toggle-password" type="button">
+<span class="material-symbols-outlined text-[20px]">visibility</span>
+</button>
+</div>
+<p class="hidden mt-1.5 ml-2 text-xs text-red-400 flex items-center gap-1" id="password-error">
+<span class="material-symbols-outlined text-[14px]">info</span>
+<span id="password-error-text" class="">Password must be at least 8 characters.</span>
+</p>
+</div>
+<!-- Confirm Password Block (Sign Up only) -->
+<div class="hidden" id="confirm-pass-block">
+<div class="relative flex items-center bg-[#2a2a2a] rounded-xl px-md py-sm border border-transparent input-glow transition-all field-input-box" id="confirm-password-container">
+<span class="material-symbols-outlined text-on-surface-variant mr-md transition-colors" id="confirm-password-icon">lock_reset</span>
+<input autocomplete="new-password" class="w-full bg-transparent border-none p-0 font-body-md text-white placeholder:text-on-surface-variant focus:ring-0" id="confirm-password-input" placeholder="Confirm Password" type="password">
+<button aria-label="Toggle confirm password visibility" class="text-on-surface-variant hover:text-white transition-colors flex items-center justify-center ml-sm toggle-password" type="button">
+<span class="material-symbols-outlined text-[20px]">visibility</span>
+</button>
+</div>
+<p class="hidden mt-1.5 ml-2 text-xs text-red-400 flex items-center gap-1" id="confirm-password-error">
+<span class="material-symbols-outlined text-[14px]">info</span>
+<span id="confirm-password-error-text" class="">Passwords do not match.</span>
+</p>
+</div>
+<!-- Submit Button -->
+<button class="w-full bg-brand-blue text-white font-button py-3 rounded-xl hover:bg-blue-600 transition-colors mt-sm active:scale-[0.98] flex items-center justify-center gap-2" id="submit-btn" type="submit">
+<span class="hidden w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" id="submit-spinner"></span>
+<span id="submit-btn-text" class="">Sign In</span>
+</button>
+<!-- Biometric Unlock -->
+<div class="flex flex-col items-center mt-lg space-y-xs" id="biometric-container">
+<span class="material-symbols-outlined text-brand-blue text-[48px] cursor-pointer hover:scale-105 active:scale-95 transition-transform" id="biometric-icon">fingerprint</span>
+<button class="text-brand-blue font-body-sm hover:underline" id="biometric-btn" type="button">Tap to Unlock</button>
+</div>
+<!-- Forgot Password -->
+<div class="text-center mt-md" id="forgot-password-container">
+<button class="text-on-surface-variant font-body-sm hover:text-white transition-colors" type="button">Forgot Password?</button>
+</div>
+</form>
+</main>
+<!-- Footer -->
+<div class="mt-xl text-center z-10 opacity-60 footer-note">
+<p class="font-body-sm text-on-surface-variant">
+        Protected with end-to-end encryption
+    </p>
+</div>
+<script>
+  // DOM Elements
+  const tabLogin = document.getElementById('tab-login');
+  const tabSignup = document.getElementById('tab-signup');
+  const authForm = document.getElementById('auth-form');
+  const submitBtn = document.getElementById('submit-btn');
+  const submitBtnText = document.getElementById('submit-btn-text');
+  const submitSpinner = document.getElementById('submit-spinner');
+  const forgotBtnContainer = document.getElementById('forgot-password-container');
+  const biometricContainer = document.getElementById('biometric-container');
+  const confirmPassBlock = document.getElementById('confirm-pass-block');
+  const formErrorBanner = document.getElementById('form-error-banner');
+  const formErrorText = document.getElementById('form-error-text');
+
+  // Input Fields & Errors
+  const emailInput = document.getElementById('email-input');
+  const emailContainer = document.getElementById('email-container');
+  const emailError = document.getElementById('email-error');
+  const emailErrorText = document.getElementById('email-error-text');
+
+  const passwordInput = document.getElementById('password-input');
+  const passwordContainer = document.getElementById('password-container');
+  const passwordError = document.getElementById('password-error');
+  const passwordErrorText = document.getElementById('password-error-text');
+
+  const confirmPasswordInput = document.getElementById('confirm-password-input');
+  const confirmPasswordContainer = document.getElementById('confirm-password-container');
+  const confirmPasswordError = document.getElementById('confirm-password-error');
+  const confirmPasswordErrorText = document.getElementById('confirm-password-error-text');
+
+  const toast = document.getElementById('toast-banner');
+  const toastMessage = document.getElementById('toast-message');
+
+  let isSignUpMode = false;
+  let isSubmitting = false;
+
+  // Email regex format: standard RFC 5322 compatible regex
+  const EMAIL_REGEX = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)+$/;
+
+  // Tab Switching
+  tabLogin.addEventListener('click', () => switchTab(false));
+  tabSignup.addEventListener('click', () => switchTab(true));
+
+  function switchTab(signup) {
+    if (isSignUpMode === signup) return;
+    isSignUpMode = signup;
+    clearAllErrors();
+
+    if (signup) {
+      tabSignup.classList.add('bg-[#1a1a1a]', 'text-white', 'shadow-sm');
+      tabSignup.classList.remove('text-on-surface-variant');
+      tabLogin.classList.remove('bg-[#1a1a1a]', 'text-white', 'shadow-sm');
+      tabLogin.classList.add('text-on-surface-variant');
+
+      submitBtnText.textContent = 'Create Account';
+      forgotBtnContainer.style.display = 'none';
+      biometricContainer.style.display = 'none';
+      confirmPassBlock.classList.remove('hidden');
+    } else {
+      tabLogin.classList.add('bg-[#1a1a1a]', 'text-white', 'shadow-sm');
+      tabLogin.classList.remove('text-on-surface-variant');
+      tabSignup.classList.remove('bg-[#1a1a1a]', 'text-white', 'shadow-sm');
+      tabSignup.classList.add('text-on-surface-variant');
+
+      submitBtnText.textContent = 'Sign In';
+      forgotBtnContainer.style.display = 'block';
+      biometricContainer.style.display = 'flex';
+      confirmPassBlock.classList.add('hidden');
+    }
+  }
+
+  // Password Visibility Toggle
+  document.querySelectorAll('.toggle-password').forEach(btn => {
+    btn.addEventListener('click', function() {
+      const input = this.previousElementSibling;
+      const icon = this.querySelector('span');
+      if (input.type === 'password') {
+        input.type = 'text';
+        icon.textContent = 'visibility_off';
+      } else {
+        input.type = 'password';
+        icon.textContent = 'visibility';
+      }
+    });
+  });
+
+  // Validation Logic
+  function validateEmail() {
+    const val = emailInput.value.trim();
+    if (!val) {
+      showFieldError(emailContainer, emailError, emailErrorText, 'Email address is required.');
+      return false;
+    } else if (!EMAIL_REGEX.test(val)) {
+      showFieldError(emailContainer, emailError, emailErrorText, 'Enter a valid email address (e.g. name@domain.com).');
+      return false;
+    }
+    clearFieldError(emailContainer, emailError);
+    return true;
+  }
+
+  function validatePassword() {
+    const val = passwordInput.value;
+    if (!val) {
+      showFieldError(passwordContainer, passwordError, passwordErrorText, 'Master password is required.');
+      return false;
+    } else if (val.length < 8) {
+      showFieldError(passwordContainer, passwordError, passwordErrorText, 'Password must be at least 8 characters long.');
+      return false;
+    }
+    clearFieldError(passwordContainer, passwordError);
+    return true;
+  }
+
+  function validateConfirmPassword() {
+    if (!isSignUpMode) return true;
+    const pass = passwordInput.value;
+    const confirm = confirmPasswordInput.value;
+    if (!confirm) {
+      showFieldError(confirmPasswordContainer, confirmPasswordError, confirmPasswordErrorText, 'Please confirm your password.');
+      return false;
+    } else if (confirm !== pass) {
+      showFieldError(confirmPasswordContainer, confirmPasswordError, confirmPasswordErrorText, 'Passwords do not match.');
+      return false;
+    }
+    clearFieldError(confirmPasswordContainer, confirmPasswordError);
+    return true;
+  }
+
+  function showFieldError(container, errorElement, textElement, msg) {
+    container.classList.add('input-error');
+    textElement.textContent = msg;
+    errorElement.classList.remove('hidden');
+    // subtle shake effect
+    container.classList.remove('shake');
+    void container.offsetWidth; // re-trigger animation
+    container.classList.add('shake');
+  }
+
+  function clearFieldError(container, errorElement) {
+    container.classList.remove('input-error', 'shake');
+    if (errorElement) errorElement.classList.add('hidden');
+  }
+
+  function clearAllErrors() {
+    clearFieldError(emailContainer, emailError);
+    clearFieldError(passwordContainer, passwordError);
+    clearFieldError(confirmPasswordContainer, confirmPasswordError);
+    formErrorBanner.classList.add('hidden');
+  }
+
+  // Real-time clearing on user input
+  emailInput.addEventListener('input', () => {
+    if (emailContainer.classList.contains('input-error')) {
+      validateEmail();
+    }
+    formErrorBanner.classList.add('hidden');
+  });
+
+  passwordInput.addEventListener('input', () => {
+    if (passwordContainer.classList.contains('input-error')) {
+      validatePassword();
+    }
+    if (isSignUpMode && confirmPasswordContainer.classList.contains('input-error')) {
+      validateConfirmPassword();
+    }
+    formErrorBanner.classList.add('hidden');
+  });
+
+  confirmPasswordInput.addEventListener('input', () => {
+    if (confirmPasswordContainer.classList.contains('input-error')) {
+      validateConfirmPassword();
+    }
+    formErrorBanner.classList.add('hidden');
+  });
+
+  // Biometric Tap Interaction
+  const triggerBiometric = () => {
+    showToast('Biometric sensor activated. Face/Touch recognized.');
+    triggerSuccess('Biometric authentication verified');
+  };
+  document.getElementById('biometric-icon')?.addEventListener('click', triggerBiometric);
+  document.getElementById('biometric-btn')?.addEventListener('click', triggerBiometric);
+
+  // Form Submission
+  authForm.addEventListener('submit', function(e) {
+    e.preventDefault();
+    if (isSubmitting) return;
+
+    const emailValid = validateEmail();
+    const passValid = validatePassword();
+    const confirmValid = validateConfirmPassword();
+
+    if (!emailValid || !passValid || !confirmValid) {
+      formErrorText.textContent = 'Please correct the highlighted fields before continuing.';
+      formErrorBanner.classList.remove('hidden');
+      return;
+    }
+
+    // Success State & Loading Spinner
+    formErrorBanner.classList.add('hidden');
+    isSubmitting = true;
+    submitSpinner.classList.remove('hidden');
+    submitBtnText.textContent = isSignUpMode ? 'Creating account...' : 'Authenticating...';
+    submitBtn.classList.add('opacity-90', 'cursor-not-allowed');
+
+    setTimeout(() => {
+      isSubmitting = false;
+      submitSpinner.classList.add('hidden');
+      submitBtnText.textContent = isSignUpMode ? 'Account Created' : 'Vault Unlocked';
+      submitBtn.classList.remove('opacity-90', 'cursor-not-allowed');
+      submitBtn.classList.replace('bg-brand-blue', 'bg-emerald-600');
+
+      const successNotice = isSignUpMode ? 'Account created successfully! Preparing your secure vault...' : 'Identity verified. Accessing vault...';
+      showToast(successNotice);
+
+      setTimeout(() => {
+        submitBtn.classList.replace('bg-emerald-600', 'bg-brand-blue');
+        submitBtnText.textContent = isSignUpMode ? 'Create Account' : 'Sign In';
+      }, 3000);
+    }, 1100);
+  });
+
+  function triggerSuccess(msg) {
+    showToast(msg);
+  }
+
+  function showToast(msg) {
+    toastMessage.textContent = msg;
+    toast.classList.remove('-translate-y-16', 'opacity-0', 'pointer-events-none');
+    toast.classList.add('translate-y-0', 'opacity-100');
+
+    setTimeout(() => {
+      toast.classList.remove('translate-y-0', 'opacity-100');
+      toast.classList.add('-translate-y-16', 'opacity-0', 'pointer-events-none');
+    }, 3200);
+  }
+</script>
+
+
+
+
+<script id="theme-sync-script">
+  (function() {
+    const getSavedTheme = () => {
+      return localStorage.getItem('neurokey_theme') || 
+             localStorage.getItem('vault_theme') || 
+             localStorage.getItem('app_theme') || 
+             'dark';
+    };
+
+    function applyTheme(theme) {
+      const isLight = theme === 'light';
+      const doc = document.documentElement;
+      const icon = document.getElementById('theme-toggle-icon');
+      
+      if (isLight) {
+        doc.classList.remove('dark');
+        doc.classList.add('theme-light');
+        if (icon) icon.textContent = 'dark_mode';
+      } else {
+        doc.classList.add('dark');
+        doc.classList.remove('theme-light');
+        if (icon) icon.textContent = 'light_mode';
+      }
+
+      // Synchronize active and inactive tab styling hooks
+      const tabLogin = document.getElementById('tab-login');
+      const tabSignup = document.getElementById('tab-signup');
+      if (tabLogin && tabSignup) {
+        const isSignup = tabSignup.classList.contains('bg-[#1a1a1a]') || tabSignup.classList.contains('tab-active');
+        if (isSignup) {
+          tabSignup.classList.add('tab-active');
+          tabSignup.classList.remove('tab-inactive');
+          tabLogin.classList.remove('tab-active');
+          tabLogin.classList.add('tab-inactive');
+        } else {
+          tabLogin.classList.add('tab-active');
+          tabLogin.classList.remove('tab-inactive');
+          tabSignup.classList.remove('tab-active');
+          tabSignup.classList.add('tab-inactive');
+        }
+      }
+    }
+
+    // Initial application
+    applyTheme(getSavedTheme());
+
+    // Listen for storage events synchronized with Settings / other tabs
+    window.addEventListener('storage', (e) => {
+      if (['neurokey_theme', 'vault_theme', 'app_theme'].includes(e.key)) {
+        applyTheme(e.newValue || 'dark');
+      }
+    });
+
+    // Toggle button interaction
+    const toggleBtn = document.getElementById('theme-toggle-btn');
+    if (toggleBtn) {
+      toggleBtn.addEventListener('click', () => {
+        const current = getSavedTheme();
+        const next = current === 'light' ? 'dark' : 'light';
+        localStorage.setItem('neurokey_theme', next);
+        localStorage.setItem('vault_theme', next);
+        localStorage.setItem('app_theme', next);
+        applyTheme(next);
+      });
+    }
+
+    // Update tabs toggle hook
+    const originalTabLogin = document.getElementById('tab-login');
+    const originalTabSignup = document.getElementById('tab-signup');
+    if (originalTabLogin && originalTabSignup) {
+      originalTabLogin.addEventListener('click', () => {
+        applyTheme(getSavedTheme());
+      });
+      originalTabSignup.addEventListener('click', () => {
+        applyTheme(getSavedTheme());
+      });
+    }
+  })();
+</script>
+
+</body></html>

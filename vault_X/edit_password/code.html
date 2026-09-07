@@ -1,0 +1,267 @@
+<!DOCTYPE html><html lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport">
+<title>View &amp; Edit Password - NeuroKey</title>
+<!-- Tailwind CSS CDN with forms and container queries plugins -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Google Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
+<script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            vault: {
+              bg: '#000000',
+              card: '#16171a',
+              cardBorder: '#23252a',
+              divider: '#202227',
+              accentBlue: '#0080ff',
+              danger: '#ef4444',
+              dangerCard: '#1a1415'
+            }
+          },
+          fontFamily: {
+            sans: ['-apple-system', 'BlinkMacSystemFont', 'SF Pro Text', 'SF Pro Display', 'Helvetica Neue', 'sans-serif']
+          }
+        }
+      }
+    };
+  </script>
+<!-- BEGIN: Custom Animation & Component Styles -->
+<style data-purpose="motion-and-tweaks">
+    @keyframes sheetEntrance {
+      0% {
+        opacity: 0;
+        transform: scale(0.96) translateY(24px);
+      }
+      100% {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+      }
+    }
+
+    .modal-entrance {
+      animation: sheetEntrance 0.38s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    /* Custom touch highlight dismissal */
+    * {
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+    }
+
+    input {
+      user-select: text;
+    }
+
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    }
+
+    .material-symbols-outlined.filled {
+      font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    }
+  </style>
+<!-- END: Custom Animation & Component Styles -->
+</head>
+<body class="bg-black text-white min-h-screen flex justify-center items-end sm:items-center overflow-x-hidden font-sans antialiased selection:bg-blue-600 selection:text-white">
+<!-- BEGIN: Mobile Viewport Container -->
+<main class="w-full max-w-[430px] h-screen sm:h-[932px] sm:max-h-[96vh] bg-black sm:border sm:border-[#222] sm:rounded-[52px] sm:shadow-2xl flex flex-col justify-between overflow-hidden relative modal-entrance">
+<!-- Top System Notch / Status Bar Spacer (Mobile Simulation) -->
+
+<!-- BEGIN: Top Navigation Header -->
+<header class="w-full px-5 py-3 flex items-center justify-between z-10 shrink-0">
+<!-- Close Circle Button -->
+<button aria-label="Close" class="w-10 h-10 rounded-full bg-[#1c1d22] active:bg-[#282a30] text-neutral-300 hover:text-white flex items-center justify-center transition-all focus:outline-none" data-purpose="dismiss-modal" id="btnClose" type="button">
+<span class="material-symbols-outlined text-[20px]">close</span>
+</button>
+<!-- Edit / Done Toggle Button -->
+<button class="text-[17px] font-semibold text-[#0080ff] active:opacity-70 px-2 py-1 transition-all focus:outline-none" data-purpose="toggle-edit-mode" id="btnEditToggle" type="button" onclick="window.handleEditToggleClick()">
+        Edit
+      </button>
+</header>
+<!-- END: Top Navigation Header -->
+<!-- BEGIN: Scrollable Content View -->
+<div class="flex-1 overflow-y-auto px-5 pb-8 space-y-6 scrollbar-none" id="scrollContainer">
+<!-- BEGIN: Service Avatar & Title Section -->
+<section class="flex flex-col items-center pt-2 pb-1" data-purpose="service-identity"><div class="w-20 h-20 rounded-full bg-[#828690]/80 flex items-center justify-center shadow-lg shadow-black/40 ring-1 ring-white/10 mb-3.5"><span class="text-3xl font-medium text-white tracking-wide" id="avatarLetter">E</span></div><input id="inputServiceName" class="text-2xl font-bold tracking-tight text-white mb-0.5 bg-transparent border-0 text-center focus:ring-0 focus:outline-none w-full truncate" readonly="" value="Email"><p class="text-[15px] font-normal text-neutral-400 select-text" id="headerSubtitle">dvknavya@gmail.com</p></section>
+<!-- END: Service Avatar & Title Section -->
+<!-- BEGIN: Credentials Group -->
+<section class="space-y-2" data-purpose="credentials-group"><h2 class="text-xs font-semibold tracking-wider text-neutral-400 uppercase px-1">Credentials</h2><div class="bg-[#16171a] rounded-2xl border border-white/5 overflow-hidden divide-y divide-[#202227]" id="credentialsContainer"><div class="flex items-center justify-between px-4 py-3.5 min-h-[54px] gap-2"><span class="text-[15px] font-medium text-white shrink-0 w-24">Username</span><div class="flex-1 flex items-center"><input class="bg-transparent border-0 p-0 text-[15px] text-neutral-300 focus:ring-0 w-full focus:outline-none truncate font-normal rounded px-1 transition-all" id="inputUsername" readonly="" type="text" value="dvknavya@gmail.com" oninput="document.getElementById('headerSubtitle').textContent = this.value;"></div><button class="text-[#0080ff] active:scale-95 p-1 rounded hover:bg-white/5 transition flex items-center justify-center shrink-0" id="btnCopyUsername" title="Copy Username" type="button" onclick="navigator.clipboard.writeText(document.getElementById('inputUsername').value); window.showAppToast('Username copied to clipboard');"><span class="material-symbols-outlined text-[20px]">content_copy</span></button></div><div class="flex items-center justify-between px-4 py-3.5 min-h-[54px] gap-2"><span class="text-[15px] font-medium text-white shrink-0 w-24">Password</span><div class="flex-1 flex items-center overflow-hidden"><input class="bg-transparent border-0 p-0 text-[16px] text-neutral-300 focus:ring-0 w-full focus:outline-none tracking-widest font-mono rounded px-1 transition-all" id="inputPassword" readonly="" type="password" value="SecureP@ssw0rd2024!"></div><div class="flex items-center space-x-2 shrink-0"><button class="text-[#0080ff] active:scale-95 p-1 rounded hover:bg-white/5 transition flex items-center justify-center" id="btnTogglePassword" title="Toggle Visibility" type="button" onclick="window.togglePasswordView()"><span class="material-symbols-outlined text-[21px]" id="eyeIcon">visibility</span></button><button class="text-[#0080ff] active:scale-95 p-1 rounded hover:bg-white/5 transition flex items-center justify-center" id="btnCopyPassword" title="Copy Password" type="button" onclick="navigator.clipboard.writeText(document.getElementById('inputPassword').value); window.showAppToast('Password copied to clipboard');"><span class="material-symbols-outlined text-[20px]">content_copy</span></button></div></div></div></section>
+<!-- END: Credentials Group -->
+<!-- BEGIN: Security / Health Status Banner -->
+<section data-purpose="security-banner">
+<div class="w-full bg-[#0a1f14]/60 border border-emerald-500/70 rounded-2xl p-4 flex items-center gap-3.5 shadow-sm">
+<!-- Green Shield Icon -->
+<div class="shrink-0 text-emerald-400 flex items-center justify-center">
+<span class="material-symbols-outlined filled text-[26px]">verified_user</span>
+</div>
+<!-- Banner Copy -->
+<div class="flex flex-col text-left">
+<span class="text-[15px] font-semibold text-emerald-400 leading-snug">Safe &amp; Secure</span>
+<span class="text-[13px] text-neutral-300 leading-snug">No leaks detected in known data breaches.</span>
+</div>
+</div>
+</section>
+<!-- END: Security / Health Status Banner -->
+<!-- BEGIN: Details Group -->
+<section class="space-y-2" data-purpose="details-group"><h2 class="text-xs font-semibold tracking-wider text-neutral-400 uppercase px-1">Details</h2><div class="bg-[#16171a] rounded-2xl border border-white/5 overflow-hidden divide-y divide-[#202227]" id="detailsContainer"><div class="flex items-center justify-between px-4 py-3.5 min-h-[50px]"><span class="text-[15px] font-medium text-white shrink-0 w-24">Website</span><input class="bg-transparent border-0 p-0 text-[15px] text-neutral-400 focus:ring-0 w-full focus:outline-none text-left placeholder:text-neutral-600 rounded px-1 transition-all" id="inputWebsite" placeholder="https://" readonly="" type="text" value="https://mail.google.com"></div><div class="flex items-start justify-between px-4 py-3.5 min-h-[50px] gap-2"><span class="text-[15px] font-medium text-white shrink-0 w-24 pt-0.5">Notes</span><textarea class="bg-transparent border-0 p-0 text-[15px] text-neutral-400 focus:ring-0 w-full focus:outline-none resize-none font-normal leading-normal rounded px-1 transition-all" id="inputNotes" readonly="" rows="2">Personal primary recovery email.</textarea></div></div></section>
+<!-- END: Details Group -->
+<!-- BEGIN: Danger Zone / Actions -->
+<section class="pt-2" data-purpose="danger-actions">
+<button class="w-full bg-[#1c1d22] active:bg-[#251717] active:border-red-900/40 border border-transparent rounded-2xl py-3.5 px-4 flex items-center justify-center transition-all duration-150 group shadow-sm focus:outline-none" id="btnDeletePassword" type="button">
+<span class="text-[16px] font-semibold text-[#ff453a] group-active:text-red-400">Delete Password</span>
+</button>
+</section>
+<!-- END: Danger Zone / Actions -->
+<script>window.isEditingActive = false; window.isPassPlain = false; window.showAppToast = function(msg) { var toast = document.getElementById('toast'); var toastMsg = document.getElementById('toastMessage'); if (window._toastTimer) clearTimeout(window._toastTimer); toastMsg.textContent = msg; toast.classList.remove('opacity-0', 'translate-y-3'); toast.classList.add('opacity-100', 'translate-y-0'); window._toastTimer = setTimeout(function() { toast.classList.remove('opacity-100', 'translate-y-0'); toast.classList.add('opacity-0', 'translate-y-3'); }, 2200); }; window.togglePasswordView = function() { var inp = document.getElementById('inputPassword'); var icon = document.getElementById('eyeIcon'); window.isPassPlain = !window.isPassPlain; if (window.isPassPlain) { inp.type = 'text'; inp.classList.remove('tracking-widest', 'font-mono'); icon.textContent = 'visibility_off'; } else { inp.type = 'password'; inp.classList.add('tracking-widest', 'font-mono'); icon.textContent = 'visibility'; } }; window.handleEditToggleClick = function() { var btn = document.getElementById('btnEditToggle'); var nameInp = document.getElementById('inputServiceName'); var userInp = document.getElementById('inputUsername'); var passInp = document.getElementById('inputPassword'); var webInp = document.getElementById('inputWebsite'); var notesInp = document.getElementById('inputNotes'); var letterEl = document.getElementById('avatarLetter'); var editFields = [nameInp, userInp, passInp, webInp, notesInp]; window.isEditingActive = !window.isEditingActive; if (window.isEditingActive) { btn.textContent = 'Done'; btn.classList.remove('text-[#0080ff]'); btn.classList.add('text-emerald-400'); editFields.forEach(function(f) { if (!f) return; f.removeAttribute('readonly'); f.classList.remove('text-neutral-400', 'text-neutral-300', 'border-0'); f.classList.add('text-white', 'bg-[#1f2128]', 'border', 'border-white/10', 'py-1', 'px-2.5', 'rounded-lg', 'focus:border-blue-500'); }); nameInp.classList.add('border-white/20'); userInp.focus(); window.showAppToast('Edit mode enabled'); } else { btn.textContent = 'Edit'; btn.classList.remove('text-emerald-400'); btn.classList.add('text-[#0080ff]'); editFields.forEach(function(f) { if (!f) return; f.setAttribute('readonly', 'true'); f.classList.add('border-0', 'bg-transparent'); f.classList.remove('bg-[#1f2128]', 'border', 'border-white/10', 'border-white/20', 'py-1', 'px-2.5', 'rounded-lg', 'focus:border-blue-500'); }); nameInp.classList.add('text-white'); userInp.classList.add('text-neutral-300'); passInp.classList.add('text-neutral-300'); webInp.classList.add('text-neutral-400'); notesInp.classList.add('text-neutral-400'); if (nameInp.value.trim().length > 0) { letterEl.textContent = nameInp.value.trim().charAt(0).toUpperCase(); } window.showAppToast('Changes saved'); } };</script></div>
+<!-- END: Scrollable Content View -->
+<!-- BEGIN: Feedback Toast Overlay -->
+<div class="pointer-events-none fixed inset-x-0 bottom-12 mx-auto w-fit max-w-[85%] bg-neutral-800/90 backdrop-blur-md border border-white/10 text-white text-xs font-medium px-4 py-2.5 rounded-full shadow-2xl transition-all duration-300 opacity-0 translate-y-3 z-50 flex items-center gap-2" id="toast">
+<span class="material-symbols-outlined text-emerald-400 text-sm">check_circle</span>
+<span id="toastMessage" class="">Copied to clipboard</span>
+</div>
+<!-- END: Feedback Toast Overlay -->
+<!-- Bottom Home Indicator Bar (iOS Style) -->
+<div class="w-full pb-2 pt-1 flex justify-center shrink-0">
+<div class="w-36 h-1 bg-neutral-600/60 rounded-full"></div>
+</div>
+</main>
+<!-- END: Mobile Viewport Container -->
+<!-- BEGIN: Interactive Logics & Handlers -->
+<script data-purpose="event-handlers">
+    document.addEventListener('DOMContentLoaded', () => {
+      // Element references
+      const btnEditToggle = document.getElementById('btnEditToggle');
+      const btnClose = document.getElementById('btnClose');
+      const btnTogglePassword = document.getElementById('btnTogglePassword');
+      const eyeIcon = document.getElementById('eyeIcon');
+      const inputPassword = document.getElementById('inputPassword');
+      const inputUsername = document.getElementById('inputUsername');
+      const inputWebsite = document.getElementById('inputWebsite');
+      const inputNotes = document.getElementById('inputNotes');
+      const btnCopyUsername = document.getElementById('btnCopyUsername');
+      const btnCopyPassword = document.getElementById('btnCopyPassword');
+      const btnDeletePassword = document.getElementById('btnDeletePassword');
+      const toast = document.getElementById('toast');
+      const toastMessage = document.getElementById('toastMessage');
+
+      let isEditing = false;
+      let isPasswordVisible = false;
+      let toastTimeout = null;
+
+      // Toast Notification Helper
+      function showToast(text) {
+        if (toastTimeout) clearTimeout(toastTimeout);
+        toastMessage.textContent = text;
+        toast.classList.remove('opacity-0', 'translate-y-3');
+        toast.classList.add('opacity-100', 'translate-y-0');
+        
+        toastTimeout = setTimeout(() => {
+          toast.classList.remove('opacity-100', 'translate-y-0');
+          toast.classList.add('opacity-0', 'translate-y-3');
+        }, 2000);
+      }
+
+      // Password Visibility Toggle
+      btnTogglePassword.addEventListener('click', () => {
+        isPasswordVisible = !isPasswordVisible;
+        if (isPasswordVisible) {
+          inputPassword.type = 'text';
+          inputPassword.classList.remove('tracking-widest', 'font-mono');
+          eyeIcon.textContent = 'visibility_off';
+          eyeIcon.classList.add('text-[#0080ff]');
+        } else {
+          inputPassword.type = 'password';
+          inputPassword.classList.add('tracking-widest', 'font-mono');
+          eyeIcon.textContent = 'visibility';
+        }
+      });
+
+      // Copy Username
+      btnCopyUsername.addEventListener('click', async () => {
+        try {
+          await navigator.clipboard.writeText(inputUsername.value);
+          showToast('Username copied to clipboard');
+        } catch (err) {
+          showToast('Username copied');
+        }
+      });
+
+      // Copy Password
+      btnCopyPassword.addEventListener('click', async () => {
+        try {
+          await navigator.clipboard.writeText(inputPassword.value);
+          showToast('Password copied to clipboard');
+        } catch (err) {
+          showToast('Password copied');
+        }
+      });
+
+      // Edit / Done State Toggle
+      btnEditToggle.addEventListener('click', () => {
+        isEditing = !isEditing;
+        if (isEditing) {
+          btnEditToggle.textContent = 'Done';
+          btnEditToggle.classList.add('text-emerald-400');
+          btnEditToggle.classList.remove('text-[#0080ff]');
+
+          // Make inputs editable
+          [inputUsername, inputPassword, inputWebsite, inputNotes].forEach(field => {
+            field.removeAttribute('readonly');
+            field.classList.add('text-white');
+            field.classList.remove('text-neutral-400', 'text-neutral-300');
+          });
+
+          if (inputNotes.value === 'No notes added.') {
+            inputNotes.value = '';
+          }
+          inputNotes.focus();
+          showToast('Edit mode enabled');
+        } else {
+          btnEditToggle.textContent = 'Edit';
+          btnEditToggle.classList.remove('text-emerald-400');
+          btnEditToggle.classList.add('text-[#0080ff]');
+
+          // Return inputs to readonly
+          [inputUsername, inputPassword, inputWebsite, inputNotes].forEach(field => {
+            field.setAttribute('readonly', true);
+            field.classList.remove('text-white');
+          });
+          inputUsername.classList.add('text-neutral-300');
+          inputPassword.classList.add('text-neutral-300');
+          inputNotes.classList.add('text-neutral-400');
+          
+          if (inputNotes.value.trim() === '') {
+            inputNotes.value = 'No notes added.';
+          }
+          showToast('Changes saved locally');
+        }
+      });
+
+      // Delete Password Confirmation
+      btnDeletePassword.addEventListener('click', () => {
+        const confirmed = confirm('Are you sure you want to permanently delete this credential from NeuroKey vault?');
+        if (confirmed) {
+          showToast('Credential removed');
+          setTimeout(() => {
+            document.querySelector('main').style.opacity = '0';
+            document.querySelector('main').style.transform = 'scale(0.96) translateY(20px)';
+          }, 400);
+        }
+      });
+
+      // Close dismiss action
+      btnClose.addEventListener('click', () => {
+        showToast('Dismissed');
+      });
+    });
+  </script>
+<!-- END: Interactive Logics & Handlers -->
+
+
+
+
+</body></html>

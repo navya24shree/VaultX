@@ -1,0 +1,354 @@
+<!DOCTYPE html><html lang="en" style=""><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport">
+<title>Password Generator</title>
+<!-- Tailwind CSS v3 CDN with forms & container queries -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Google Fonts: Inter & JetBrains Mono -->
+<link href="https://fonts.googleapis.com" rel="preconnect">
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@500;600;700&amp;display=swap" rel="stylesheet">
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              DEFAULT: '#0080ff',
+              hover: '#0070e0',
+              glow: 'rgba(0, 128, 255, 0.35)',
+            },
+            surface: {
+              base: '#101415',
+              card: '#191c1e',
+              inner: '#101415',
+              subtle: '#232729'
+            }
+          },
+          fontFamily: {
+            sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace'],
+          }
+        }
+      }
+    }
+  </script>
+<!-- BEGIN: Custom Styles -->
+<style data-purpose="custom-inputs">
+    .rotate-spin {
+      transform: rotate(360deg);
+      transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    /* Prevent unwanted touch defaults on ruler during drag */
+    #rulerTrack {
+      touch-action: none;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+  </style>
+<!-- END: Custom Styles -->
+</head>
+<body class="bg-[#101415] text-slate-100 font-sans min-h-screen antialiased selection:bg-brand selection:text-white pb-36">
+<!-- BEGIN: Toast Notification -->
+<div class="fixed top-6 left-1/2 -translate-x-1/2 z-50 transform pointer-events-none transition-all duration-300 ease-out flex items-center gap-2.5 bg-[#191c1e] border border-blue-500/40 text-white text-xs font-semibold px-4 py-2.5 rounded-full shadow-2xl backdrop-blur-md -translate-y-16 opacity-0" data-purpose="toast-notification" id="copyToast">
+<svg class="w-4 h-4 text-[#0080ff]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+<path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"></path>
+</svg>
+<span class="" id="toastMessage">Password copied to clipboard!</span>
+</div>
+<!-- END: Toast Notification -->
+<!-- BEGIN: Main Container -->
+<main class="max-w-md mx-auto px-5 pt-8 select-none">
+<!-- BEGIN: TopHeader -->
+<header class="flex items-center justify-between mb-6" data-purpose="screen-header">
+<h1 class="text-3xl font-bold tracking-tight text-white">Generator</h1>
+</header>
+<!-- END: TopHeader -->
+<!-- BEGIN: GeneratedPasswordCard -->
+<section class="bg-[#191c1e] rounded-3xl p-6 border border-[#232729] shadow-xl relative overflow-hidden flex flex-col items-center justify-center text-center" data-purpose="password-display-card">
+<!-- Prominent Centered Monospace Password Text -->
+<div class="font-mono text-2xl sm:text-3xl font-medium text-white tracking-wide break-all leading-snug py-2 px-1 selection:bg-blue-600 selection:text-white" id="passwordText">;lUA.P&gt;/;hf6tRR)</div>
+<!-- Status Indicator Text Directly Below -->
+<div class="mt-1 mb-6">
+<span class="text-base font-semibold text-emerald-500 tracking-normal transition-colors duration-200" id="strengthLabel">Strong</span>
+</div>
+<!-- Action Controls Row -->
+<div class="w-full flex items-center gap-3">
+<!-- Left Circular Reload Button -->
+<button aria-label="Regenerate password" class="w-14 h-14 rounded-full bg-[#272a2c] hover:bg-[#323537] active:scale-90 flex items-center justify-center text-[#0080ff] transition-all shrink-0 border border-[#363a3b]/40 shadow-sm" id="inlineRefreshBtn" title="Regenerate">
+<svg class="w-6 h-6 transform transition-transform duration-300" fill="none" id="refreshIconSvg" stroke="currentColor" viewBox="0 0 24 24">
+<path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.3"></path>
+</svg>
+</button>
+<!-- Right Wide Pill Copy Button -->
+<button aria-label="Copy to clipboard" class="flex-1 h-14 rounded-full bg-[#0080ff] hover:bg-blue-600 active:scale-[0.98] text-white font-semibold flex items-center justify-center gap-2.5 shadow-lg shadow-blue-500/20 transition-all text-base" id="copyBtn" title="Copy to clipboard">
+<svg class="w-5 h-5" fill="none" id="copyIconSvg" stroke="currentColor" viewBox="0 0 24 24">
+<path d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+<span class="" id="copyBtnText">Copy</span>
+</button>
+</div>
+</section>
+<!-- END: GeneratedPasswordCard -->
+<!-- BEGIN: Dual Section Area (Settings Card on left, Vertical Scrollbar Widget on right) -->
+<div class="flex items-center justify-between mt-6 mb-3 px-1"><h2 class="text-lg font-bold text-white tracking-tight">Options</h2><div class="flex items-center gap-1.5 text-xs font-medium tracking-wide text-slate-400"><span class="uppercase text-[11px] text-slate-400 tracking-wider">Length</span><span class="font-mono font-bold text-white text-sm" id="lengthBadge">16</span></div></div><div class="flex items-stretch gap-3.5" data-purpose="controls-and-slider-wrapper"><section class="flex-1 flex flex-col justify-between gap-2.5" data-purpose="settings-control-panel"><label class="flex items-center justify-between px-4 py-3 bg-[#191c1e] border border-[#232729] shadow-sm cursor-pointer rounded-t-3xl rounded-b"><div class="flex flex-col pr-2"><span class="text-sm font-medium text-slate-200">Uppercase</span><span class="text-[11px] text-slate-500 font-mono">A-Z</span></div><div class="relative inline-block w-11 h-6 align-middle select-none shrink-0"><input checked="" class="sr-only peer" id="toggleUpper" type="checkbox"><div class="w-11 h-6 bg-slate-700/60 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#0080ff]"></div></div></label><label class="flex items-center justify-between px-4 py-3 bg-[#191c1e] border border-[#232729] shadow-sm cursor-pointer rounded"><div class="flex flex-col pr-2"><span class="text-sm font-medium text-slate-200">Lowercase</span><span class="text-[11px] text-slate-500 font-mono">a-z</span></div><div class="relative inline-block w-11 h-6 align-middle select-none shrink-0"><input checked="" class="sr-only peer" id="toggleLower" type="checkbox"><div class="w-11 h-6 bg-slate-700/60 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#0080ff]"></div></div></label><label class="flex items-center justify-between px-4 py-3 bg-[#191c1e] border border-[#232729] shadow-sm cursor-pointer rounded"><div class="flex flex-col pr-2"><span class="text-sm font-medium text-slate-200">Numbers</span><span class="text-[11px] text-slate-500 font-mono">0-9</span></div><div class="relative inline-block w-11 h-6 align-middle select-none shrink-0"><input checked="" class="sr-only peer" id="toggleNumbers" type="checkbox"><div class="w-11 h-6 bg-slate-700/60 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#0080ff]"></div></div></label><label class="flex items-center justify-between px-4 py-3 bg-[#191c1e] border border-[#232729] shadow-sm cursor-pointer rounded-b-3xl rounded-t"><div class="flex flex-col pr-2"><span class="text-sm font-medium text-slate-200">Symbols</span><span class="text-[11px] text-slate-500 font-mono">!@#$%^&amp;*</span></div><div class="relative inline-block w-11 h-6 align-middle select-none shrink-0"><input checked="" class="sr-only peer" id="toggleSymbols" type="checkbox"><div class="w-11 h-6 bg-slate-700/60 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#0080ff]"></div></div></label></section><div class="shrink-0 flex items-stretch" data-purpose="vertical-ruler-widget"><div class="relative w-[68px] h-full bg-[#0c0e10] border border-[#2b3034]/90 px-4 py-5 select-none touch-none shadow-[inset_0_2px_8px_rgba(0,0,0,0.6)] flex flex-col justify-between items-center cursor-ns-resize group rounded-xl" id="rulerTrack" title="Scroll or drag up to increase length, down to decrease"><div class="absolute inset-y-5 left-4 right-4 flex flex-col justify-between items-center pointer-events-none z-0" id="rulerRungs"><div class="w-full h-[2.5px] rounded-full bg-[#353b42]"></div><div class="w-full h-[2.5px] rounded-full bg-[#353b42]"></div><div class="w-full h-[2.5px] rounded-full bg-[#353b42]"></div><div class="w-full h-[2.5px] rounded-full bg-[#353b42]"></div><div class="w-full h-[2.5px] rounded-full bg-[#353b42]"></div><div class="w-full h-[2.5px] rounded-full bg-[#353b42]"></div><div class="w-full h-[2.5px] rounded-full bg-[#353b42]"></div><div class="w-full h-[2.5px] rounded-full bg-[#353b42]"></div><div class="w-full h-[2.5px] rounded-full bg-[#353b42]"></div><div class="w-full h-[2.5px] rounded-full bg-[#353b42]"></div><div class="w-full h-[2.5px] rounded-full bg-[#353b42]"></div><div class="w-full h-[2.5px] rounded-full bg-[#353b42]"></div><div class="w-full h-[2.5px] rounded-full bg-[#353b42]"></div><div class="w-full h-[2.5px] rounded-full bg-[#353b42]"></div><div class="w-full h-[2.5px] rounded-full bg-[#353b42]"></div><div class="w-full h-[2.5px] rounded-full bg-[#353b42]"></div><div class="w-full h-[2.5px] rounded-full bg-[#353b42]"></div><div class="w-full h-[2.5px] rounded-full bg-[#353b42]"></div><div class="w-full h-[2.5px] rounded-full bg-[#353b42]"></div><div class="w-full h-[2.5px] rounded-full bg-[#353b42]"></div><div class="w-full h-[2.5px] rounded-full bg-[#353b42]"></div><div class="w-full h-[2.5px] rounded-full bg-[#353b42]"></div><div class="w-full h-[2.5px] rounded-full bg-[#353b42]"></div></div><div class="absolute left-4 right-4 h-[11px] bg-[#0080ff] shadow-[0_0_12px_rgba(0,128,255,0.9)] pointer-events-none transition-[top] duration-75 ease-out z-10 rounded" id="rulerThumb" style="top: 120px;"></div></div></div></div>
+<!-- END: Dual Section Area -->
+</main>
+<!-- END: Main Container -->
+<!-- BEGIN: BottomNavigationDock -->
+<nav class="fixed bottom-6 left-1/2 -translate-x-1/2 z-40 flex items-center justify-center bg-[#25282a]/95 backdrop-blur-md px-3 py-2 rounded-full shadow-2xl border border-white/10 gap-2" data-purpose="bottom-navigation-dock">
+<a class="text-[#a0a5aa] hover:text-white p-2.5 flex items-center justify-center transition-colors" href="#" title="Passwords">
+<span class="material-symbols-outlined text-[22px]">vpn_key</span>
+</a>
+<a class="text-[#a0a5aa] hover:text-white p-2.5 flex items-center justify-center transition-colors" href="#" title="Wallet">
+<span class="material-symbols-outlined text-[22px]">account_balance_wallet</span>
+</a>
+<a class="bg-[#0080ff] text-white px-5 py-2.5 rounded-full flex items-center justify-center shadow-md transition-all" href="#" title="Generator">
+<span class="material-symbols-outlined text-[22px]" style="font-variation-settings: 'FILL' 1;">grid_view</span>
+</a>
+<a class="text-[#a0a5aa] hover:text-white p-2.5 flex items-center justify-center transition-colors" href="#" title="Settings">
+<span class="material-symbols-outlined text-[22px]">settings</span>
+</a>
+</nav>
+<!-- END: BottomNavigationDock -->
+<!-- BEGIN: Interactive Logic Scripts -->
+<script data-purpose="password-logic">
+    // State
+    const MIN_LENGTH = 6;
+    const MAX_LENGTH = 32;
+    let currentLength = 16;
+
+    // DOM Elements
+    const passwordDisplay = document.getElementById('passwordText');
+    const lengthBadge = document.getElementById('lengthBadge');
+    const toggleUpper = document.getElementById('toggleUpper');
+    const toggleLower = document.getElementById('toggleLower');
+    const toggleNumbers = document.getElementById('toggleNumbers');
+    const toggleSymbols = document.getElementById('toggleSymbols');
+    const inlineRefreshBtn = document.getElementById('inlineRefreshBtn');
+    const refreshIconSvg = document.getElementById('refreshIconSvg');
+    const copyBtn = document.getElementById('copyBtn');
+    const copyBtnText = document.getElementById('copyBtnText');
+    const copyIconSvg = document.getElementById('copyIconSvg');
+    const copyToast = document.getElementById('copyToast');
+    const strengthLabel = document.getElementById('strengthLabel');
+
+    // Ruler Elements
+    const rulerTrack = document.getElementById('rulerTrack');
+    const rulerThumb = document.getElementById('rulerThumb');
+
+    // Character Sets
+    const CHARS = {
+      upper: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ',
+      lower: 'abcdefghijklmnopqrstuvwxyz',
+      numbers: '0123456789',
+      symbols: '!@#$%^&*()_+-=[]{}|;:,.<>?'
+    };
+
+    // Update ruler position based on length:
+    // UPWARD = Higher length (top of track = MAX_LENGTH 32)
+    // DOWNWARD = Lower length (bottom of track = MIN_LENGTH 6)
+    function updateRulerUI() {
+      const trackHeight = rulerTrack.clientHeight || 240;
+      const thumbHeight = 11;
+      const topPadding = 16;
+      const bottomPadding = 16;
+      const usableHeight = trackHeight - topPadding - bottomPadding - thumbHeight;
+
+      // fraction: 1.0 at MAX_LENGTH, 0.0 at MIN_LENGTH
+      const fraction = (currentLength - MIN_LENGTH) / (MAX_LENGTH - MIN_LENGTH);
+      // top position: topPadding when fraction=1 (top), topPadding + usableHeight when fraction=0 (bottom)
+      const topPos = topPadding + (1 - fraction) * usableHeight;
+
+      rulerThumb.style.top = `${topPos}px`;
+      lengthBadge.textContent = currentLength;
+    }
+
+    // Set length directly and trigger regeneration
+    function setLength(newLen) {
+      const clamped = Math.max(MIN_LENGTH, Math.min(MAX_LENGTH, Math.round(newLen)));
+      if (clamped !== currentLength) {
+        currentLength = clamped;
+        updateRulerUI();
+        generatePassword();
+      }
+    }
+
+    // Calculate length from Y coordinate relative to rulerTrack
+    function updateFromClientY(clientY) {
+      const rect = rulerTrack.getBoundingClientRect();
+      const topPadding = 16;
+      const bottomPadding = 16;
+      const usableHeight = rect.height - topPadding - bottomPadding;
+
+      // yPos clamped within usable region
+      const yPos = Math.max(topPadding, Math.min(rect.height - bottomPadding, clientY - rect.top));
+      // fraction from bottom to top: 1.0 at top, 0.0 at bottom
+      const fraction = 1 - ((yPos - topPadding) / usableHeight);
+      const computedLen = MIN_LENGTH + fraction * (MAX_LENGTH - MIN_LENGTH);
+      setLength(computedLen);
+    }
+
+    // Drag / Touch handling
+    let isDragging = false;
+
+    rulerTrack.addEventListener('pointerdown', (e) => {
+      isDragging = true;
+      rulerTrack.setPointerCapture(e.pointerId);
+      updateFromClientY(e.clientY);
+    });
+
+    rulerTrack.addEventListener('pointermove', (e) => {
+      if (isDragging) {
+        updateFromClientY(e.clientY);
+      }
+    });
+
+    const stopDragging = (e) => {
+      if (isDragging) {
+        isDragging = false;
+        try {
+          rulerTrack.releasePointerCapture(e.pointerId);
+        } catch (_) {}
+      }
+    };
+
+    rulerTrack.addEventListener('pointerup', stopDragging);
+    rulerTrack.addEventListener('pointercancel', stopDragging);
+
+    // Mouse wheel support:
+    // Scrolling UP (negative deltaY) increases length.
+    // Scrolling DOWN (positive deltaY) decreases length.
+    rulerTrack.addEventListener('wheel', (e) => {
+      e.preventDefault();
+      if (e.deltaY < 0) {
+        setLength(currentLength + 1); // scroll up = increase
+      } else if (e.deltaY > 0) {
+        setLength(currentLength - 1); // scroll down = decrease
+      }
+    }, { passive: false });
+
+    // Generate random secure password
+    function generatePassword() {
+      let allowedChars = '';
+
+      if (toggleUpper.checked) allowedChars += CHARS.upper;
+      if (toggleLower.checked) allowedChars += CHARS.lower;
+      if (toggleNumbers.checked) allowedChars += CHARS.numbers;
+      if (toggleSymbols.checked) allowedChars += CHARS.symbols;
+
+      // Fallback if none checked
+      if (!allowedChars) {
+        toggleLower.checked = true;
+        allowedChars = CHARS.lower;
+      }
+
+      let result = '';
+      const array = new Uint32Array(currentLength);
+      window.crypto.getRandomValues(array);
+
+      for (let i = 0; i < currentLength; i++) {
+        result += allowedChars[array[i] % allowedChars.length];
+      }
+
+      passwordDisplay.textContent = result;
+      updateStrength(result);
+    }
+
+    // Evaluate Strength
+    function updateStrength(pwd) {
+      let score = 0;
+      if (pwd.length >= 8) score++;
+      if (pwd.length >= 14) score++;
+      if (/[A-Z]/.test(pwd) && /[a-z]/.test(pwd)) score++;
+      if (/[0-9]/.test(pwd) && /[^A-Za-z0-9]/.test(pwd)) score++;
+
+      if (score <= 1) {
+        strengthLabel.textContent = 'Weak';
+        strengthLabel.className = 'text-base font-semibold text-rose-500 transition-colors duration-200';
+      } else if (score === 2) {
+        strengthLabel.textContent = 'Fair';
+        strengthLabel.className = 'text-base font-semibold text-amber-500 transition-colors duration-200';
+      } else {
+        strengthLabel.textContent = 'Strong';
+        strengthLabel.className = 'text-base font-semibold text-emerald-500 transition-colors duration-200';
+      }
+    }
+
+    // Toast triggers
+    let toastTimeout;
+    function showToast() {
+      clearTimeout(toastTimeout);
+      copyToast.classList.remove('-translate-y-16', 'opacity-0');
+      copyToast.classList.add('translate-y-0', 'opacity-100');
+
+      toastTimeout = setTimeout(() => {
+        copyToast.classList.remove('translate-y-0', 'opacity-100');
+        copyToast.classList.add('-translate-y-16', 'opacity-0');
+      }, 2000);
+    }
+
+    // Copy to clipboard with UI feedback
+    async function copyPassword() {
+      const text = passwordDisplay.textContent.trim();
+      try {
+        await navigator.clipboard.writeText(text);
+      } catch (err) {
+        const textarea = document.createElement('textarea');
+        textarea.value = text;
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textarea);
+      }
+
+      showToast();
+
+      if (copyBtnText) {
+        const originalText = copyBtnText.textContent;
+        copyBtnText.textContent = 'Copied!';
+        copyIconSvg.innerHTML = '<path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"></path>';
+        copyBtn.classList.add('bg-emerald-600');
+        copyBtn.classList.remove('bg-[#0080ff]');
+
+        setTimeout(() => {
+          copyBtnText.textContent = originalText;
+          copyIconSvg.innerHTML = '<path d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>';
+          copyBtn.classList.remove('bg-emerald-600');
+          copyBtn.classList.add('bg-[#0080ff]');
+        }, 1500);
+      }
+    }
+
+    // Rotation effect on regenerate
+    let currentRotation = 0;
+    function triggerSpinAnimation() {
+      currentRotation += 360;
+      refreshIconSvg.style.transform = `rotate(${currentRotation}deg)`;
+    }
+
+    // Event Listeners for Toggles & Buttons
+    [toggleUpper, toggleLower, toggleNumbers, toggleSymbols].forEach(toggle => {
+      toggle.addEventListener('change', generatePassword);
+    });
+
+    inlineRefreshBtn.addEventListener('click', () => {
+      generatePassword();
+      triggerSpinAnimation();
+    });
+
+    copyBtn.addEventListener('click', copyPassword);
+
+    // Initial Setup
+    window.addEventListener('load', () => {
+      updateRulerUI();
+      passwordDisplay.textContent = ';lUA.P>/;hf6tRR)';
+      updateStrength(';lUA.P>/;hf6tRR)');
+    });
+  </script>
+<!-- END: Interactive Logic Scripts -->
+
+
+</body></html>

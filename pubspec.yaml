@@ -1,0 +1,53 @@
+name: neurokey
+description: "A local-first, offline-capable password and card vault."
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.13.0
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # State Management
+  flutter_riverpod: ^2.6.1
+
+  # Local Storage & Database
+  drift: ^2.24.2
+  drift_flutter: ^0.2.4
+  sqlite3_flutter_libs: ^0.5.28
+  path_provider: ^2.1.5
+  path: ^1.9.0
+
+  # Secret Storage
+  flutter_secure_storage: ^9.2.2
+
+  # Cryptography (Argon2id, AES-256-GCM, X25519 ECDH, HKDF)
+  cryptography: ^2.7.2
+  crypto: ^3.0.6
+
+  # Biometric Authentication
+  local_auth: ^2.3.0
+
+  # LAN Discovery & Network Transfer
+  bonsoir: ^5.1.0
+  web_socket_channel: ^3.0.1
+
+  # QR Code Generation & Scanning
+  qr_flutter: ^4.1.0
+  mobile_scanner: ^6.0.4
+
+  # Icons & Fonts
+  cupertino_icons: ^1.0.8
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
+  mocktail: ^1.0.4
+  drift_dev: ^2.24.2
+  build_runner: ^2.4.14
+
+flutter:
+  uses-material-design: true

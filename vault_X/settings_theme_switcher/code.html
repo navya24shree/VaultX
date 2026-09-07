@@ -1,0 +1,1489 @@
+<!DOCTYPE html><html class="stitch-anim-fade-in" lang="en" style="width: 390px; height: 1060px; overflow: hidden auto; position: relative; scrollbar-width: none;"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport">
+<title>Settings - Offline Password Manager</title>
+<!-- Tailwind CSS v3 with forms and container queries -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Tailwind Configuration -->
+<script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              blue: '#0080ff',
+              teal: '#52d1b8',
+              surface: '#15191c',
+              card: '#1c2024',
+              divider: '#282d32'
+            }
+          },
+          fontFamily: {
+            sans: ['-apple-system', 'BlinkMacSystemFont', '"SF Pro Display"', '"Segoe UI"', 'Roboto', 'sans-serif']
+          }
+        }
+      }
+    }
+  </script>
+<!-- BEGIN: Custom Styles -->
+<style data-purpose="custom-scroll-and-animations">
+    /* Hide scrollbars for clean native app appearance */
+    body::-webkit-scrollbar,
+    div::-webkit-scrollbar {
+      display: none;
+    }
+    body, div {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+    
+    /* Toggle switch transitions */
+    .toggle-thumb {
+      transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.25s;
+    }
+    .toggle-track {
+      transition: background-color 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* Modal Origin & Expansion Transitions */
+    .modal-container {
+      transition: opacity 0.26s cubic-bezier(0.16, 1, 0.3, 1), backdrop-filter 0.26s ease;
+    }
+    .modal-card {
+      transition: transform 0.28s cubic-bezier(0.175, 0.885, 0.32, 1.15), opacity 0.24s cubic-bezier(0.16, 1, 0.3, 1);
+      will-change: transform, opacity;
+    }
+    .modal-open .modal-card {
+      transform: scale(1) translate3d(0, 0, 0) !important;
+      opacity: 1 !important;
+    }
+    .modal-closed .modal-card {
+      opacity: 0 !important;
+    }
+
+    /* Light Theme Adaptive Overrides */
+    html:not(.dark) body,
+    html:not(.dark) #appRoot {
+      background-color: #f8fafc !important;
+      color: #0f172a !important;
+    }
+
+    html:not(.dark) .settings-title {
+      color: #0f172a !important;
+    }
+
+    html:not(.dark) .settings-group-title {
+      color: #64748b !important;
+    }
+
+    html:not(.dark) .settings-card-group {
+      background-color: #ffffff !important;
+      border-color: #e2e8f0 !important;
+      box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.05), 0 1px 2px -1px rgb(0 0 0 / 0.05) !important;
+    }
+
+    html:not(.dark) .settings-card-group > div:not(:last-child),
+    html:not(.dark) .settings-card-group > button:not(:last-child) {
+      border-color: #f1f5f9 !important;
+    }
+
+    html:not(.dark) .settings-row-text {
+      color: #1e293b !important;
+    }
+
+    html:not(.dark) .settings-sub-text {
+      color: #64748b !important;
+    }
+
+    html:not(.dark) .settings-row-hover:hover {
+      background-color: #f8fafc !important;
+    }
+
+    html:not(.dark) .settings-row-hover:active {
+      background-color: #f1f5f9 !important;
+    }
+
+    html:not(.dark) .settings-chevron {
+      filter: invert(0) !important;
+      opacity: 0.45 !important;
+    }
+
+    html:not(.dark) .settings-nav-dock {
+      background-color: rgba(255, 255, 255, 0.92) !important;
+      border-color: #e2e8f0 !important;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.05) !important;
+    }
+
+    html:not(.dark) .settings-nav-link {
+      color: #64748b !important;
+    }
+    html:not(.dark) .settings-nav-link:hover {
+      color: #0f172a !important;
+    }
+
+    html:not(.dark) .modal-card {
+      background-color: #ffffff !important;
+      border-color: #e2e8f0 !important;
+      color: #0f172a !important;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15) !important;
+    }
+
+    html:not(.dark) .modal-card h3 {
+      color: #0f172a !important;
+    }
+
+    html:not(.dark) .modal-card .border-white\/10 {
+      border-color: #e2e8f0 !important;
+    }
+
+    html:not(.dark) .modal-inner-box {
+      background-color: #f8fafc !important;
+      border-color: #e2e8f0 !important;
+      color: #1e293b !important;
+    }
+
+    html:not(.dark) .modal-input {
+      background-color: #ffffff !important;
+      border-color: #cbd5e1 !important;
+      color: #0f172a !important;
+    }
+
+    html:not(.dark) .theme-pill-active {
+      background-color: #ffffff !important;
+      color: #0080ff !important;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1) !important;
+    }
+  </style>
+<!-- END: Custom Styles -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"></head>
+<body class="bg-black text-gray-100 min-h-screen antialiased flex justify-center selection:bg-blue-600 selection:text-white transition-colors duration-200">
+<!-- Mobile Screen Container -->
+<div class="w-full max-w-[440px] min-h-screen bg-black flex flex-col relative pb-32 px-4 select-none overflow-y-auto transition-colors duration-200" id="appRoot">
+<!-- BEGIN: Title Section -->
+<div class="mt-4 mb-3 px-1 flex items-center justify-between">
+<h1 class="text-3xl font-extrabold tracking-tight text-white settings-title">Settings</h1>
+<!-- Quick Theme Toggle Pill (Mobile Header Access) -->
+
+</div>
+<!-- END: Title Section -->
+<!-- BEGIN: Main Settings Content -->
+<main class="space-y-6">
+<!-- BEGIN: Appearance Section -->
+<section data-purpose="appearance-settings">
+<h2 class="text-xs font-semibold tracking-wider text-gray-400 uppercase px-1 mb-2 settings-group-title">
+  Appearance
+</h2>
+<div class="bg-[#181b1e] rounded-2xl overflow-hidden divide-y divide-[#272b30]/80 shadow-sm border border-white/5 settings-card-group">
+<!-- App Theme Row -->
+<button class="w-full flex items-center justify-between p-3.5 hover:bg-white/[0.03] active:bg-white/[0.06] transition text-left settings-row-hover" onclick="openAnimatedModal('themeModal', this, event)" type="button">
+<div class="flex items-center gap-3">
+<div class="w-9 h-9 rounded-xl bg-blue-500/20 text-blue-400 flex items-center justify-center shrink-0" id="themeIconContainer">
+<!-- Theme Palette / Sun-Moon Icon -->
+<span class="material-symbols-outlined text-[20px] text-amber-500" id="currentThemeRowIcon">light_mode</span>
+</div>
+<div class="flex flex-col">
+<span class="text-base font-medium text-white settings-row-text">App Theme</span>
+<span class="text-[11px] text-gray-400 font-medium settings-sub-text" id="appThemeStatusLabel">Light Mode</span>
+</div>
+</div>
+<!-- Theme Segmented Badge / Chevron -->
+<div class="flex items-center gap-2">
+<span class="text-xs font-semibold px-2.5 py-1 rounded-full bg-amber-500/15 text-amber-600 border border-amber-500/25" id="activeThemeBadge">Light</span>
+<img alt="arrow" class="w-3.5 h-3.5 object-contain invert shrink-0 opacity-70 settings-chevron" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAvK3hUNx3IC8pvx7W7-ydIQubEAwPXkTMandnYSXdbhG_4jBno2ZPxsABLJdKdlJstlrO1cNqlfT71i-FpYEETB0ANJtT9X5smsO5mfaj3x3Z-COsLXTJDXIP7kSmDRy0G8p2J0LyEdJDGcQm7IuAkWAWPkiSzCElv1L5Wpae3EpXG0yxlj8BL_LhKabhP1aXgdNyTMnV70jLwOYy7TlHWMXxUXocgjJVumIsrazERoOl35Eguad_CGxPeSPK-Wm6Sqik">
+</div>
+</button>
+</div>
+</section>
+<!-- END: Appearance Section -->
+<!-- BEGIN: Security Section -->
+<section data-purpose="security-settings">
+<h2 class="text-xs font-semibold tracking-wider text-gray-400 uppercase px-1 mb-2 settings-group-title">
+          Security
+        </h2>
+<div class="bg-[#181b1e] rounded-2xl overflow-hidden divide-y divide-[#272b30]/80 shadow-sm border border-white/5 settings-card-group">
+<!-- Change Password Row -->
+<button class="w-full flex items-center justify-between p-3.5 hover:bg-white/[0.03] active:bg-white/[0.06] transition text-left settings-row-hover" onclick="openAnimatedModal('changePasswordModal', this, event)" type="button">
+<div class="flex items-center gap-3">
+<div class="w-9 h-9 rounded-xl bg-cyan-500/20 text-cyan-400 flex items-center justify-center shrink-0">
+<!-- Key Icon SVG -->
+<svg class="w-5 h-5 stroke-current" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24">
+<circle cx="7.5" cy="15.5" r="4.5"></circle>
+<path d="m21 3-9.5 9.5"></path>
+<path d="m15.5 8.5 2 2"></path>
+<path d="m18 6 2 2"></path>
+</svg>
+</div>
+<div class="flex flex-col">
+<span class="text-base font-medium text-white settings-row-text">Change Password</span>
+</div>
+</div>
+<!-- Chevron Right -->
+<img alt="arrow" class="w-3.5 h-3.5 object-contain invert shrink-0 opacity-70 settings-chevron" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAvK3hUNx3IC8pvx7W7-ydIQubEAwPXkTMandnYSXdbhG_4jBno2ZPxsABLJdKdlJstlrO1cNqlfT71i-FpYEETB0ANJtT9X5smsO5mfaj3x3Z-COsLXTJDXIP7kSmDRy0G8p2J0LyEdJDGcQm7IuAkWAWPkiSzCElv1L5Wpae3EpXG0yxlj8BL_LhKabhP1aXgdNyTMnV70jLwOYy7TlHWMXxUXocgjJVumIsrazERoOl35Eguad_CGxPeSPK-Wm6Sqik">
+</button>
+<!-- Touch ID Row -->
+<div class="flex items-center justify-between p-3.5 hover:bg-white/[0.02] cursor-pointer transition-colors settings-row-hover" onclick="handleBiometricsRowClick(event, this)">
+<div class="flex items-center gap-3">
+<div class="w-9 h-9 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0">
+<!-- Biometric / Face ID Scanner SVG -->
+<svg class="w-5 h-5 stroke-current" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24">
+<path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path>
+<path d="M9 9h.01M15 9h.01M10 14a3.5 3.5 0 0 0 4 0"></path>
+</svg>
+</div>
+<span class="text-base font-medium text-white settings-row-text">Touch ID</span>
+</div>
+<!-- Interactive Switch 1 -->
+<button aria-pressed="true" class="toggle-track relative inline-flex h-7 w-12 shrink-0 cursor-pointer rounded-full border-2 border-transparent p-0.5 transition-colors duration-200 ease-in-out focus:outline-none bg-[#0080ff]" data-purpose="biometric-toggle" id="biometricMasterToggle" onclick="event.stopPropagation(); toggleSwitch(this)" type="button">
+<span class="sr-only">Toggle Biometric authentication</span>
+<span class="toggle-thumb pointer-events-none inline-block h-6 w-6 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out translate-x-5"></span>
+</button>
+</div>
+<!-- Auto-Lock Row -->
+<div class="flex items-center justify-between p-3.5 hover:bg-white/[0.02] cursor-pointer transition-colors settings-row-hover" onclick="handleAutoLockRowClick(event, this)">
+<div class="flex items-center gap-3">
+<div class="w-9 h-9 rounded-xl bg-amber-500/20 text-amber-500 flex items-center justify-center shrink-0">
+<!-- Lock Icon SVG -->
+<svg class="w-5 h-5 stroke-current" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24">
+<rect height="11" rx="2" ry="2" width="18" x="3" y="11"></rect>
+<path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+</svg>
+</div>
+<div class="flex flex-col">
+<span class="text-base font-medium text-white settings-row-text">Auto-Lock</span>
+<span class="text-[11px] text-gray-400 font-medium settings-sub-text" id="autoLockStatusLabel">Immediately</span>
+</div>
+</div>
+<!-- Interactive Switch 2 -->
+<button aria-pressed="true" class="toggle-track relative inline-flex h-7 w-12 shrink-0 cursor-pointer rounded-full border-2 border-transparent p-0.5 transition-colors duration-200 ease-in-out focus:outline-none bg-[#0080ff]" data-purpose="auto-lock-toggle" id="autoLockMasterToggle" onclick="event.stopPropagation(); toggleAutoLockSwitch(this)" type="button">
+<span class="sr-only">Toggle Auto-Lock</span>
+<span class="toggle-thumb pointer-events-none inline-block h-6 w-6 transform translate-x-5 rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out"></span>
+</button>
+</div>
+</div>
+</section>
+<!-- END: Security Section -->
+<!-- BEGIN: Data Section -->
+<section data-purpose="data-management-settings">
+<h2 class="text-xs font-semibold tracking-wider text-gray-400 uppercase px-1 mb-2 settings-group-title">
+          Data
+        </h2>
+<div class="bg-[#181b1e] rounded-2xl overflow-hidden divide-y divide-[#272b30]/80 shadow-sm border border-white/5 settings-card-group">
+<!-- Sync with Desktop -->
+<button class="w-full flex items-center justify-between p-3.5 hover:bg-white/[0.03] active:bg-white/[0.06] transition text-left settings-row-hover" onclick="openAnimatedModal('syncModal', this, event)" type="button">
+<div class="flex items-center gap-3">
+<div class="w-9 h-9 rounded-xl bg-purple-500/20 text-purple-400 flex items-center justify-center shrink-0">
+<!-- Refresh / Sync SVG -->
+<svg class="w-5 h-5 stroke-current" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24">
+<path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"></path>
+</svg>
+</div>
+<span class="text-base font-medium text-white settings-row-text">Sync with Desktop</span>
+</div>
+<!-- Chevron Right -->
+<img alt="arrow" class="w-3.5 h-3.5 object-contain invert shrink-0 opacity-70 settings-chevron" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCV3aFS9BgRKraj8TbUlfFZ5w2idt92-SWR9e-SHvR-inyDJVNQB8z2cMe9aAOLEQZLxBXavLFJckEDKGjajm9vIgOrT7FiYdoKtnE6nXcWmljgYyfvZqLqORgSjE1w0quTw-c_g3TczBh3pQUu03T8HE5FqKRL5pqLJlXyiB-WDQxbZ-q1JsTERIoWX6D6yr6Fh9mW0-YntbdneYIN-1vFA5OPi4mYB8dN7SW2wG1wlLrIV-4LEp7Zwnh5rVbpIuyO7yo">
+</button>
+<!-- Backup Vault -->
+<button class="w-full flex items-center justify-between p-3.5 hover:bg-white/[0.03] active:bg-white/[0.06] transition text-left settings-row-hover" onclick="openAnimatedModal('backupModal', this, event)" type="button">
+<div class="flex items-center gap-3">
+<div class="w-9 h-9 rounded-xl bg-blue-500/20 text-blue-400 flex items-center justify-center shrink-0">
+<!-- Cloud Upload SVG -->
+<svg class="w-5 h-5 stroke-current" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24">
+<path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"></path>
+<polyline points="12 13 12 9 12 13"></polyline>
+<path d="m9 12 3-3 3 3"></path>
+</svg>
+</div>
+<span class="text-base font-medium text-white settings-row-text">Backup Vault</span>
+</div>
+<!-- Chevron Right -->
+<img alt="arrow" class="w-3.5 h-3.5 object-contain invert shrink-0 opacity-70 settings-chevron" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC31-iYhpStqm-G6miNnX8fMVtcX3wpfJtiwW_HPIv1NvlehxYwknWbrCBChFK60IyI77DpYPOBymrEk0RU8CqqoKizoUJZvv76n9k0OyiFaD_wYZKoTZLYl8else4vK1oybDkvG1mvwFr6J4UVcsYg5VIc5mMIdf-f8RSgBA0j-Cs7JuwrJOuSAb08_pkGR__EjZiXMG3wLVLJoqt0PQtlaPBiK-zm_MC-IgEdWiVLgPzl0mTnQjXIdj1XPKeybmw1Xbs">
+</button>
+<!-- Import Passwords -->
+<button class="w-full flex items-center justify-between p-3.5 hover:bg-white/[0.03] active:bg-white/[0.06] transition text-left settings-row-hover" onclick="openAnimatedModal('importModal', this, event)" type="button">
+<div class="flex items-center gap-3">
+<div class="w-9 h-9 rounded-xl bg-indigo-500/20 text-indigo-400 flex items-center justify-center shrink-0">
+<!-- Import Tray SVG -->
+<svg class="w-5 h-5 stroke-current" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24">
+<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+<polyline points="7 10 12 15 17 10"></polyline>
+<line x1="12" x2="12" y1="15" y2="3"></line>
+</svg>
+</div>
+<span class="text-base font-medium text-white settings-row-text">Import Passwords</span>
+</div>
+<!-- Chevron Right -->
+<img alt="arrow" class="w-3.5 h-3.5 object-contain invert shrink-0 opacity-70 settings-chevron" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCFvPdTKNT2q1uc9VW5m8XV7kXNtaTPWKI2-Ek7FzzteleyICAamgy7OfioXSpNvv3wOWAAgsPDnDEJyMd2pr10OjU9b87M-H4wKCVO4fIQ5sPzgDXtsegzPqGuCSo9ma7JKuOJo93hKFNUYsrJPGETULBgxr-uBh-Fjh0tjtnLoP88ouzX7E0yoIvk7JdbpkOMe_6if7B227PluBJicgNJ50bS4Mxp_Eu5MDQhMK_GLB3e4y_4h2kDWBrFyHIt70QrB7o">
+</button>
+</div>
+</section>
+<!-- END: Data Section -->
+<!-- BEGIN: About Section -->
+<section data-purpose="about-settings">
+<h2 class="text-xs font-semibold tracking-wider text-gray-400 uppercase px-1 mb-2 settings-group-title">
+          About
+        </h2>
+<div class="bg-[#181b1e] rounded-2xl overflow-hidden divide-y divide-[#272b30]/80 shadow-sm border border-white/5 settings-card-group">
+<!-- Security Guide -->
+<button class="w-full flex items-center justify-between p-3.5 hover:bg-white/[0.03] active:bg-white/[0.06] transition text-left settings-row-hover" onclick="openAnimatedModal('guideModal', this, event)" type="button">
+<div class="flex items-center gap-3">
+<div class="w-9 h-9 rounded-xl bg-sky-500/20 text-sky-400 flex items-center justify-center shrink-0">
+<!-- Shield Check SVG -->
+<svg class="w-5 h-5 stroke-current" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24">
+<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+<path d="m9 12 2 2 4-4"></path>
+</svg>
+</div>
+<span class="text-base font-medium text-white settings-row-text">Security Guide</span>
+</div>
+<!-- Chevron Right -->
+<img alt="arrow" class="w-3.5 h-3.5 object-contain invert shrink-0 opacity-70 settings-chevron" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCxY_EzBWhz_bP9fY2wq-WWlxHESNFe3AhWmKM02fpFW64p4ylnVGTRX9J3fbZOcDtDzBDFSR4UEYyU2SootysCtwzpdM73jrZphq7B1dcjIt0gxHUdAYtj0B3qZIKbo5RrLJBsr5NlQ92aLP2PWqAhErjY13L0oh7Gf_lPgWAmShsy3MH3rW2DGUYS2pGpqQGZVhBm4alRokD2FBpRTjHlKrFvP44Va9c3sz7Sd6vEN01xDvYMA_G5zTGxeonz9pIePYM">
+</button>
+<!-- App Info -->
+<button class="w-full flex items-center justify-between p-3.5 hover:bg-white/[0.03] active:bg-white/[0.06] transition text-left settings-row-hover" onclick="openAnimatedModal('appInfoModal', this, event)" type="button">
+<div class="flex items-center gap-3">
+<div class="w-9 h-9 rounded-xl bg-pink-500/20 text-pink-400 flex items-center justify-center shrink-0">
+<!-- Info Icon SVG -->
+<svg class="w-5 h-5 stroke-current" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24">
+<circle cx="12" cy="12" r="10"></circle>
+<line x1="12" x2="12" y1="16" y2="12"></line>
+<line x1="12" x2="12.01" y1="8" y2="8"></line>
+</svg>
+</div>
+<div class="flex flex-col">
+<span class="text-base font-medium text-white settings-row-text">App Info</span>
+</div>
+</div>
+<!-- Chevron Right -->
+<img alt="arrow" class="w-3.5 h-3.5 object-contain invert shrink-0 opacity-70 settings-chevron" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD0rLFzWFP4GsgmtJmKbUi1plnq-ucPKJ_SwQ7TcB-vnogmkJ40kytBo5Oha2hJS_oRp5h7pXxFeyH9YiLfll1dmlH49p395bG7kuy7YBgzSOntBEatpcemzvUP3iyFtNWtqqmYnhtchwyev4jyZMj0voX6JF_6hzbSWQRgLcGtV7iVoeJBD-QJxfK_kSrMj7ritxfUR9x5EGp9_FhMRRLfQgy7oHMqD1bOWG-TRt0Fs1kG6uWz_MJnwgGooc92MdrFixs">
+</button>
+<!-- Rate App -->
+<button class="w-full flex items-center justify-between p-3.5 hover:bg-white/[0.03] active:bg-white/[0.06] transition text-left settings-row-hover" onclick="openAnimatedModal('rateModal', this, event)" type="button">
+<div class="flex items-center gap-3">
+<div class="w-9 h-9 rounded-xl bg-amber-400/20 text-amber-300 flex items-center justify-center shrink-0">
+<!-- Star SVG -->
+<svg class="w-5 h-5 stroke-current" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24">
+<polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+</svg>
+</div>
+<span class="text-base font-medium text-white settings-row-text">Rate App</span>
+</div>
+<!-- Chevron Right -->
+<img alt="arrow" class="w-3.5 h-3.5 object-contain invert shrink-0 opacity-70 settings-chevron" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBfvZbSNsUiFfmIZTfO-s7fJEu-22k6vYIhGYRYz0NSK1dbGUdnubLyPu5BCtacXmLEt3yQI6SvQohxQrXrkXieCuagYSUjknyAGyDNblOWzMS-QMOoBs1sFKiuPv0vF-sIwoSw7uOmNUJA76TOgM60emmU0EexisTwiOA7ABgBEvxaJ5msxB6B3dNOhR7vHVFpUEbpWLy7YUHYCx1Uhe5Z24K3yScpn84VV4HI0BzOh9alNIoBOsPG-L-NJ-XBrI9mTXk">
+</button>
+</div>
+</section>
+<!-- END: About Section -->
+<!-- BEGIN: Danger Zone Section -->
+<section class="pt-1" data-purpose="danger-zone-settings">
+<h2 class="text-xs font-semibold tracking-wider text-gray-400 uppercase px-1 mb-2 settings-group-title">
+          Danger Zone
+        </h2>
+<div class="bg-[#181b1e] rounded-2xl overflow-hidden shadow-sm border border-red-500/10 settings-card-group">
+<!-- Wipe All Data Row -->
+<button class="w-full flex items-center justify-between p-3.5 hover:bg-red-950/20 active:bg-red-950/40 transition text-left group settings-row-hover" onclick="openAnimatedModal('wipeDataModal', this, event)" type="button">
+<div class="flex items-center gap-3">
+<div class="w-9 h-9 rounded-xl bg-red-500/20 text-red-500 flex items-center justify-center shrink-0 group-hover:bg-red-500/30 transition">
+<!-- Trash Can SVG -->
+<svg class="w-5 h-5 stroke-current" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24">
+<path d="M3 6h18"></path>
+<path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+<line x1="10" x2="10" y1="11" y2="17"></line>
+<line x1="14" x2="14" y1="11" y2="17"></line>
+</svg>
+</div>
+<div class="flex flex-col">
+<span class="text-base font-medium text-red-500 group-hover:text-red-400 transition-colors">Wipe All Data</span>
+</div>
+</div>
+<!-- Alert icon indicator -->
+<span class="text-xs text-red-400/80 font-semibold px-2 py-0.5 rounded bg-red-500/10 border border-red-500/20" id="wipeBadgeIndicator">IRREVERSIBLE</span>
+</button>
+</div>
+</section>
+<!-- END: Danger Zone Section -->
+</main>
+<!-- END: Main Settings Content -->
+<!-- ========================================================================= -->
+<!-- BEGIN: INTERACTIVE MODALS & DIALOGS (Origin-Animated) -->
+<!-- ========================================================================= -->
+<!-- THEME SELECTION MODAL -->
+<div class="modal-container fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm opacity-100 modal-open" id="themeModal" onclick="handleBackdropClick(event, 'themeModal')">
+<div class="modal-card w-full max-w-[390px] bg-[#181c20] border border-white/10 rounded-2xl p-5 shadow-2xl overflow-y-auto max-h-[90vh]" style="transform-origin: 153px 128px; transform: scale(1); opacity: 1;">
+<div class="flex items-center justify-between pb-3 border-b border-white/10">
+<div class="flex items-center gap-2.5">
+<div class="w-8 h-8 rounded-lg bg-blue-500/20 text-blue-400 flex items-center justify-center">
+<span class="material-symbols-outlined text-[19px]">palette</span>
+</div>
+<div>
+<h3 class="text-base font-bold text-white leading-none">App Theme</h3>
+<p class="text-[11px] text-gray-400 mt-0.5 settings-sub-text">Choose your visual appearance</p>
+</div>
+</div>
+<button class="w-8 h-8 rounded-full bg-white/5 hover:bg-white/10 text-gray-400 hover:text-white flex items-center justify-center transition-colors" onclick="closeAnimatedModal('themeModal')" type="button">✕</button>
+</div>
+<!-- Segmented Quick Switcher inside Modal -->
+<div class="mt-4 p-1 rounded-xl bg-[#111315] border border-white/5 flex gap-1 modal-inner-box">
+<button class="w-1/2 py-2 rounded-lg text-xs font-semibold flex items-center justify-center gap-1.5 transition-all bg-[#0080ff] text-white shadow" id="modalPillLight" onclick="setAppTheme('light')" type="button">
+<span class="material-symbols-outlined text-[16px]">light_mode</span>
+Light Mode
+</button>
+<button class="w-1/2 py-2 rounded-lg text-xs font-semibold flex items-center justify-center gap-1.5 transition-all text-gray-500 hover:text-black" id="modalPillDark" onclick="setAppTheme('dark')" type="button">
+<span class="material-symbols-outlined text-[16px]">dark_mode</span>
+Dark Mode
+</button>
+</div>
+<div class="mt-4 space-y-2.5" id="themeOptionsList">
+<!-- Dark Theme Radio Card -->
+
+<!-- Light Theme Radio Card -->
+
+</div>
+<div class="mt-4 pt-2 border-t border-white/10 flex gap-2">
+<button class="w-full py-2.5 rounded-xl bg-[#0080ff] hover:bg-blue-600 font-semibold text-white text-sm transition shadow-lg shadow-blue-500/20" onclick="closeAnimatedModal('themeModal')" type="button">Done</button>
+</div>
+</div>
+</div>
+<!-- 1. CHANGE PASSWORD MODAL -->
+<div class="modal-container fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm opacity-0 pointer-events-none modal-closed" id="changePasswordModal" onclick="handleBackdropClick(event, 'changePasswordModal')">
+<div class="modal-card w-full max-w-[400px] bg-[#181c20] border border-white/10 rounded-2xl p-5 shadow-2xl overflow-y-auto max-h-[90vh]">
+<div class="flex items-center justify-between pb-3 border-b border-white/10">
+<div class="flex items-center gap-2.5">
+<div class="w-8 h-8 rounded-lg bg-cyan-500/20 text-cyan-400 flex items-center justify-center">
+<svg class="w-4 h-4 stroke-current" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24">
+<circle cx="7.5" cy="15.5" r="4.5"></circle>
+<path d="m21 3-9.5 9.5"></path>
+<path d="m15.5 8.5 2 2"></path>
+<path d="m18 6 2 2"></path>
+</svg>
+</div>
+<div>
+<h3 class="text-base font-bold text-white leading-none">Change Password</h3>
+<p class="text-[11px] text-gray-400 mt-0.5 settings-sub-text">Secure your offline master vault</p>
+</div>
+</div>
+<button class="w-8 h-8 rounded-full bg-white/5 hover:bg-white/10 text-gray-400 hover:text-white flex items-center justify-center transition-colors" onclick="closeAnimatedModal('changePasswordModal')" type="button">✕</button>
+</div>
+<div class="hidden mt-3 p-2.5 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-xs flex items-center gap-2" id="pwdErrorNotice">
+<svg class="w-4 h-4 shrink-0 stroke-current" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="12" x2="12" y1="8" y2="12"></line><line x1="12" x2="12.01" y1="16" y2="16"></line></svg>
+<span class="" id="pwdErrorText">Please fill in all fields.</span>
+</div>
+<form class="mt-4 space-y-3.5" onsubmit="submitChangePassword(event)">
+<div>
+<label class="block text-xs font-semibold text-gray-300 uppercase tracking-wider mb-1.5 settings-row-text" for="currentPassword">Current Password</label>
+<div class="relative">
+<input class="w-full bg-[#111315] border border-white/10 rounded-xl px-3.5 py-2.5 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-cyan-400 transition modal-input" id="currentPassword" placeholder="Enter current master password" required="" type="password">
+<button class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-gray-400 hover:text-white" onclick="togglePasswordVisibility('currentPassword', this)" type="button">
+<span class="material-symbols-outlined text-[19px]">visibility</span>
+</button>
+</div>
+</div>
+<div>
+<label class="block text-xs font-semibold text-gray-300 uppercase tracking-wider mb-1.5 settings-row-text" for="newPassword">New Password</label>
+<div class="relative">
+<input class="w-full bg-[#111315] border border-white/10 rounded-xl px-3.5 py-2.5 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-cyan-400 transition modal-input" id="newPassword" oninput="updatePasswordStrength(this.value)" placeholder="Minimum 8 characters" required="" type="password">
+<button class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-gray-400 hover:text-white" onclick="togglePasswordVisibility('newPassword', this)" type="button">
+<span class="material-symbols-outlined text-[19px]">visibility</span>
+</button>
+</div>
+<!-- Strength meter -->
+<div class="mt-2">
+<div class="flex justify-between items-center text-[10px] uppercase font-semibold text-gray-400 mb-1 settings-sub-text">
+<span class="">Strength: <span class="text-cyan-400 font-bold" id="pwdStrengthLabel">Enter password</span></span>
+<span class="" id="pwdStrengthEntropy">0 bits</span>
+</div>
+<div class="w-full bg-[#20252b] h-1.5 rounded-full overflow-hidden flex gap-1">
+<div class="h-full w-1/4 rounded-full bg-gray-700 transition-all duration-300" id="strBar1"></div>
+<div class="h-full w-1/4 rounded-full bg-gray-700 transition-all duration-300" id="strBar2"></div>
+<div class="h-full w-1/4 rounded-full bg-gray-700 transition-all duration-300" id="strBar3"></div>
+<div class="h-full w-1/4 rounded-full bg-gray-700 transition-all duration-300" id="strBar4"></div>
+</div>
+</div>
+</div>
+<div>
+<label class="block text-xs font-semibold text-gray-300 uppercase tracking-wider mb-1.5 settings-row-text" for="confirmPassword">Confirm New Password</label>
+<div class="relative">
+<input class="w-full bg-[#111315] border border-white/10 rounded-xl px-3.5 py-2.5 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-cyan-400 transition modal-input" id="confirmPassword" placeholder="Re-enter new password" required="" type="password">
+<button class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-gray-400 hover:text-white" onclick="togglePasswordVisibility('confirmPassword', this)" type="button">
+<span class="material-symbols-outlined text-[19px]">visibility</span>
+</button>
+</div>
+</div>
+<div class="pt-2 flex items-center gap-2.5">
+<button class="w-1/2 py-2.5 px-4 rounded-xl border border-white/10 hover:bg-white/5 text-sm font-medium text-gray-300 hover:text-white transition" onclick="closeAnimatedModal('changePasswordModal')" type="button">Cancel</button>
+<button class="w-1/2 py-2.5 px-4 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-sm font-semibold text-white shadow-lg shadow-blue-500/20 transition active:scale-[0.98]" type="submit">Update Password</button>
+</div>
+</form>
+</div>
+</div>
+<!-- 2. TOUCH ID / BIOMETRICS MODAL -->
+<div class="modal-container fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm opacity-0 pointer-events-none modal-closed" id="biometricsModal" onclick="handleBackdropClick(event, 'biometricsModal')">
+<div class="modal-card w-full max-w-[400px] bg-[#181c20] border border-white/10 rounded-2xl p-5 shadow-2xl overflow-y-auto max-h-[90vh]">
+<div class="flex items-center justify-between pb-3 border-b border-white/10">
+<div class="flex items-center gap-2.5">
+<div class="w-8 h-8 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center">
+<svg class="w-4 h-4 stroke-current" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path><path d="M9 9h.01M15 9h.01M10 14a3.5 3.5 0 0 0 4 0"></path></svg>
+</div>
+<div>
+<h3 class="text-base font-bold text-white leading-none">Biometric Security</h3>
+<p class="text-[11px] text-gray-400 mt-0.5 settings-sub-text">Configure hardware-backed Touch ID &amp; Face ID</p>
+</div>
+</div>
+<button class="w-8 h-8 rounded-full bg-white/5 hover:bg-white/10 text-gray-400 hover:text-white flex items-center justify-center transition-colors" onclick="closeAnimatedModal('biometricsModal')" type="button">✕</button>
+</div>
+<div class="mt-4 space-y-4">
+<div class="p-3.5 rounded-xl bg-[#111315] border border-white/5 flex items-center justify-between modal-inner-box">
+<div>
+<div class="text-sm font-semibold text-white settings-row-text">Enable Touch ID</div>
+<div class="text-xs text-gray-400 settings-sub-text">Unlock vault with Apple Secure Enclave</div>
+</div>
+<button aria-pressed="true" class="toggle-track relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent p-0.5 transition-colors bg-[#0080ff]" id="modalBioToggle" onclick="toggleModalBio(this)" type="button">
+<span class="toggle-thumb pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow translate-x-5"></span>
+</button>
+</div>
+<div class="p-3.5 rounded-xl bg-[#111315] border border-white/5 flex items-center justify-between modal-inner-box">
+<div>
+<div class="text-sm font-semibold text-white settings-row-text">Master Password Fallback</div>
+<div class="text-xs text-gray-400 settings-sub-text">Require password after 3 failed scans</div>
+</div>
+<input checked="" class="rounded bg-black/40 border-white/20 text-emerald-500 focus:ring-emerald-500/20 w-4 h-4" type="checkbox">
+</div>
+<div>
+<label class="block text-xs font-semibold text-gray-300 uppercase tracking-wider mb-2 settings-row-text">Authentication Timeout</label>
+<select class="w-full bg-[#111315] border border-white/10 rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-emerald-400 modal-input" id="bioTimeoutSelect">
+<option selected="" value="immediate">Require biometric on every open</option>
+<option value="1min">Grace period of 1 minute</option>
+<option value="5min">Grace period of 5 minutes</option>
+</select>
+</div>
+<div class="p-4 rounded-xl bg-[#111315] border border-white/5 text-center flex flex-col items-center justify-center modal-inner-box">
+<div class="w-14 h-14 rounded-full bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center text-emerald-400 mb-2 cursor-pointer active:scale-95 transition" id="bioScanButton" onclick="simulateBiometricScan()">
+<span class="material-symbols-outlined text-[32px]">fingerprint</span>
+</div>
+<span class="text-xs font-medium text-gray-300 settings-sub-text" id="bioScanLabel">Tap to simulate biometric scan</span>
+</div>
+<div class="pt-1 flex gap-2">
+<button class="w-full py-2.5 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-sm font-semibold text-white shadow-lg transition active:scale-[0.98]" onclick="saveBiometricsSettings()" type="button">Save Settings</button>
+</div>
+</div>
+</div>
+</div>
+<!-- 3. AUTO-LOCK INTERVAL MODAL -->
+<div class="modal-container fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm opacity-0 pointer-events-none modal-closed" id="autoLockModal" onclick="handleBackdropClick(event, 'autoLockModal')">
+<div class="modal-card w-full max-w-[390px] bg-[#181c20] border border-white/10 rounded-2xl p-5 shadow-2xl overflow-y-auto max-h-[90vh]">
+<div class="flex items-center justify-between pb-3 border-b border-white/10">
+<div class="flex items-center gap-2.5">
+<div class="w-8 h-8 rounded-lg bg-amber-500/20 text-amber-500 flex items-center justify-center">
+<svg class="w-4 h-4 stroke-current" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24"><rect height="11" rx="2" ry="2" width="18" x="3" y="11"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+</div>
+<div>
+<h3 class="text-base font-bold text-white leading-none">Auto-Lock Vault</h3>
+<p class="text-[11px] text-gray-400 mt-0.5 settings-sub-text">Choose inactive duration before auto locking</p>
+</div>
+</div>
+<button class="w-8 h-8 rounded-full bg-white/5 hover:bg-white/10 text-gray-400 hover:text-white flex items-center justify-center transition-colors" onclick="closeAnimatedModal('autoLockModal')" type="button">✕</button>
+</div>
+<div class="mt-4 space-y-2" id="autoLockOptionsList">
+<div class="flex items-center justify-between p-3.5 rounded-xl bg-[#111315] border border-amber-500/30 cursor-pointer text-white autolock-option modal-inner-box" onclick="selectAutoLockOption('Immediately', this)">
+<div class="flex items-center gap-2.5">
+<span class="text-sm font-medium settings-row-text">Immediately</span>
+<span class="text-[10px] uppercase font-bold text-emerald-400 bg-emerald-500/10 px-1.5 py-0.5 rounded">Highest Security</span>
+</div>
+<span class="material-symbols-outlined text-amber-400 text-lg check-icon">check_circle</span>
+</div>
+<div class="flex items-center justify-between p-3.5 rounded-xl bg-[#111315] border border-white/5 cursor-pointer text-gray-300 hover:text-white autolock-option modal-inner-box" onclick="selectAutoLockOption('1 Minute', this)">
+<span class="text-sm font-medium settings-row-text">1 Minute</span>
+<span class="material-symbols-outlined text-transparent text-lg check-icon">check_circle</span>
+</div>
+<div class="flex items-center justify-between p-3.5 rounded-xl bg-[#111315] border border-white/5 cursor-pointer text-gray-300 hover:text-white autolock-option modal-inner-box" onclick="selectAutoLockOption('5 Minutes', this)">
+<span class="text-sm font-medium settings-row-text">5 Minutes</span>
+<span class="material-symbols-outlined text-transparent text-lg check-icon">check_circle</span>
+</div>
+<div class="flex items-center justify-between p-3.5 rounded-xl bg-[#111315] border border-white/5 cursor-pointer text-gray-300 hover:text-white autolock-option modal-inner-box" onclick="selectAutoLockOption('15 Minutes', this)">
+<span class="text-sm font-medium settings-row-text">15 Minutes</span>
+<span class="material-symbols-outlined text-transparent text-lg check-icon">check_circle</span>
+</div>
+<div class="flex items-center justify-between p-3.5 rounded-xl bg-[#111315] border border-white/5 cursor-pointer text-gray-300 hover:text-white autolock-option modal-inner-box" onclick="selectAutoLockOption('Never', this)">
+<div class="flex items-center gap-2.5">
+<span class="text-sm font-medium settings-row-text">Never</span>
+<span class="text-[10px] uppercase font-bold text-red-400 bg-red-500/10 px-1.5 py-0.5 rounded">Not Recommended</span>
+</div>
+<span class="material-symbols-outlined text-transparent text-lg check-icon">check_circle</span>
+</div>
+</div>
+<div class="mt-4 pt-2 border-t border-white/10 flex gap-2">
+<button class="w-full py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 font-semibold text-black text-sm transition" onclick="saveAutoLockPreference()" type="button">Save Auto-Lock Setting</button>
+</div>
+</div>
+</div>
+<!-- 4. SYNC WITH DESKTOP MODAL -->
+<div class="modal-container fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm opacity-0 pointer-events-none modal-closed" id="syncModal" onclick="handleBackdropClick(event, 'syncModal')">
+<div class="modal-card w-full max-w-[400px] bg-[#181c20] border border-white/10 rounded-2xl p-5 shadow-2xl overflow-y-auto max-h-[90vh]">
+<div class="flex items-center justify-between pb-3 border-b border-white/10">
+<div class="flex items-center gap-2.5">
+<div class="w-8 h-8 rounded-lg bg-purple-500/20 text-purple-400 flex items-center justify-center">
+<svg class="w-4 h-4 stroke-current" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"></path></svg>
+</div>
+<div>
+<h3 class="text-base font-bold text-white leading-none">Desktop P2P Sync</h3>
+<p class="text-[11px] text-gray-400 mt-0.5 settings-sub-text">Air-gapped local Wi-Fi / Bluetooth pairing</p>
+</div>
+</div>
+<button class="w-8 h-8 rounded-full bg-white/5 hover:bg-white/10 text-gray-400 hover:text-white flex items-center justify-center transition-colors" onclick="closeAnimatedModal('syncModal')" type="button">✕</button>
+</div>
+<div class="mt-4 space-y-4">
+<div class="bg-[#111315] p-3 rounded-xl border border-white/5 flex items-center justify-between modal-inner-box">
+<div>
+<div class="text-xs text-gray-400 settings-sub-text">Vault Sync Status</div>
+<div class="text-sm font-semibold text-emerald-400 flex items-center gap-1.5 mt-0.5">
+<span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+Last synced 2 hours ago
+</div>
+</div>
+<span class="text-xs font-mono text-gray-400 bg-white/5 px-2 py-1 rounded">macOS App v2.4</span>
+</div>
+<!-- QR Simulation -->
+<div class="p-4 bg-[#111315] rounded-xl border border-white/5 flex flex-col items-center text-center modal-inner-box">
+<div class="w-36 h-36 bg-white p-2 rounded-xl flex items-center justify-center shadow-lg relative group">
+<!-- Simulated SVG QR Matrix -->
+<svg class="w-full h-full text-black" viewBox="0 0 100 100">
+<rect fill="#000" height="20" width="20" x="5" y="5"></rect>
+<rect fill="#fff" height="12" width="12" x="9" y="9"></rect>
+<rect fill="#000" height="6" width="6" x="12" y="12"></rect>
+<rect fill="#000" height="20" width="20" x="75" y="5"></rect>
+<rect fill="#fff" height="12" width="12" x="79" y="9"></rect>
+<rect fill="#000" height="6" width="6" x="82" y="12"></rect>
+<rect fill="#000" height="20" width="20" x="5" y="75"></rect>
+<rect fill="#fff" height="12" width="12" x="9" y="79"></rect>
+<rect fill="#000" height="6" width="6" x="12" y="82"></rect>
+<rect fill="#000" height="8" width="8" x="35" y="10"></rect>
+<rect fill="#000" height="8" width="8" x="50" y="20"></rect>
+<rect fill="#000" height="8" width="8" x="35" y="35"></rect>
+<rect fill="#000" height="8" width="8" x="55" y="45"></rect>
+<rect fill="#000" height="8" width="8" x="45" y="65"></rect>
+<rect fill="#000" height="8" width="8" x="75" y="45"></rect>
+<rect fill="#000" height="8" width="8" x="75" y="75"></rect>
+<rect fill="#000" height="6" width="6" x="48" y="48"></rect>
+</svg>
+<div class="absolute inset-0 bg-black/60 rounded-xl opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity text-white text-xs font-semibold">Regenerate Token</div>
+</div>
+<p class="text-xs text-gray-300 mt-2.5 settings-sub-text">Scan this QR in your Desktop App to initialize secure zero-cloud handshake.</p>
+</div>
+<div class="space-y-2">
+<button class="w-full py-2.5 px-3 rounded-xl bg-purple-600 hover:bg-purple-500 font-semibold text-white text-sm flex items-center justify-center gap-2 transition" onclick="triggerP2PScanSimulation()" type="button">
+<span class="material-symbols-outlined text-[18px]">wifi_tethering</span>
+<span class="">Search Local Network Devices</span>
+</button>
+<div class="text-[11px] text-gray-500 text-center">No internet connection required • Direct encrypted LAN handshake</div>
+</div>
+</div>
+</div>
+</div>
+<!-- 5. BACKUP VAULT MODAL -->
+<div class="modal-container fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm opacity-0 pointer-events-none modal-closed" id="backupModal" onclick="handleBackdropClick(event, 'backupModal')">
+<div class="modal-card w-full max-w-[400px] bg-[#181c20] border border-white/10 rounded-2xl p-5 shadow-2xl overflow-y-auto max-h-[90vh]">
+<div class="flex items-center justify-between pb-3 border-b border-white/10">
+<div class="flex items-center gap-2.5">
+<div class="w-8 h-8 rounded-lg bg-blue-500/20 text-blue-400 flex items-center justify-center">
+<svg class="w-4 h-4 stroke-current" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24"><path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"></path><polyline points="12 13 12 9 12 13"></polyline><path d="m9 12 3-3 3 3"></path></svg>
+</div>
+<div>
+<h3 class="text-base font-bold text-white leading-none">Backup Encrypted Vault</h3>
+<p class="text-[11px] text-gray-400 mt-0.5 settings-sub-text">Export portable .vault snapshot</p>
+</div>
+</div>
+<button class="w-8 h-8 rounded-full bg-white/5 hover:bg-white/10 text-gray-400 hover:text-white flex items-center justify-center transition-colors" onclick="closeAnimatedModal('backupModal')" type="button">✕</button>
+</div>
+<form class="mt-4 space-y-3.5" onsubmit="executeBackupDownload(event)">
+<div>
+<label class="block text-xs font-semibold text-gray-300 uppercase tracking-wider mb-1 settings-row-text">Backup Password</label>
+<input class="w-full bg-[#111315] border border-white/10 rounded-xl px-3 py-2.5 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-blue-400 modal-input" id="backupPassword" placeholder="Protect backup file with passphrase" required="" type="password">
+<span class="text-[10px] text-gray-400 settings-sub-text">Used with Argon2id + AES-256 to encrypt the backup</span>
+</div>
+<div>
+<label class="block text-xs font-semibold text-gray-300 uppercase tracking-wider mb-1 settings-row-text">Export Destination</label>
+<select class="w-full bg-[#111315] border border-white/10 rounded-xl px-3 py-2.5 text-sm text-white focus:outline-none focus:border-blue-400 modal-input">
+<option>Save to Files / Local Storage</option>
+<option>Share via AirDrop</option>
+<option>Save to External USB Key</option>
+</select>
+</div>
+<div class="p-3 bg-[#111315] border border-white/5 rounded-xl space-y-1 modal-inner-box">
+<div class="flex justify-between text-xs text-gray-300">
+<span class="settings-sub-text">File format:</span>
+<span class="font-mono text-blue-400 font-semibold">vault_backup_2025.vault</span>
+</div>
+<div class="flex justify-between text-xs text-gray-300">
+<span class="settings-sub-text">Items included:</span>
+<span class="font-semibold text-white settings-row-text">42 Credentials &amp; 4 Cards</span>
+</div>
+</div>
+<button class="w-full py-2.5 px-4 rounded-xl bg-blue-600 hover:bg-blue-500 font-semibold text-white text-sm shadow-lg shadow-blue-600/30 transition flex items-center justify-center gap-2" type="submit">
+<span class="material-symbols-outlined text-[18px]">download</span>
+<span class="">Download Encrypted Backup</span>
+</button>
+</form>
+</div>
+</div>
+<!-- 6. IMPORT PASSWORDS MODAL -->
+<div class="modal-container fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm opacity-0 pointer-events-none modal-closed" id="importModal" onclick="handleBackdropClick(event, 'importModal')">
+<div class="modal-card w-full max-w-[400px] bg-[#181c20] border border-white/10 rounded-2xl p-5 shadow-2xl overflow-y-auto max-h-[90vh]">
+<div class="flex items-center justify-between pb-3 border-b border-white/10">
+<div class="flex items-center gap-2.5">
+<div class="w-8 h-8 rounded-lg bg-indigo-500/20 text-indigo-400 flex items-center justify-center">
+<svg class="w-4 h-4 stroke-current" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" x2="12" y1="15" y2="3"></line></svg>
+</div>
+<div>
+<h3 class="text-base font-bold text-white leading-none">Import Passwords</h3>
+<p class="text-[11px] text-gray-400 mt-0.5 settings-sub-text">Migrate credentials securely offline</p>
+</div>
+</div>
+<button class="w-8 h-8 rounded-full bg-white/5 hover:bg-white/10 text-gray-400 hover:text-white flex items-center justify-center transition-colors" onclick="closeAnimatedModal('importModal')" type="button">✕</button>
+</div>
+<div class="mt-4 space-y-3.5">
+<div>
+<label class="block text-xs font-semibold text-gray-300 uppercase tracking-wider mb-2 settings-row-text">Select Source Format</label>
+<div class="grid grid-cols-2 gap-2">
+<button class="p-2.5 rounded-xl border border-indigo-500 bg-indigo-500/10 text-xs font-semibold text-white flex items-center gap-2 import-src-btn" onclick="selectImportSource('Bitwarden (JSON)', this)" type="button">
+<span class="w-2 h-2 rounded-full bg-indigo-400"></span>
+Bitwarden (.json)
+</button>
+<button class="p-2.5 rounded-xl border border-white/10 bg-[#111315] hover:bg-white/5 text-xs font-semibold text-gray-300 flex items-center gap-2 import-src-btn modal-inner-box" onclick="selectImportSource('1Password (.1pux)', this)" type="button">
+<span class="w-2 h-2 rounded-full bg-gray-500"></span>
+1Password (.1pux)
+</button>
+<button class="p-2.5 rounded-xl border border-white/10 bg-[#111315] hover:bg-white/5 text-xs font-semibold text-gray-300 flex items-center gap-2 import-src-btn modal-inner-box" onclick="selectImportSource('Chrome CSV', this)" type="button">
+<span class="w-2 h-2 rounded-full bg-gray-500"></span>
+Google Chrome (.csv)
+</button>
+<button class="p-2.5 rounded-xl border border-white/10 bg-[#111315] hover:bg-white/5 text-xs font-semibold text-gray-300 flex items-center gap-2 import-src-btn modal-inner-box" onclick="selectImportSource('Standard CSV', this)" type="button">
+<span class="w-2 h-2 rounded-full bg-gray-500"></span>
+Standard (.csv)
+</button>
+</div>
+</div>
+<!-- Dropzone -->
+<div class="border-2 border-dashed border-white/15 rounded-2xl p-4 text-center cursor-pointer hover:border-indigo-400/50 bg-[#111315] transition modal-inner-box" onclick="simulateFileUpload()">
+<span class="material-symbols-outlined text-3xl text-indigo-400 mb-1">upload_file</span>
+<div class="text-xs font-medium text-white settings-row-text" id="importFileLabel">Click or drop vault export here</div>
+<div class="text-[10px] text-gray-500 mt-0.5">Parsed completely on-device without internet</div>
+</div>
+<div class="hidden p-3 bg-indigo-950/20 border border-indigo-500/30 rounded-xl flex items-center justify-between text-xs" id="importPreviewBox">
+<span class="text-indigo-300 font-medium">Ready to import:</span>
+<span class="text-white font-bold bg-indigo-500/20 px-2 py-0.5 rounded" id="importCountBadge">38 items found</span>
+</div>
+<button class="w-full py-2.5 px-4 rounded-xl bg-indigo-600 hover:bg-indigo-500 font-semibold text-white text-sm shadow-lg shadow-indigo-600/30 transition disabled:opacity-50" id="importConfirmBtn" onclick="confirmImport()" type="button">
+Import Credentials
+</button>
+</div>
+</div>
+</div>
+<!-- 7. SECURITY GUIDE MODAL -->
+<div class="modal-container fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm opacity-0 pointer-events-none modal-closed" id="guideModal" onclick="handleBackdropClick(event, 'guideModal')">
+<div class="modal-card w-full max-w-[420px] bg-[#181c20] border border-white/10 rounded-2xl p-5 shadow-2xl overflow-y-auto max-h-[85vh]">
+<div class="flex items-center justify-between pb-3 border-b border-white/10 sticky top-0 bg-[#181c20] z-10 modal-header-bar">
+<div class="flex items-center gap-2.5">
+<div class="w-8 h-8 rounded-lg bg-sky-500/20 text-sky-400 flex items-center justify-center">
+<svg class="w-4 h-4 stroke-current" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path><path d="m9 12 2 2 4-4"></path></svg>
+</div>
+<div>
+<h3 class="text-base font-bold text-white leading-none">Security Architecture</h3>
+<p class="text-[11px] text-gray-400 mt-0.5 settings-sub-text">Zero-knowledge offline guarantees</p>
+</div>
+</div>
+<button class="w-8 h-8 rounded-full bg-white/5 hover:bg-white/10 text-gray-400 hover:text-white flex items-center justify-center transition-colors" onclick="closeAnimatedModal('guideModal')" type="button">✕</button>
+</div>
+<div class="mt-4 space-y-3.5 text-xs text-gray-300 leading-relaxed">
+<div class="p-3 bg-[#111315] rounded-xl border border-white/5 modal-inner-box">
+<div class="font-bold text-sky-400 flex items-center gap-1.5 mb-1 text-sm">
+<span class="material-symbols-outlined text-[16px]">lock</span>
+100% Offline &amp; Air-Gapped
+</div>
+<p class="settings-sub-text">No remote databases, servers, or external telemetry exist. Your database remains strictly stored in local SQLite / SecureStorage on this iOS device.</p>
+</div>
+<div class="p-3 bg-[#111315] rounded-xl border border-white/5 modal-inner-box">
+<div class="font-bold text-cyan-400 flex items-center gap-1.5 mb-1 text-sm">
+<span class="material-symbols-outlined text-[16px]">enhanced_encryption</span>
+AES-256 GCM + Argon2id
+</div>
+<p class="settings-sub-text">Master passwords undergo 600,000 Argon2id hash rounds to derive vault encryption keys. All individual records utilize authenticated AES-256 Galois/Counter Mode encryption.</p>
+</div>
+<div class="p-3 bg-[#111315] rounded-xl border border-white/5 modal-inner-box">
+<div class="font-bold text-emerald-400 flex items-center gap-1.5 mb-1 text-sm">
+<span class="material-symbols-outlined text-[16px]">verified_user</span>
+Zero-Knowledge Guarantee
+</div>
+<p class="settings-sub-text">Even under physical device inspection, your vault cannot be opened without the master passphrase or biometric enclave token.</p>
+</div>
+<div class="pt-2">
+<button class="w-full py-2.5 rounded-xl bg-sky-600 hover:bg-sky-500 font-semibold text-white text-sm transition" onclick="closeAnimatedModal('guideModal')" type="button">Understood</button>
+</div>
+</div>
+</div>
+</div>
+<!-- 8. APP INFO MODAL -->
+<div class="modal-container fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm opacity-0 pointer-events-none modal-closed" id="appInfoModal" onclick="handleBackdropClick(event, 'appInfoModal')">
+<div class="modal-card w-full max-w-[390px] bg-[#181c20] border border-white/10 rounded-2xl p-5 shadow-2xl overflow-y-auto max-h-[90vh]">
+<div class="flex items-center justify-between pb-3 border-b border-white/10">
+<div class="flex items-center gap-2.5">
+<div class="w-8 h-8 rounded-lg bg-pink-500/20 text-pink-400 flex items-center justify-center">
+<svg class="w-4 h-4 stroke-current" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="12" x2="12" y1="16" y2="12"></line><line x1="12" x2="12.01" y1="8" y2="8"></line></svg>
+</div>
+<div>
+<h3 class="text-base font-bold text-white leading-none">App Information</h3>
+<p class="text-[11px] text-gray-400 mt-0.5 settings-sub-text">Build verification &amp; open source stack</p>
+</div>
+</div>
+<button class="w-8 h-8 rounded-full bg-white/5 hover:bg-white/10 text-gray-400 hover:text-white flex items-center justify-center transition-colors" onclick="closeAnimatedModal('appInfoModal')" type="button">✕</button>
+</div>
+<div class="mt-4 space-y-3">
+<div class="divide-y divide-white/5 bg-[#111315] rounded-xl border border-white/5 text-xs modal-inner-box">
+<div class="p-3 flex justify-between items-center">
+<span class="text-gray-400 settings-sub-text">Application Version</span>
+<span class="font-mono text-white font-semibold settings-row-text">v2.4.1 (Build 890)</span>
+</div>
+<div class="p-3 flex justify-between items-center">
+<span class="text-gray-400 settings-sub-text">Security Certificate</span>
+<span class="text-emerald-400 font-semibold flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">check_circle</span> Verified Offline
+</span>
+</div>
+<div class="p-3 flex justify-between items-center">
+<span class="text-gray-400 settings-sub-text">Core Engine</span>
+<span class="font-mono text-white settings-row-text">libsodium 1.0.19</span>
+</div>
+<div class="p-3 flex justify-between items-center">
+<span class="text-gray-400 settings-sub-text">License</span>
+<span class="text-white font-medium settings-row-text">MIT / Open Source</span>
+</div>
+</div>
+<div class="p-3 bg-[#111315] border border-white/5 rounded-xl text-[11px] text-gray-400 leading-relaxed modal-inner-box settings-sub-text">
+Cryptographically verified reproducible binary. Source code and audit logs are publicly accessible on GitHub.
+</div>
+<button class="w-full py-2.5 rounded-xl bg-white/10 hover:bg-white/15 font-semibold text-white text-sm transition" onclick="showToast('Diagnostic checksum: SHA256-verified')" type="button">Verify Build Integrity</button>
+</div>
+</div>
+</div>
+<!-- 9. RATE APP MODAL -->
+<div class="modal-container fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm opacity-0 pointer-events-none modal-closed" id="rateModal" onclick="handleBackdropClick(event, 'rateModal')">
+<div class="modal-card w-full max-w-[390px] bg-[#181c20] border border-white/10 rounded-2xl p-5 shadow-2xl overflow-y-auto max-h-[90vh]">
+<div class="flex items-center justify-between pb-3 border-b border-white/10">
+<div class="flex items-center gap-2.5">
+<div class="w-8 h-8 rounded-lg bg-amber-400/20 text-amber-300 flex items-center justify-center">
+<svg class="w-4 h-4 stroke-current" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+</div>
+<div>
+<h3 class="text-base font-bold text-white leading-none">Rate Offline Vault</h3>
+<p class="text-[11px] text-gray-400 mt-0.5 settings-sub-text">Help support privacy-first software</p>
+</div>
+</div>
+<button class="w-8 h-8 rounded-full bg-white/5 hover:bg-white/10 text-gray-400 hover:text-white flex items-center justify-center transition-colors" onclick="closeAnimatedModal('rateModal')" type="button">✕</button>
+</div>
+<div class="mt-4 space-y-4 text-center">
+<p class="text-xs text-gray-300 settings-sub-text">How would you rate your offline security experience?</p>
+<!-- Star Rating Interactive -->
+<div class="flex items-center justify-center gap-2" id="starRatingContainer">
+<button class="text-amber-400 text-3xl hover:scale-110 transition star-btn" onclick="setRating(1)" type="button">★</button>
+<button class="text-amber-400 text-3xl hover:scale-110 transition star-btn" onclick="setRating(2)" type="button">★</button>
+<button class="text-amber-400 text-3xl hover:scale-110 transition star-btn" onclick="setRating(3)" type="button">★</button>
+<button class="text-amber-400 text-3xl hover:scale-110 transition star-btn" onclick="setRating(4)" type="button">★</button>
+<button class="text-amber-400 text-3xl hover:scale-110 transition star-btn" onclick="setRating(5)" type="button">★</button>
+</div>
+<textarea class="w-full bg-[#111315] border border-white/10 rounded-xl p-3 text-xs text-white placeholder-gray-500 focus:outline-none focus:border-amber-400 resize-none h-20 modal-input" id="rateFeedbackText" placeholder="Optional comments or feature requests..."></textarea>
+<div class="flex gap-2">
+<button class="w-1/2 py-2.5 rounded-xl border border-white/10 text-xs font-semibold text-gray-300 hover:bg-white/5" onclick="closeAnimatedModal('rateModal')" type="button">Later</button>
+<button class="w-1/2 py-2.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-xs font-bold text-black shadow-lg shadow-amber-400/20" onclick="submitReview()" type="button">Submit Review</button>
+</div>
+</div>
+</div>
+</div>
+<!-- 10. WIPE ALL DATA CONFIRMATION MODAL -->
+<div class="modal-container fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm opacity-0 pointer-events-none modal-closed" id="wipeDataModal" onclick="handleBackdropClick(event, 'wipeDataModal')">
+<div class="modal-card w-full max-w-[420px] bg-[#1a1c1f] border border-red-500/40 rounded-2xl p-5 shadow-2xl shadow-red-950/50 overflow-y-auto max-h-[90vh]" id="wipeDataCard">
+<div class="flex items-start gap-3.5 pb-4 border-b border-white/10">
+<div class="w-11 h-11 rounded-2xl bg-red-500/15 border border-red-500/30 text-red-500 flex items-center justify-center shrink-0">
+<svg class="w-6 h-6 stroke-current" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24">
+<path d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z"></path>
+</svg>
+</div>
+<div class="flex-1">
+<h3 class="text-lg font-bold text-white tracking-tight">Wipe All Data?</h3>
+<p class="text-xs text-red-400 font-medium mt-0.5">Destructive action • Irreversible</p>
+</div>
+<button class="w-8 h-8 rounded-full bg-white/5 hover:bg-white/10 text-gray-400 hover:text-white flex items-center justify-center transition-colors" onclick="closeAnimatedModal('wipeDataModal')" type="button">✕</button>
+</div>
+<div class="py-4 space-y-3">
+<p class="text-sm text-gray-300 leading-relaxed settings-sub-text">
+This will purge <strong class="text-white font-semibold settings-row-text">all stored passwords, credit cards, cryptographic keys, and notes</strong> from this device.
+</p>
+<div class="rounded-xl bg-red-950/30 border border-red-500/20 p-3 flex items-start gap-2.5">
+<svg class="w-4 h-4 text-red-400 shrink-0 mt-0.5" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24">
+<circle cx="12" cy="12" r="10"></circle><line x1="12" x2="12" y1="8" y2="12"></line><line x1="12" x2="12.01" y1="16" y2="16"></line>
+</svg>
+<p class="text-xs text-red-300/90 leading-normal">
+Zero-knowledge design means there is <span class="underline font-semibold text-red-200">no recovery key</span> or cloud undo.
+</p>
+</div>
+<div>
+<label class="block text-xs font-semibold text-gray-300 uppercase tracking-wider mb-1.5 settings-row-text" for="wipeConfirmInput">Type <span class="text-red-400 font-mono">DELETE</span> to confirm:</label>
+<input class="w-full bg-[#111315] border border-red-500/30 rounded-xl px-3.5 py-2.5 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-red-400 modal-input" id="wipeConfirmInput" oninput="checkWipeInput(this.value)" placeholder="Type DELETE" type="text">
+</div>
+</div>
+<div class="pt-2 flex items-center gap-2.5">
+<button class="w-1/2 py-2.5 px-4 rounded-xl border border-white/10 hover:bg-white/5 text-sm font-medium text-gray-300 hover:text-white transition" onclick="closeAnimatedModal('wipeDataModal')" type="button">
+Cancel
+</button>
+<button class="w-1/2 py-2.5 px-4 rounded-xl bg-red-700/60 text-white/50 text-sm font-semibold transition flex items-center justify-center gap-1.5 cursor-not-allowed" disabled="" id="wipeSubmitBtn" onclick="executeWipeData()" type="button">
+<svg class="w-4 h-4 stroke-current" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24">
+<path d="M3 6h18"></path><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+</svg>
+<span class="">Wipe Everything</span>
+</button>
+</div>
+</div>
+</div>
+<!-- ========================================================================= -->
+<!-- END: INTERACTIVE MODALS & DIALOGS -->
+<!-- ========================================================================= -->
+<!-- BEGIN: Floating Navigation Dock -->
+<nav class="fixed bottom-6 left-1/2 -translate-x-1/2 z-40 flex items-center justify-center bg-[#25282a]/95 backdrop-blur-md px-3 py-2 rounded-full shadow-2xl border border-white/10 gap-2 settings-nav-dock" data-purpose="bottom-navigation-dock"><a class="text-[#a0a5aa] hover:text-white p-2.5 flex items-center justify-center transition-colors settings-nav-link" href="#" onclick="switchTab('passwords')" title="Passwords"><span class="material-symbols-outlined text-[22px]">vpn_key</span></a><a class="text-[#a0a5aa] hover:text-white p-2.5 flex items-center justify-center transition-colors settings-nav-link" href="#" onclick="switchTab('wallet')" title="Wallet"><span class="material-symbols-outlined text-[22px]">account_balance_wallet</span></a><a class="text-[#a0a5aa] hover:text-white p-2.5 flex items-center justify-center transition-colors settings-nav-link" href="#" onclick="switchTab('generator')" title="Generator"><span class="material-symbols-outlined text-[22px]">grid_view</span></a><a class="bg-[#0080ff] text-white px-5 py-2.5 rounded-full flex items-center justify-center shadow-md shadow-blue-500/30 transition-all" href="#" title="Settings"><span class="material-symbols-outlined text-[22px]" style="font-variation-settings: 'FILL' 1;">settings</span></a></nav>
+<!-- END: Floating Navigation Dock -->
+<!-- BEGIN: Toast Dialog -->
+<div class="fixed top-6 left-1/2 -translate-x-1/2 bg-gray-900/95 border border-white/10 text-white text-sm font-medium px-4 py-2.5 rounded-full shadow-2xl transition-all duration-300 z-50 flex items-center gap-2 opacity-100" id="toast">
+<span class="" id="toast-message">Switched to Light Mode</span>
+</div>
+<!-- END: Toast Dialog -->
+</div>
+<!-- BEGIN: Client Interactivity Scripts -->
+<script data-purpose="theme-management">
+    let currentTheme = 'dark';
+
+    function setAppTheme(theme) {
+      currentTheme = theme;
+      const html = document.documentElement;
+      const themeLabel = document.getElementById('appThemeStatusLabel');
+      const themeBadge = document.getElementById('activeThemeBadge');
+      const themeRowIcon = document.getElementById('currentThemeRowIcon');
+      const quickIcon = document.getElementById('quickThemeIcon');
+      const quickLabel = document.getElementById('quickThemeLabel');
+      const modalPillLight = document.getElementById('modalPillLight');
+      const modalPillDark = document.getElementById('modalPillDark');
+      const cardLight = document.getElementById('themeCardLight');
+      const cardDark = document.getElementById('themeCardDark');
+      const checkLight = document.getElementById('checkLight');
+      const checkDark = document.getElementById('checkDark');
+
+      if (theme === 'light') {
+        html.classList.remove('dark');
+        if (themeLabel) themeLabel.textContent = 'Light Mode';
+        if (themeBadge) {
+          themeBadge.textContent = 'Light';
+          themeBadge.className = 'text-xs font-semibold px-2.5 py-1 rounded-full bg-amber-500/15 text-amber-600 border border-amber-500/25';
+        }
+        if (themeRowIcon) {
+          themeRowIcon.textContent = 'light_mode';
+          themeRowIcon.className = 'material-symbols-outlined text-[20px] text-amber-500';
+        }
+        if (quickIcon) quickIcon.textContent = 'light_mode';
+        if (quickLabel) quickLabel.textContent = 'Light';
+
+        if (modalPillLight) {
+          modalPillLight.className = 'w-1/2 py-2 rounded-lg text-xs font-semibold flex items-center justify-center gap-1.5 transition-all bg-[#0080ff] text-white shadow';
+        }
+        if (modalPillDark) {
+          modalPillDark.className = 'w-1/2 py-2 rounded-lg text-xs font-semibold flex items-center justify-center gap-1.5 transition-all text-gray-500 hover:text-black';
+        }
+
+        if (cardLight) {
+          cardLight.className = 'flex items-center justify-between p-3.5 rounded-xl bg-blue-50/70 border border-blue-500/40 cursor-pointer text-slate-900 theme-option modal-inner-box';
+        }
+        if (cardDark) {
+          cardDark.className = 'flex items-center justify-between p-3.5 rounded-xl bg-white border border-slate-200 cursor-pointer text-slate-500 hover:text-slate-900 theme-option modal-inner-box';
+        }
+        if (checkLight) {
+          checkLight.className = 'material-symbols-outlined text-blue-500 text-lg theme-check-icon';
+        }
+        if (checkDark) {
+          checkDark.className = 'material-symbols-outlined text-transparent text-lg theme-check-icon';
+        }
+
+        showToast('Switched to Light Mode');
+      } else {
+        html.classList.add('dark');
+        if (themeLabel) themeLabel.textContent = 'Dark Mode';
+        if (themeBadge) {
+          themeBadge.textContent = 'Dark';
+          themeBadge.className = 'text-xs font-semibold px-2.5 py-1 rounded-full bg-blue-500/15 text-blue-400 border border-blue-500/25';
+        }
+        if (themeRowIcon) {
+          themeRowIcon.textContent = 'dark_mode';
+          themeRowIcon.className = 'material-symbols-outlined text-[20px] text-blue-400';
+        }
+        if (quickIcon) quickIcon.textContent = 'dark_mode';
+        if (quickLabel) quickLabel.textContent = 'Dark';
+
+        if (modalPillDark) {
+          modalPillDark.className = 'w-1/2 py-2 rounded-lg text-xs font-semibold flex items-center justify-center gap-1.5 transition-all bg-[#0080ff] text-white shadow';
+        }
+        if (modalPillLight) {
+          modalPillLight.className = 'w-1/2 py-2 rounded-lg text-xs font-semibold flex items-center justify-center gap-1.5 transition-all text-gray-400 hover:text-white';
+        }
+
+        if (cardDark) {
+          cardDark.className = 'flex items-center justify-between p-3.5 rounded-xl bg-[#111315] border border-blue-500/40 cursor-pointer text-white theme-option modal-inner-box';
+        }
+        if (cardLight) {
+          cardLight.className = 'flex items-center justify-between p-3.5 rounded-xl bg-[#111315] border border-white/5 cursor-pointer text-gray-300 hover:text-white theme-option modal-inner-box';
+        }
+        if (checkDark) {
+          checkDark.className = 'material-symbols-outlined text-blue-400 text-lg theme-check-icon';
+        }
+        if (checkLight) {
+          checkLight.className = 'material-symbols-outlined text-transparent text-lg theme-check-icon';
+        }
+
+        showToast('Switched to Dark Mode');
+      }
+    }
+
+    function toggleThemeQuick() {
+      if (currentTheme === 'dark') {
+        setAppTheme('light');
+      } else {
+        setAppTheme('dark');
+      }
+    }
+  </script>
+<script data-purpose="core-modal-orchestrator">
+    let activeModalId = null;
+
+    /**
+     * Opens modal originating from tapped trigger location
+     */
+    function openAnimatedModal(modalId, triggerElement, event) {
+      const modal = document.getElementById(modalId);
+      if (!modal) return;
+
+      const card = modal.querySelector('.modal-card');
+      
+      // Calculate origin coordinates from clicked trigger or click event
+      let originX = '50%';
+      let originY = '50%';
+
+      if (triggerElement) {
+        const rect = triggerElement.getBoundingClientRect();
+        const clickX = event && event.clientX ? event.clientX : rect.left + rect.width / 2;
+        const clickY = event && event.clientY ? event.clientY : rect.top + rect.height / 2;
+        originX = `${clickX}px`;
+        originY = `${clickY}px`;
+      }
+
+      if (card) {
+        card.style.transformOrigin = `${originX} ${originY}`;
+        card.style.transform = 'scale(0.82)';
+        card.style.opacity = '0';
+      }
+
+      modal.classList.remove('opacity-0', 'pointer-events-none', 'modal-closed');
+      modal.classList.add('opacity-100', 'modal-open');
+
+      // Trigger transition on next animation frame
+      requestAnimationFrame(() => {
+        if (card) {
+          card.style.transform = 'scale(1)';
+          card.style.opacity = '1';
+        }
+      });
+
+      activeModalId = modalId;
+    }
+
+    /**
+     * Smoothly closes modal back toward origin
+     */
+    function closeAnimatedModal(modalId) {
+      const id = modalId || activeModalId;
+      if (!id) return;
+      const modal = document.getElementById(id);
+      if (!modal) return;
+
+      const card = modal.querySelector('.modal-card');
+      if (card) {
+        card.style.transform = 'scale(0.85)';
+        card.style.opacity = '0';
+      }
+
+      modal.classList.remove('opacity-100', 'modal-open');
+      modal.classList.add('opacity-0', 'pointer-events-none', 'modal-closed');
+      activeModalId = null;
+    }
+
+    /**
+     * Closes on clicking outside card
+     */
+    function handleBackdropClick(e, modalId) {
+      if (e.target.id === modalId) {
+        closeAnimatedModal(modalId);
+      }
+    }
+
+    // Keyboard support: Escape key closes active modal
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && activeModalId) {
+        closeAnimatedModal(activeModalId);
+      }
+    });
+
+    /**
+     * Toggles smooth iOS style switches
+     */
+    function toggleSwitch(btn) {
+      const isPressed = btn.getAttribute('aria-pressed') === 'true';
+      const newState = !isPressed;
+      btn.setAttribute('aria-pressed', newState);
+      const thumb = btn.querySelector('.toggle-thumb');
+      
+      if (newState) {
+        btn.classList.remove('bg-gray-700');
+        btn.classList.add('bg-[#0080ff]');
+        thumb.classList.remove('translate-x-0');
+        thumb.classList.add('translate-x-5');
+        showToast('Touch ID Enabled');
+      } else {
+        btn.classList.remove('bg-[#0080ff]');
+        btn.classList.add('bg-gray-700');
+        thumb.classList.remove('translate-x-5');
+        thumb.classList.add('translate-x-0');
+        showToast('Touch ID Disabled');
+      }
+    }
+
+    function toggleAutoLockSwitch(btn) {
+      const isPressed = btn.getAttribute('aria-pressed') === 'true';
+      const newState = !isPressed;
+      btn.setAttribute('aria-pressed', newState);
+      const thumb = btn.querySelector('.toggle-thumb');
+      
+      if (newState) {
+        btn.classList.remove('bg-gray-700');
+        btn.classList.add('bg-[#0080ff]');
+        thumb.classList.remove('translate-x-0');
+        thumb.classList.add('translate-x-5');
+        document.getElementById('autoLockStatusLabel').textContent = 'Immediately';
+        showToast('Auto-Lock Enabled (Immediately)');
+      } else {
+        btn.classList.remove('bg-[#0080ff]');
+        btn.classList.add('bg-gray-700');
+        thumb.classList.remove('translate-x-5');
+        thumb.classList.add('translate-x-0');
+        document.getElementById('autoLockStatusLabel').textContent = 'Disabled';
+        showToast('Auto-Lock Disabled');
+      }
+    }
+
+    function handleBiometricsRowClick(e, rowEl) {
+      // Open detailed biometric config dialog
+      openAnimatedModal('biometricsModal', rowEl, e);
+    }
+
+    function handleAutoLockRowClick(e, rowEl) {
+      openAnimatedModal('autoLockModal', rowEl, e);
+    }
+  </script>
+<script data-purpose="dialog-specific-logics">
+    // Password Strength Evaluator
+    function updatePasswordStrength(val) {
+      const b1 = document.getElementById('strBar1');
+      const b2 = document.getElementById('strBar2');
+      const b3 = document.getElementById('strBar3');
+      const b4 = document.getElementById('strBar4');
+      const label = document.getElementById('pwdStrengthLabel');
+      const bits = document.getElementById('pwdStrengthEntropy');
+
+      const resetBars = () => [b1, b2, b3, b4].forEach(b => {
+        b.className = 'h-full w-1/4 rounded-full bg-gray-700 transition-all duration-300';
+      });
+
+      resetBars();
+      if (!val) {
+        label.textContent = 'Enter password';
+        bits.textContent = '0 bits';
+        return;
+      }
+
+      let score = 0;
+      if (val.length >= 8) score++;
+      if (val.length >= 12) score++;
+      if (/[A-Z]/.test(val) && /[0-9]/.test(val)) score++;
+      if (/[^A-Za-z0-9]/.test(val)) score++;
+
+      if (score === 1) {
+        b1.className = 'h-full w-1/4 rounded-full bg-red-500 transition-all duration-300';
+        label.textContent = 'Weak';
+        label.className = 'text-red-400 font-bold';
+        bits.textContent = '32 bits';
+      } else if (score === 2) {
+        b1.className = 'h-full w-1/4 rounded-full bg-amber-500 transition-all duration-300';
+        b2.className = 'h-full w-1/4 rounded-full bg-amber-500 transition-all duration-300';
+        label.textContent = 'Fair';
+        label.className = 'text-amber-400 font-bold';
+        bits.textContent = '54 bits';
+      } else if (score === 3) {
+        b1.className = 'h-full w-1/4 rounded-full bg-cyan-400 transition-all duration-300';
+        b2.className = 'h-full w-1/4 rounded-full bg-cyan-400 transition-all duration-300';
+        b3.className = 'h-full w-1/4 rounded-full bg-cyan-400 transition-all duration-300';
+        label.textContent = 'Good';
+        label.className = 'text-cyan-400 font-bold';
+        bits.textContent = '76 bits';
+      } else if (score >= 4) {
+        b1.className = 'h-full w-1/4 rounded-full bg-emerald-400 transition-all duration-300';
+        b2.className = 'h-full w-1/4 rounded-full bg-emerald-400 transition-all duration-300';
+        b3.className = 'h-full w-1/4 rounded-full bg-emerald-400 transition-all duration-300';
+        b4.className = 'h-full w-1/4 rounded-full bg-emerald-400 transition-all duration-300';
+        label.textContent = 'Very Strong';
+        label.className = 'text-emerald-400 font-bold';
+        bits.textContent = '128 bits (Military grade)';
+      }
+    }
+
+    function togglePasswordVisibility(inputId, btn) {
+      const input = document.getElementById(inputId);
+      const icon = btn.querySelector('.material-symbols-outlined');
+      if (input.type === 'password') {
+        input.type = 'text';
+        icon.textContent = 'visibility_off';
+      } else {
+        input.type = 'password';
+        icon.textContent = 'visibility';
+      }
+    }
+
+    function submitChangePassword(e) {
+      e.preventDefault();
+      const current = document.getElementById('currentPassword').value.trim();
+      const next = document.getElementById('newPassword').value;
+      const confirm = document.getElementById('confirmPassword').value;
+      const errNotice = document.getElementById('pwdErrorNotice');
+      const errText = document.getElementById('pwdErrorText');
+
+      if (!current || !next || !confirm) {
+        errText.textContent = 'Please fill in all password fields.';
+        errNotice.classList.remove('hidden');
+        return;
+      }
+      if (next.length < 8) {
+        errText.textContent = 'New password must be at least 8 characters long.';
+        errNotice.classList.remove('hidden');
+        return;
+      }
+      if (next !== confirm) {
+        errText.textContent = 'New passwords do not match. Please verify.';
+        errNotice.classList.remove('hidden');
+        return;
+      }
+
+      errNotice.classList.add('hidden');
+      closeAnimatedModal('changePasswordModal');
+      showToast('Master password successfully updated!');
+    }
+
+    // Biometrics Modal Functions
+    function toggleModalBio(btn) {
+      const isPressed = btn.getAttribute('aria-pressed') === 'true';
+      const newState = !isPressed;
+      btn.setAttribute('aria-pressed', newState);
+      const thumb = btn.querySelector('.toggle-thumb');
+      if (newState) {
+        btn.classList.remove('bg-gray-700');
+        btn.classList.add('bg-[#0080ff]');
+        thumb.classList.remove('translate-x-0');
+        thumb.classList.add('translate-x-5');
+      } else {
+        btn.classList.remove('bg-[#0080ff]');
+        btn.classList.add('bg-gray-700');
+        thumb.classList.remove('translate-x-5');
+        thumb.classList.add('translate-x-0');
+      }
+    }
+
+    function simulateBiometricScan() {
+      const scanBtn = document.getElementById('bioScanButton');
+      const scanLabel = document.getElementById('bioScanLabel');
+      scanLabel.textContent = 'Scanning Secure Enclave...';
+      scanBtn.classList.add('animate-pulse', 'border-cyan-400');
+
+      setTimeout(() => {
+        scanBtn.classList.remove('animate-pulse', 'border-cyan-400');
+        scanBtn.classList.add('border-emerald-400', 'bg-emerald-500/30');
+        scanLabel.textContent = '✓ Biometric Handshake Verified';
+        showToast('Touch ID verified successfully');
+      }, 900);
+    }
+
+    function saveBiometricsSettings() {
+      const modalBioBtn = document.getElementById('modalBioToggle');
+      const isEnabled = modalBioBtn.getAttribute('aria-pressed') === 'true';
+      const mainBioBtn = document.getElementById('biometricMasterToggle');
+      if (mainBioBtn) {
+        mainBioBtn.setAttribute('aria-pressed', isEnabled);
+        const thumb = mainBioBtn.querySelector('.toggle-thumb');
+        if (isEnabled) {
+          mainBioBtn.classList.remove('bg-gray-700');
+          mainBioBtn.classList.add('bg-[#0080ff]');
+          thumb.classList.remove('translate-x-0');
+          thumb.classList.add('translate-x-5');
+        } else {
+          mainBioBtn.classList.remove('bg-[#0080ff]');
+          mainBioBtn.classList.add('bg-gray-700');
+          thumb.classList.remove('translate-x-5');
+          thumb.classList.add('translate-x-0');
+        }
+      }
+      closeAnimatedModal('biometricsModal');
+      showToast('Biometric preferences updated');
+    }
+
+    // Auto-Lock Option Select
+    let selectedAutoLockDuration = 'Immediately';
+    function selectAutoLockOption(duration, element) {
+      selectedAutoLockDuration = duration;
+      const options = document.querySelectorAll('.autolock-option');
+      options.forEach(opt => {
+        opt.classList.remove('border-amber-500/30');
+        opt.classList.add('border-white/5');
+        const icon = opt.querySelector('.check-icon');
+        if (icon) {
+          icon.classList.remove('text-amber-400');
+          icon.classList.add('text-transparent');
+        }
+      });
+      element.classList.remove('border-white/5');
+      element.classList.add('border-amber-500/30');
+      const check = element.querySelector('.check-icon');
+      if (check) {
+        check.classList.remove('text-transparent');
+        check.classList.add('text-amber-400');
+      }
+    }
+
+    function saveAutoLockPreference() {
+      const label = document.getElementById('autoLockStatusLabel');
+      if (label) label.textContent = selectedAutoLockDuration;
+      closeAnimatedModal('autoLockModal');
+      showToast(`Auto-lock set to ${selectedAutoLockDuration}`);
+    }
+
+    // P2P Sync Simulation
+    function triggerP2PScanSimulation() {
+      showToast('Broadcasting peer beacon across LAN...');
+      setTimeout(() => {
+        showToast('MacBook Pro (M3 Max) paired & synchronized.');
+      }, 1500);
+    }
+
+    // Backup Download
+    function executeBackupDownload(e) {
+      e.preventDefault();
+      closeAnimatedModal('backupModal');
+      showToast('Encrypted vault (.vault) successfully downloaded.');
+    }
+
+    // Import Flow
+    let chosenFormat = 'Bitwarden (JSON)';
+    function selectImportSource(format, btn) {
+      chosenFormat = format;
+      document.querySelectorAll('.import-src-btn').forEach(b => {
+        b.classList.remove('border-indigo-500', 'bg-indigo-500/10', 'text-white');
+        b.classList.add('border-white/10', 'bg-[#111315]', 'text-gray-300');
+      });
+      btn.classList.add('border-indigo-500', 'bg-indigo-500/10', 'text-white');
+      btn.classList.remove('border-white/10', 'bg-[#111315]', 'text-gray-300');
+      showToast(`Format set to ${format}`);
+    }
+
+    function simulateFileUpload() {
+      const preview = document.getElementById('importPreviewBox');
+      const label = document.getElementById('importFileLabel');
+      label.textContent = 'Selected: vault_export.json (48KB)';
+      preview.classList.remove('hidden');
+      showToast('Archive parsed locally: 38 credentials found');
+    }
+
+    function confirmImport() {
+      closeAnimatedModal('importModal');
+      showToast('Successfully imported 38 credentials into vault!');
+    }
+
+    // Rating System
+    let currentRating = 5;
+    function setRating(stars) {
+      currentRating = stars;
+      const buttons = document.querySelectorAll('.star-btn');
+      buttons.forEach((b, idx) => {
+        if (idx < stars) {
+          b.classList.remove('text-gray-600');
+          b.classList.add('text-amber-400');
+        } else {
+          b.classList.remove('text-amber-400');
+          b.classList.add('text-gray-600');
+        }
+      });
+    }
+
+    function submitReview() {
+      closeAnimatedModal('rateModal');
+      showToast(`Thank you for rating ${currentRating} stars!`);
+    }
+
+    // Destructive Wipe Data Validation
+    function checkWipeInput(val) {
+      const btn = document.getElementById('wipeSubmitBtn');
+      if (val.trim().toUpperCase() === 'DELETE') {
+        btn.disabled = false;
+        btn.classList.remove('bg-red-700/60', 'text-white/50', 'cursor-not-allowed');
+        btn.classList.add('bg-red-600', 'hover:bg-red-500', 'text-white', 'shadow-lg', 'shadow-red-600/40', 'cursor-pointer');
+      } else {
+        btn.disabled = true;
+        btn.classList.add('bg-red-700/60', 'text-white/50', 'cursor-not-allowed');
+        btn.classList.remove('bg-red-600', 'hover:bg-red-500', 'text-white', 'shadow-lg', 'shadow-red-600/40', 'cursor-pointer');
+      }
+    }
+
+    function executeWipeData() {
+      ['vault_passwords', 'passwords', 'vault_items', 'wallet_cards', 'secure_notes'].forEach(k => {
+        try { localStorage.removeItem(k); } catch (e) {}
+      });
+
+      const badge = document.getElementById('wipeBadgeIndicator');
+      if (badge) {
+        badge.textContent = 'VAULT WIPED';
+        badge.className = 'text-xs text-emerald-400 font-semibold px-2 py-0.5 rounded bg-emerald-500/10 border border-emerald-500/20';
+      }
+
+      closeAnimatedModal('wipeDataModal');
+      showToast('All vault data wiped clean.');
+    }
+
+    // Helper Toast
+    function showToast(msg) {
+      const toast = document.getElementById('toast');
+      const msgEl = document.getElementById('toast-message');
+      msgEl.textContent = msg;
+      toast.classList.remove('opacity-0', 'pointer-events-none');
+      toast.classList.add('opacity-100');
+
+      setTimeout(() => {
+        toast.classList.add('opacity-0', 'pointer-events-none');
+        toast.classList.remove('opacity-100');
+      }, 2600);
+    }
+
+    function switchTab(tabName) {
+      showToast(`Navigating to ${tabName.charAt(0).toUpperCase() + tabName.slice(1)}...`);
+    }
+  </script>
+<!-- END: Client Interactivity Scripts -->
+
+
+</body></html>

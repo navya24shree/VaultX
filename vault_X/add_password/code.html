@@ -1,0 +1,689 @@
+<!DOCTYPE html><html class="dark" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport">
+<title>Add Password - Vault</title>
+<!-- Tailwind CSS v3 -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Google Fonts: Inter & Material Symbols -->
+<link href="https://fonts.googleapis.com" rel="preconnect">
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
+<script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            vaultDark: '#050708',
+            vaultNavy: '#0c1013',
+            vaultSurface: '#191d20',
+            vaultInput: '#131618',
+            vaultBorder: '#262b30',
+            vaultAccent: '#0080ff',
+            vaultAccentHover: '#006ee0',
+            vaultMuted: '#8b949e',
+            vaultMutedLight: '#a0aab4',
+          },
+          fontFamily: {
+            sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+<!-- BEGIN: Custom Stylesheet for UI Refinements -->
+<style data-purpose="scrollbar-and-ios-tweaks">
+    /* Hide horizontal scrollbars on icon picker */
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+
+    /* iOS safe areas */
+    .pt-safe {
+      padding-top: env(safe-area-inset-top, 20px);
+    }
+    .pb-safe {
+      padding-bottom: env(safe-area-inset-bottom, 24px);
+    }
+
+    /* Material Symbols alignment */
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      display: inline-block;
+      vertical-align: middle;
+      line-height: 1;
+    }
+
+    /* Shimmer animation for slider text */
+    @keyframes shimmer-slide {
+      0% {
+        background-position: -200% 0;
+      }
+      100% {
+        background-position: 200% 0;
+      }
+    }
+    .shimmer-text {
+      background: linear-gradient(90deg, rgba(139,148,158,0.7) 0%, rgba(255,255,255,0.95) 50%, rgba(139,148,158,0.7) 100%);
+      background-size: 200% 100%;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: shimmer-slide 2.5s infinite linear;
+    }
+  </style>
+<!-- END: Custom Stylesheet for UI Refinements -->
+</head>
+<body class="bg-vaultDark text-white font-sans antialiased min-h-screen flex flex-col justify-start selection:bg-vaultAccent selection:text-white">
+<!-- BEGIN: Mobile App Container -->
+<div class="w-full max-w-md mx-auto flex-1 flex flex-col bg-vaultDark min-h-screen relative pb-10">
+<!-- BEGIN: Top Navigation Bar -->
+<header class="sticky top-0 z-30 bg-vaultDark/95 backdrop-blur-md px-5 pt-safe pb-3 flex items-center justify-between border-b border-vaultBorder/40">
+<!-- Cancel Button -->
+<button class="text-vaultAccent hover:text-vaultAccentHover text-[17px] font-normal transition-colors py-1" id="btn-cancel" type="button">
+        Cancel
+      </button>
+<!-- Screen Title -->
+<h1 class="text-white text-[17px] font-semibold tracking-tight text-center">
+        Add Password
+      </h1>
+<!-- Save Action Button -->
+<button class="text-vaultAccent hover:text-vaultAccentHover font-semibold text-[17px] transition-colors py-1" id="btn-save" type="button">
+        Save
+      </button>
+</header>
+<!-- END: Top Navigation Bar -->
+<!-- BEGIN: Scrollable Form Body -->
+<main class="flex-1 px-4 pt-5 pb-safe space-y-6">
+<!-- BEGIN: Icon Selection Section -->
+<section class="space-y-3" data-purpose="category-picker"><div class="flex items-center justify-between px-1">
+<span class="text-[12px] font-semibold tracking-wider text-vaultMuted uppercase">
+CHOOSE CATEGORY
+</span>
+<div class="w-10 h-10 rounded-full bg-vaultMuted/20 border border-white/20 flex items-center justify-center text-white shadow-lg transition-all duration-300" id="active-icon-badge" title="Selected Category Icon">
+<span class="material-symbols-outlined text-[20px]" id="active-icon-glyph">vpn_key</span>
+</div>
+</div>
+<div class="flex items-center gap-2 overflow-x-auto no-scrollbar py-2 px-1 -mx-4 px-4 scroll-smooth" id="category-chip-list">
+<!-- Default and custom chips injected by script -->
+<button class="category-chip shrink-0 px-4 py-2 rounded-full text-xs font-semibold transition-all duration-200 bg-vaultAccent text-white border border-vaultAccent shadow-md flex items-center gap-1.5" data-category="General" data-glyph="vpn_key" type="button">
+<span class="material-symbols-outlined text-[16px]">vpn_key</span>
+<span class="">General</span>
+</button>
+<button class="category-chip shrink-0 px-4 py-2 rounded-full text-xs font-semibold transition-all duration-200 bg-vaultSurface border border-vaultBorder/50 text-vaultMuted hover:text-white flex items-center gap-1.5" data-category="Email" data-glyph="mail" type="button">
+<span class="material-symbols-outlined text-[16px]">mail</span>
+<span class="">Email</span>
+</button>
+<button class="category-chip shrink-0 px-4 py-2 rounded-full text-xs font-semibold transition-all duration-200 bg-vaultSurface border border-vaultBorder/50 text-vaultMuted hover:text-white flex items-center gap-1.5" data-category="Instagram" data-glyph="photo_camera" type="button">
+<span class="material-symbols-outlined text-[16px]">photo_camera</span>
+<span class="">Instagram</span>
+</button>
+<button class="category-chip shrink-0 px-4 py-2 rounded-full text-xs font-semibold transition-all duration-200 bg-vaultSurface border border-vaultBorder/50 text-vaultMuted hover:text-white flex items-center gap-1.5" data-category="Google" data-glyph="mail" type="button">
+<span class="font-black text-[14px] leading-none">G</span>
+<span class="">Google</span>
+</button>
+<button class="category-chip shrink-0 px-4 py-2 rounded-full text-xs font-semibold transition-all duration-200 bg-vaultSurface border border-vaultBorder/50 text-vaultMuted hover:text-white flex items-center gap-1.5" data-category="Bank" data-glyph="account_balance" type="button">
+<span class="material-symbols-outlined text-[16px]">account_balance</span>
+<span class="">Bank</span>
+</button>
+<button class="category-chip shrink-0 px-4 py-2 rounded-full text-xs font-semibold transition-all duration-200 bg-vaultSurface border border-vaultBorder/50 text-vaultMuted hover:text-white flex items-center gap-1.5" data-category="GitHub" data-glyph="code" type="button">
+<span class="material-symbols-outlined text-[16px]">code</span>
+<span class="">GitHub</span>
+</button>
+<button class="category-chip shrink-0 px-4 py-2 rounded-full text-xs font-semibold transition-all duration-200 bg-vaultSurface border border-vaultBorder/50 text-vaultMuted hover:text-white flex items-center gap-1.5" data-category="Entertainment" data-glyph="movie" type="button">
+<span class="material-symbols-outlined text-[16px]">movie</span>
+<span class="">Entertainment</span>
+</button>
+<!-- Add Category Button -->
+<button class="shrink-0 px-3.5 py-2 rounded-full text-xs font-semibold transition-all duration-200 bg-vaultSurface border border-dashed border-vaultAccent/60 text-vaultAccent hover:bg-vaultAccent/10 flex items-center gap-1.5 cursor-pointer" id="btn-open-add-category" type="button">
+<span class="material-symbols-outlined text-[16px]">add</span>
+<span class="">Add Category</span>
+</button>
+</div>
+
+<!-- Inline Custom Category Creator Modal / Dropdown -->
+<div class="hidden bg-vaultSurface border border-vaultBorder/50 rounded-2xl p-3 shadow-lg space-y-3 transition-all duration-200" id="add-category-box">
+<div class="flex items-center justify-between">
+<span class="text-[13px] font-semibold text-white">New Category</span>
+<button class="text-vaultMuted hover:text-white text-xs p-1 focus:outline-none" id="btn-cancel-add-category" type="button">
+<span class="material-symbols-outlined text-[18px]">close</span>
+</button>
+</div>
+<div class="flex items-center gap-2">
+<div class="relative flex-1">
+<input class="w-full bg-vaultInput/50 border border-vaultBorder/50 rounded-xl px-3 py-2 text-white placeholder-vaultMuted text-xs focus:outline-none focus:border-vaultAccent transition-colors" id="input-new-category-name" maxlength="24" placeholder="e.g. Work, Crypto, Social" type="text">
+</div>
+<button class="px-3.5 py-2 rounded-xl text-xs font-semibold bg-vaultAccent hover:bg-vaultAccentHover text-white transition-colors shrink-0" id="btn-confirm-add-category" type="button">
+Save
+</button>
+</div>
+</div>
+
+<script>
+(function() {
+  const defaultCategories = [
+    { name: 'General', glyph: 'vpn_key' },
+    { name: 'Email', glyph: 'mail' },
+    { name: 'Instagram', glyph: 'photo_camera' },
+    { name: 'Google', glyph: 'mail', isChar: true, char: 'G' },
+    { name: 'Bank', glyph: 'account_balance' },
+    { name: 'GitHub', glyph: 'code' },
+    { name: 'Entertainment', glyph: 'movie' }
+  ];
+
+  const chipList = document.getElementById('category-chip-list');
+  const activeGlyph = document.getElementById('active-icon-glyph');
+  const activeBadge = document.getElementById('active-icon-badge');
+  const bottomCategoryBadge = document.getElementById('category-badge-label');
+  const btnOpenAdd = document.getElementById('btn-open-add-category');
+  const addCategoryBox = document.getElementById('add-category-box');
+  const btnCancelAdd = document.getElementById('btn-cancel-add-category');
+  const btnConfirmAdd = document.getElementById('btn-confirm-add-category');
+  const inputNewCat = document.getElementById('input-new-category-name');
+
+  function getStoredCategories() {
+    try {
+      const stored = localStorage.getItem('neurokey_categories') || localStorage.getItem('vault_categories');
+      return stored ? JSON.parse(stored) : [];
+    } catch (e) {
+      return [];
+    }
+  }
+
+  function saveCategoriesToStorage(categories) {
+    try {
+      localStorage.setItem('neurokey_categories', JSON.stringify(categories));
+      localStorage.setItem('vault_categories', JSON.stringify(categories));
+      window.dispatchEvent(new CustomEvent('vault_categories_updated', { detail: categories }));
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
+  let selectedCategory = 'General';
+
+  function renderChips() {
+    const customCats = getStoredCategories();
+    const allCats = [...defaultCategories, ...customCats];
+
+    chipList.innerHTML = '';
+
+    allCats.forEach(cat => {
+      const isSelected = (cat.name === selectedCategory);
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = `category-chip shrink-0 px-4 py-2 rounded-full text-xs font-semibold transition-all duration-200 flex items-center gap-1.5 ${
+        isSelected
+          ? 'bg-vaultAccent text-white border border-vaultAccent shadow-md'
+          : 'bg-vaultSurface border border-vaultBorder/50 text-vaultMuted hover:text-white'
+      }`;
+      btn.setAttribute('data-category', cat.name);
+      btn.setAttribute('data-glyph', cat.glyph || 'folder');
+
+      if (cat.isChar) {
+        btn.innerHTML = `<span class="font-black text-[14px] leading-none">${cat.char}</span><span>${cat.name}</span>`;
+      } else {
+        btn.innerHTML = `<span class="material-symbols-outlined text-[16px]">${cat.glyph || 'folder'}</span><span>${cat.name}</span>`;
+      }
+
+      btn.addEventListener('click', () => {
+        selectedCategory = cat.name;
+        setActiveChip(btn, cat.name, cat.glyph || 'folder');
+      });
+
+      chipList.appendChild(btn);
+    });
+
+    // Append Add button at end
+    if (btnOpenAdd) {
+      chipList.appendChild(btnOpenAdd);
+    }
+  }
+
+  function setActiveChip(selectedChip, catName, glyph) {
+    const chips = chipList.querySelectorAll('.category-chip');
+    chips.forEach(chip => {
+      chip.classList.remove('bg-vaultAccent', 'text-white', 'border-vaultAccent', 'shadow-md');
+      chip.classList.add('bg-vaultSurface', 'border-vaultBorder/50', 'text-vaultMuted');
+    });
+    selectedChip.classList.remove('bg-vaultSurface', 'border-vaultBorder/50', 'text-vaultMuted');
+    selectedChip.classList.add('bg-vaultAccent', 'text-white', 'border-vaultAccent', 'shadow-md');
+
+    if (bottomCategoryBadge) {
+      bottomCategoryBadge.textContent = catName;
+    }
+    if (activeGlyph) {
+      activeGlyph.textContent = glyph;
+    }
+    if (activeBadge) {
+      activeBadge.classList.add('scale-110');
+      setTimeout(() => activeBadge.classList.remove('scale-110'), 200);
+    }
+  }
+
+  if (btnOpenAdd) {
+    btnOpenAdd.addEventListener('click', () => {
+      addCategoryBox.classList.remove('hidden');
+      inputNewCat.value = '';
+      inputNewCat.focus();
+    });
+  }
+
+  if (btnCancelAdd) {
+    btnCancelAdd.addEventListener('click', () => {
+      addCategoryBox.classList.add('hidden');
+    });
+  }
+
+  function handleCreateCategory() {
+    const newName = (inputNewCat.value || '').trim();
+    if (!newName) return;
+
+    const existingCustom = getStoredCategories();
+    const exists = [...defaultCategories, ...existingCustom].some(
+      c => c.name.toLowerCase() === newName.toLowerCase()
+    );
+
+    if (!exists) {
+      existingCustom.push({ name: newName, glyph: 'folder' });
+      saveCategoriesToStorage(existingCustom);
+    }
+
+    selectedCategory = newName;
+    addCategoryBox.classList.add('hidden');
+    renderChips();
+
+    if (bottomCategoryBadge) {
+      bottomCategoryBadge.textContent = newName;
+    }
+    if (activeGlyph) {
+      activeGlyph.textContent = 'folder';
+    }
+  }
+
+  if (btnConfirmAdd) {
+    btnConfirmAdd.addEventListener('click', handleCreateCategory);
+  }
+  if (inputNewCat) {
+    inputNewCat.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        handleCreateCategory();
+      }
+    });
+  }
+
+  renderChips();
+})();
+</script></section>
+<!-- END: Icon Selection Section -->
+<!-- BEGIN: Credentials Form Fields -->
+<form class="space-y-6" id="vault-form" onsubmit="event.preventDefault();">
+<!-- Input Group 1: Name and Email -->
+<div class="bg-vaultSurface rounded-2xl border border-vaultBorder/50 overflow-hidden shadow-sm">
+<!-- Name Field -->
+<div class="flex items-center px-4 py-3.5 focus-within:bg-vaultNavy/40 transition-colors">
+<label class="w-24 text-[16px] font-semibold text-white tracking-normal shrink-0" for="input-name">
+              Name
+            </label>
+<input class="w-full bg-transparent border-0 p-0 text-white placeholder-vaultMuted text-[16px] focus:ring-0 outline-none" id="input-name" name="name" placeholder="e.g. Netflix" type="text">
+</div>
+<!-- Divider -->
+<div class="h-[1px] bg-vaultBorder/60 ml-4"></div><div class="flex items-center px-4 py-3.5 focus-within:bg-vaultNavy/40 transition-colors"><label class="w-24 text-[16px] font-semibold text-white tracking-normal shrink-0" for="input-username">Username</label><input class="w-full bg-transparent border-0 p-0 text-white placeholder-vaultMuted text-[16px] focus:ring-0 outline-none" id="input-username" name="username" placeholder="e.g. johndoe" type="text"></div><div class="h-[1px] bg-vaultBorder/60 ml-4"></div>
+<!-- Email Field -->
+<div class="flex items-center px-4 py-3.5 focus-within:bg-vaultNavy/40 transition-colors">
+<label class="w-24 text-[16px] font-semibold text-white tracking-normal shrink-0" for="input-email">
+              Email
+            </label>
+<input class="w-full bg-transparent border-0 p-0 text-white placeholder-vaultMuted text-[16px] focus:ring-0 outline-none" id="input-email" name="email" placeholder="username@email.com" type="text">
+</div>
+</div>
+<!-- Input Group 2: Password Section -->
+<div class="space-y-2">
+<label class="block px-1 text-[12px] font-semibold tracking-wider text-vaultMuted uppercase">
+            PASSWORD
+          </label>
+<div class="bg-vaultSurface rounded-2xl border border-vaultBorder/50 overflow-hidden shadow-sm">
+<!-- Password Input Row with Visibility Toggle -->
+<div class="flex items-center justify-between px-4 py-3.5 focus-within:bg-vaultNavy/40 transition-colors relative">
+<input class="w-full bg-transparent border-0 p-0 pr-8 text-white placeholder-vaultMuted text-[16px] focus:ring-0 outline-none font-mono tracking-tight" id="input-password" name="password" placeholder="Required" type="password">
+<!-- Toggle Visibility Button -->
+<button class="text-vaultMuted hover:text-white transition-colors p-1 flex items-center justify-center focus:outline-none" id="btn-toggle-eye" title="Toggle visibility" type="button">
+<span class="material-symbols-outlined text-[20px]" id="eye-icon">visibility</span>
+</button>
+</div>
+<!-- Divider -->
+<div class="h-[1px] bg-vaultBorder/60"></div>
+<!-- Interactive Swipe to Create Password Container -->
+<div class="p-3 bg-vaultSurface">
+<div class="relative w-full h-12 rounded-full bg-[#101415] border border-[#262b30] flex items-center overflow-hidden select-none touch-pan-y" id="swipe-track">
+<!-- Active Progress Fill -->
+<div class="absolute inset-y-0 left-0 bg-gradient-to-r from-vaultAccent/20 to-vaultAccent/40 rounded-full transition-all pointer-events-none" id="swipe-progress" style="width: 44px;"></div>
+<!-- Shimmer Instruction / Success Text -->
+<div class="absolute inset-0 flex items-center justify-center pointer-events-none px-12 text-center" id="swipe-text-container">
+<span class="text-[13px] font-medium tracking-wide shimmer-text" id="swipe-label">
+        Swipe to Create Password
+      </span>
+</div>
+<!-- Draggable Knob / Thumb -->
+<div class="absolute left-1 top-1 bottom-1 w-10 h-10 rounded-full bg-vaultAccent hover:bg-vaultAccentHover text-white flex items-center justify-center shadow-lg shadow-vaultAccent/30 cursor-grab active:cursor-grabbing transition-transform touch-none z-10" id="swipe-thumb" title="Swipe or tap to generate">
+<span class="material-symbols-outlined text-[20px] transition-transform duration-200" id="swipe-icon">auto_awesome</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Input Group 3: URL, Notes & Auto Category -->
+<div class="bg-vaultSurface rounded-2xl border border-vaultBorder/50 overflow-hidden shadow-sm">
+<!-- URL Field -->
+<div class="flex items-center px-4 py-3.5 focus-within:bg-vaultNavy/40 transition-colors">
+<label class="w-24 text-[16px] font-semibold text-white tracking-normal shrink-0" for="input-url">
+              URL
+            </label>
+<input class="w-full bg-transparent border-0 p-0 text-white placeholder-vaultMuted text-[16px] focus:ring-0 outline-none font-mono text-[14px]" id="input-url" name="url" placeholder="https://example.com" type="url">
+</div>
+<!-- Divider -->
+<div class="h-[1px] bg-vaultBorder/60 ml-4"></div>
+<!-- Notes Field -->
+<div class="px-4 py-3.5 focus-within:bg-vaultNavy/40 transition-colors space-y-1">
+<label class="block text-[16px] font-semibold text-white tracking-normal" for="input-notes">
+              Notes
+            </label>
+<textarea class="w-full bg-transparent border-0 p-0 text-white placeholder-vaultMuted text-[15px] focus:ring-0 outline-none resize-none" id="input-notes" name="notes" placeholder="Security questions, PINs, etc." rows="3"></textarea>
+</div>
+<!-- Divider -->
+<div class="h-[1px] bg-vaultBorder/60 ml-4"></div>
+<!-- Category Indicator Bar -->
+<div class="px-4 py-3 bg-vaultInput/50 flex items-center justify-between text-xs">
+<span class="text-vaultMuted uppercase font-semibold tracking-wider">Category</span>
+<div class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-vaultAccent/10 border border-vaultAccent/30 text-vaultAccent font-medium text-[12px]">
+<span class="w-1.5 h-1.5 rounded-full bg-vaultAccent animate-pulse"></span>
+<span class="" id="category-badge-label">General</span>
+</div>
+</div>
+</div>
+<script>document.addEventListener('DOMContentLoaded', () => { const btnSave = document.getElementById('btn-save'); const inputName = document.getElementById('input-name'); const inputUsername = document.getElementById('input-username'); const inputEmail = document.getElementById('input-email'); const inputPassword = document.getElementById('input-password'); const inputUrl = document.getElementById('input-url'); const inputNotes = document.getElementById('input-notes'); const categoryBadgeLabel = document.getElementById('category-badge-label'); const activeGlyph = document.getElementById('active-icon-glyph'); const toast = document.getElementById('toast-banner'); const toastMsg = document.getElementById('toast-message'); function displayToast(msg, isSuccess = true) { if (toastMsg) toastMsg.textContent = msg; if (toast) { toast.classList.remove('opacity-0', 'pointer-events-none', 'translate-y-3'); toast.classList.add('opacity-100', 'translate-y-0'); setTimeout(() => { toast.classList.remove('opacity-100', 'translate-y-0'); toast.classList.add('opacity-0', 'pointer-events-none', 'translate-y-3'); }, 2200); } } function saveCredential() { const name = (inputName?.value || '').trim(); const username = (inputUsername?.value || '').trim(); const email = (inputEmail?.value || '').trim(); const password = (inputPassword?.value || '').trim(); const url = (inputUrl?.value || '').trim(); const notes = (inputNotes?.value || '').trim(); const category = categoryBadgeLabel?.textContent?.trim() || 'General'; const icon = activeGlyph?.textContent?.trim() || 'vpn_key'; if (!name) { displayToast('Please enter a name or service', false); if (inputName) inputName.focus(); return; } if (!password && !email) { displayToast('Please provide a password or email', false); if (inputPassword) inputPassword.focus(); return; } const newEntry = { id: 'pwd_' + Date.now(), name, username, email, password, url, notes, category, icon, createdAt: new Date().toISOString() }; try { const existing = JSON.parse(localStorage.getItem('neurokey_vault_passwords') || localStorage.getItem('vault_passwords') || '[]'); const updated = [newEntry, ...existing]; localStorage.setItem('neurokey_vault_passwords', JSON.stringify(updated)); localStorage.setItem('vault_passwords', JSON.stringify(updated)); window.dispatchEvent(new CustomEvent('vault_data_updated', { detail: updated })); window.dispatchEvent(new Event('storage')); } catch (e) { console.error('LocalStorage error:', e); } displayToast('Saved to Vault!'); const form = document.getElementById('vault-form'); if (form) form.reset(); if (categoryBadgeLabel) categoryBadgeLabel.textContent = 'General'; if (activeGlyph) activeGlyph.textContent = 'vpn_key'; } if (btnSave) { btnSave.addEventListener('click', (e) => { e.stopImmediatePropagation(); saveCredential(); }, true); } });</script></form>
+<!-- END: Credentials Form Fields -->
+</main>
+<!-- END: Scrollable Form Body -->
+<!-- Notification Toast Popup for Generator / Actions -->
+<div class="fixed bottom-6 left-1/2 -translate-x-1/2 bg-vaultNavy border border-vaultAccent/40 text-white px-4 py-2.5 rounded-full shadow-2xl flex items-center gap-2 text-sm opacity-0 pointer-events-none transition-all duration-300 transform translate-y-3 z-50" id="toast-banner">
+<span class="material-symbols-outlined text-vaultAccent text-[18px]">check_circle</span>
+<span class="" id="toast-message">Password generated</span>
+</div>
+</div>
+<!-- END: Mobile App Container -->
+<!-- BEGIN: Interactive Behavior Script -->
+<script data-purpose="form-interactions">
+    document.addEventListener('DOMContentLoaded', () => {
+      // DOM Elements
+      const iconButtons = document.querySelectorAll('.icon-btn');
+      const activeBadge = document.getElementById('active-icon-badge');
+      const activeGlyph = document.getElementById('active-icon-glyph');
+      const inputName = document.getElementById('input-name');
+      const inputUrl = document.getElementById('input-url');
+      const inputPassword = document.getElementById('input-password');
+      const categoryBadgeLabel = document.getElementById('category-badge-label');
+      const btnToggleEye = document.getElementById('btn-toggle-eye');
+      const eyeIcon = document.getElementById('eye-icon');
+      const toast = document.getElementById('toast-banner');
+      const toastMessage = document.getElementById('toast-message');
+      const btnSave = document.getElementById('btn-save');
+      const btnCancel = document.getElementById('btn-cancel');
+
+      // Swipe Slider Elements
+      const swipeTrack = document.getElementById('swipe-track');
+      const swipeThumb = document.getElementById('swipe-thumb');
+      const swipeProgress = document.getElementById('swipe-progress');
+      const swipeLabel = document.getElementById('swipe-label');
+      const swipeIcon = document.getElementById('swipe-icon');
+
+      // Helper: Toast display
+      function showToast(msg) {
+        toastMessage.textContent = msg;
+        toast.classList.remove('opacity-0', 'pointer-events-none', 'translate-y-3');
+        toast.classList.add('opacity-100', 'translate-y-0');
+        setTimeout(() => {
+          toast.classList.remove('opacity-100', 'translate-y-0');
+          toast.classList.add('opacity-0', 'pointer-events-none', 'translate-y-3');
+        }, 2200);
+      }
+
+      // Password Generation Logic
+      function generatePassword(length = 20) {
+        const uppercase = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        const lowercase = 'abcdefghijklmnopqrstuvwxyz';
+        const numbers = '0123456789';
+        const symbols = '!@#$%^&*()-_=+[]{}|;:,.<>?';
+        const all = uppercase + lowercase + numbers + symbols;
+
+        let password = '';
+        // Guarantee at least one of each category
+        password += uppercase[Math.floor(Math.random() * uppercase.length)];
+        password += lowercase[Math.floor(Math.random() * lowercase.length)];
+        password += numbers[Math.floor(Math.random() * numbers.length)];
+        password += symbols[Math.floor(Math.random() * symbols.length)];
+
+        for (let i = password.length; i < length; i++) {
+          password += all[Math.floor(Math.random() * all.length)];
+        }
+
+        // Shuffle
+        return password.split('').sort(() => 0.5 - Math.random()).join('');
+      }
+
+      // Swipe Slider Interaction Logic
+      let isDragging = false;
+      let startX = 0;
+      let currentX = 0;
+      let maxSlide = 0;
+      let isCompleted = false;
+
+      function updateDimensions() {
+        const trackWidth = swipeTrack.clientWidth;
+        const thumbWidth = swipeThumb.offsetWidth;
+        maxSlide = Math.max(0, trackWidth - thumbWidth - 8);
+      }
+
+      function setSliderPosition(pos, animated = false) {
+        if (animated) {
+          swipeThumb.style.transition = 'transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1)';
+          swipeProgress.style.transition = 'width 0.3s cubic-bezier(0.2, 0.8, 0.2, 1)';
+        } else {
+          swipeThumb.style.transition = 'none';
+          swipeProgress.style.transition = 'none';
+        }
+        swipeThumb.style.transform = `translateX(${pos}px)`;
+        swipeProgress.style.width = `${pos + 44}px`;
+      }
+
+      function triggerPasswordGeneration() {
+        if (isCompleted) return;
+        isCompleted = true;
+
+        // Generate and fill password
+        const strongPass = generatePassword(18);
+        inputPassword.value = strongPass;
+        inputPassword.type = 'text';
+        eyeIcon.textContent = 'visibility_off';
+
+        // Success visual feedback on the slider
+        swipeIcon.textContent = 'check';
+        swipeThumb.classList.remove('bg-vaultAccent');
+        swipeThumb.classList.add('bg-emerald-500');
+        swipeLabel.textContent = 'Password Generated!';
+        swipeLabel.classList.remove('shimmer-text');
+        swipeLabel.classList.add('text-emerald-400');
+
+        showToast('Generated strong 18-char password');
+
+        // Smooth reset after brief celebration
+        setTimeout(() => {
+          setSliderPosition(0, true);
+          setTimeout(() => {
+            swipeIcon.textContent = 'auto_awesome';
+            swipeThumb.classList.remove('bg-emerald-500');
+            swipeThumb.classList.add('bg-vaultAccent');
+            swipeLabel.textContent = 'Swipe to Create Password';
+            swipeLabel.classList.remove('text-emerald-400');
+            swipeLabel.classList.add('shimmer-text');
+            isCompleted = false;
+          }, 350);
+        }, 850);
+      }
+
+      // Drag Handlers (Pointer / Touch / Mouse)
+      function onPointerDown(e) {
+        if (isCompleted) return;
+        updateDimensions();
+        isDragging = true;
+        startX = e.type.startsWith('touch') ? e.touches[0].clientX : e.clientX;
+        currentX = 0;
+        swipeThumb.style.transition = 'none';
+        swipeProgress.style.transition = 'none';
+      }
+
+      function onPointerMove(e) {
+        if (!isDragging || isCompleted) return;
+        const clientX = e.type.startsWith('touch') ? e.touches[0].clientX : e.clientX;
+        const delta = clientX - startX;
+        currentX = Math.max(0, Math.min(delta, maxSlide));
+        setSliderPosition(currentX, false);
+
+        // Opacity of instruction text dims as slider nears end
+        const progress = currentX / (maxSlide || 1);
+        swipeLabel.style.opacity = `${Math.max(0.15, 1 - progress * 1.2)}`;
+
+        // Snap threshold
+        if (currentX >= maxSlide * 0.9) {
+          isDragging = false;
+          setSliderPosition(maxSlide, true);
+          triggerPasswordGeneration();
+        }
+      }
+
+      function onPointerUp() {
+        if (!isDragging || isCompleted) return;
+        isDragging = false;
+        swipeLabel.style.opacity = '1';
+
+        // Animate back if released before completion
+        if (currentX < maxSlide * 0.9) {
+          setSliderPosition(0, true);
+        }
+      }
+
+      // Slider Event Listeners
+      swipeThumb.addEventListener('mousedown', onPointerDown);
+      window.addEventListener('mousemove', onPointerMove);
+      window.addEventListener('mouseup', onPointerUp);
+
+      swipeThumb.addEventListener('touchstart', onPointerDown, { passive: true });
+      window.addEventListener('touchmove', onPointerMove, { passive: true });
+      window.addEventListener('touchend', onPointerUp);
+
+      // Accessibility / Click Support
+      swipeThumb.addEventListener('click', () => {
+        if (!isCompleted && currentX === 0) {
+          updateDimensions();
+          setSliderPosition(maxSlide, true);
+          setTimeout(() => {
+            triggerPasswordGeneration();
+          }, 150);
+        }
+      });
+
+      swipeTrack.addEventListener('click', (e) => {
+        if (e.target !== swipeThumb && !swipeThumb.contains(e.target) && !isCompleted) {
+          updateDimensions();
+          setSliderPosition(maxSlide, true);
+          setTimeout(() => {
+            triggerPasswordGeneration();
+          }, 150);
+        }
+      });
+
+      // Icon Selection Handler
+      iconButtons.forEach(button => {
+        button.addEventListener('click', () => {
+          // Reset all buttons style
+          iconButtons.forEach(btn => {
+            const circle = btn.querySelector('.icon-circle');
+            const label = btn.querySelector('span:last-child');
+            circle.classList.remove('border-vaultAccent', 'text-vaultAccent');
+            circle.classList.add('border-transparent', 'text-vaultMutedLight');
+            label.classList.remove('text-white');
+            label.classList.add('text-vaultMuted');
+          });
+
+          // Highlight selected button
+          const activeCircle = button.querySelector('.icon-circle');
+          const activeText = button.querySelector('span:last-child');
+          activeCircle.classList.remove('border-transparent', 'text-vaultMutedLight');
+          activeCircle.classList.add('border-vaultAccent', 'text-vaultAccent');
+          activeText.classList.remove('text-vaultMuted');
+          activeText.classList.add('text-white');
+
+          // Extract data attributes
+          const serviceName = button.dataset.name;
+          const serviceCategory = button.dataset.category || 'General';
+          const glyph = button.dataset.glyph;
+          const defaultUrl = button.dataset.url;
+
+          // Update Fields
+          if (serviceName) {
+            inputName.value = serviceName;
+          }
+          if (defaultUrl && !inputUrl.value) {
+            inputUrl.value = defaultUrl;
+          }
+          categoryBadgeLabel.textContent = serviceCategory;
+
+          // Update Top Right Badge
+          if (glyph) {
+            activeGlyph.textContent = glyph;
+          }
+
+          // Subtle feedback animation on preview badge
+          activeBadge.classList.add('scale-110');
+          setTimeout(() => activeBadge.classList.remove('scale-110'), 200);
+        });
+      });
+
+      // Toggle Password Visibility
+      btnToggleEye.addEventListener('click', () => {
+        if (inputPassword.type === 'password') {
+          inputPassword.type = 'text';
+          eyeIcon.textContent = 'visibility_off';
+        } else {
+          inputPassword.type = 'password';
+          eyeIcon.textContent = 'visibility';
+        }
+      });
+
+      // Action Handlers
+      btnSave.addEventListener('click', () => {
+        if (!inputName.value.trim() && !inputPassword.value.trim()) {
+          showToast('Please provide a name and password');
+          return;
+        }
+        showToast('Password entry saved successfully!');
+      });
+
+      btnCancel.addEventListener('click', () => {
+        if (confirm('Discard changes?')) {
+          document.getElementById('vault-form').reset();
+          categoryBadgeLabel.textContent = 'General';
+          activeGlyph.textContent = 'vpn_key';
+        }
+      });
+    });
+  </script>
+<!-- END: Interactive Behavior Script -->
+
+
+</body></html>

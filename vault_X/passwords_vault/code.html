@@ -1,0 +1,984 @@
+<!DOCTYPE html><html class="dark" lang="en" style=""><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Vault - Passwords</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;700&amp;family=Inter:wght@400;500;600;700&amp;family=Jetbrains+Mono:wght@400;500;700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">tailwind.config = {darkMode: "class", theme: {extend: {colors: {"on-secondary": "#003063", "surface-dim": "#101415", "on-primary-fixed": "#131b2e", "secondary-container": "#3c90ff", background: "#101415", "on-error-container": "#ffdad6", "surface-tint": "#bec6e0", "on-primary": "#283044", "on-primary-container": "#798098", outline: "#909097", "on-tertiary-container": "#728299", tertiary: "#b7c8e1", "tertiary-fixed": "#d3e4fe", "tertiary-container": "#06182b", "surface-container-lowest": "#0b0f10", surface: "#101415", "on-primary-fixed-variant": "#3f465c", "surface-variant": "#323537", "on-secondary-fixed": "#001b3d", "surface-container-low": "#191c1e", error: "#ffb4ab", "secondary-fixed-dim": "#a9c7ff", "on-error": "#690005", "tertiary-fixed-dim": "#b7c8e1", "error-container": "#93000a", "inverse-primary": "#565e74", primary: "#bec6e0", "surface-container-high": "#272a2c", "on-secondary-fixed-variant": "#00468c", "primary-fixed": "#dae2fd", "outline-variant": "#45464d", "inverse-surface": "#e0e3e5", "surface-bright": "#363a3b", "secondary-fixed": "#d6e3ff", "primary-fixed-dim": "#bec6e0", secondary: "#a9c7ff", "on-background": "#e0e3e5", "surface-container": "#1d2022", "inverse-on-surface": "#2d3133", "primary-container": "#0f172a", "on-tertiary": "#213145", "on-tertiary-fixed-variant": "#38485d", "on-surface-variant": "#c6c6cd", "on-surface": "#e0e3e5", "surface-container-highest": "#323537", "on-tertiary-fixed": "#0b1c30", "on-secondary-container": "#002957"}, borderRadius: {DEFAULT: "0.5rem", lg: "1rem", xl: "1.5rem", full: "9999px"}, spacing: {md: "16px", lg: "24px", sm: "8px", "container-max": "1200px", xl: "40px", xs: "4px", unit: "4px", gutter: "20px"}, fontFamily: {"headline-xl": ["Hanken Grotesk"], "body-md": ["Inter"], "headline-lg-mobile": ["Hanken Grotesk"], "label-mono": ["JetBrains Mono"], "body-sm": ["Inter"], button: ["Inter"], "headline-lg": ["Hanken Grotesk"], headline: ["Hanken Grotesk"], display: ["Hanken Grotesk"], body: ["Inter"], label: ["Jetbrains Mono"]}, fontSize: {"headline-xl": ["40px", {lineHeight: "48px", letterSpacing: "-0.02em", fontWeight: "700"}], "body-md": ["16px", {lineHeight: "24px", fontWeight: "400"}], "headline-lg-mobile": ["24px", {lineHeight: "32px", fontWeight: "600"}], "label-mono": ["14px", {lineHeight: "16px", letterSpacing: "0.05em", fontWeight: "500"}], "body-sm": ["14px", {lineHeight: "20px", fontWeight: "400"}], button: ["15px", {lineHeight: "20px", fontWeight: "600"}], "headline-lg": ["32px", {lineHeight: "40px", letterSpacing: "-0.01em", fontWeight: "600"}]}}}};</script>
+<style>
+        .glass-card {
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(71, 85, 105, 0.5);
+        }
+        .scrollbar-none::-webkit-scrollbar {
+            display: none;
+        }
+        .scrollbar-none {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+</head>
+<body class="bg-[#020617] text-white selection:bg-[#0080ff] selection:text-white relative">
+<!-- TopAppBar -->
+<header class="w-full top-0 sticky bg-[#020617] z-40">
+<div class="flex justify-between items-center px-md py-sm w-full max-w-[1200px] mx-auto">
+<div class="flex items-center gap-sm text-primary dark:text-primary active:scale-95 transition-transform cursor-pointer">
+<span class="text-[28px] leading-8 font-bold text-white tracking-tight">Passwords</span>
+</div>
+<div class="hidden md:flex flex-1 max-w-md mx-md">
+<div class="relative w-full">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant">search</span>
+<input class="w-full bg-[#000000] border border-white/10 rounded-full py-2 pl-10 pr-4 text-[#a0a5aa] placeholder:text-[#a0a5aa]/60 focus:outline-none focus:border-secondary focus:ring-1 focus:ring-secondary transition-all" id="desktop-search" placeholder="Search passwords..." type="text">
+</div>
+</div>
+<div class="flex items-center gap-sm">
+<button class="w-10 h-10 border border-surface-variant text-white rounded-full flex items-center justify-center hover:scale-105 active:scale-95 transition-all shadow-sm bg-[#0080ff]" title="Add Password">
+<span class="material-symbols-outlined text-white" data-icon="add" style="font-variation-settings: &quot;FILL&quot; 1;">add</span>
+</button>
+</div>
+</div>
+<!-- Mobile Search -->
+<div class="px-md pb-sm md:hidden">
+<div class="relative w-full">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant">search</span>
+<input class="w-full bg-[#000000] border border-white/10 rounded-full py-2 pl-10 pr-4 text-[#a0a5aa] placeholder:text-[#a0a5aa]/60 focus:outline-none focus:border-secondary focus:ring-1 focus:ring-secondary transition-all" id="mobile-search" placeholder="Search passwords..." type="text">
+</div>
+</div>
+</header>
+<!-- Main Canvas -->
+<main class="flex-1 w-full max-w-[1200px] mx-auto px-md py-lg md:flex md:gap-lg pb-28 md:pb-lg">
+<!-- SideNav (Desktop) -->
+<aside class="hidden md:flex flex-col w-64 glass-card rounded-xl p-md h-[calc(100vh-100px)] sticky top-24">
+<nav class="space-y-sm flex-1">
+<a class="flex items-center gap-md px-md py-sm bg-secondary-container text-on-secondary-container rounded-lg font-button text-button transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="password">password</span>
+                    Passwords
+                </a>
+<a class="flex items-center gap-md px-md py-sm text-on-surface-variant hover:bg-surface-container-high rounded-lg font-button text-button transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="account_balance_wallet">account_balance_wallet</span>
+                    Wallet
+                </a>
+<a class="flex items-center gap-md px-md py-sm text-on-surface-variant hover:bg-surface-container-high rounded-lg font-button text-button transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="vpn_key">vpn_key</span>
+                    Generator
+                </a>
+</nav>
+<div class="mt-auto">
+<a class="flex items-center gap-md px-md py-sm text-on-surface-variant hover:bg-surface-container-high rounded-lg font-button text-button transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+                    Settings
+                </a>
+</div>
+</aside>
+<!-- Content Area -->
+<section class="flex-1">
+<!-- Dynamic Filter Pills -->
+<div class="flex gap-2 overflow-x-auto pb-2 mb-md pt-1 scrollbar-none" id="filter-pills"><button class="filter-btn hover:text-white rounded-full px-4 py-1.5 text-sm whitespace-nowrap transition-all cursor-pointer bg-[#0080ff] text-white shadow-sm" data-category="all">All</button>
+<button class="filter-btn bg-[#191c1e] border border-white/10 text-on-surface-variant hover:text-white rounded-full px-4 py-1.5 text-sm whitespace-nowrap transition-all cursor-pointer" data-category="email">Email</button>
+<button class="filter-btn bg-[#191c1e] border border-white/10 text-on-surface-variant hover:text-white rounded-full px-4 py-1.5 text-sm whitespace-nowrap transition-all cursor-pointer" data-category="instagram">Instagram</button>
+<button class="filter-btn bg-[#191c1e] border border-white/10 text-on-surface-variant hover:text-white rounded-full px-4 py-1.5 text-sm whitespace-nowrap transition-all cursor-pointer" data-category="bank">Bank</button>
+<button class="filter-btn bg-[#191c1e] border border-white/10 text-on-surface-variant hover:text-white rounded-full px-4 py-1.5 text-sm whitespace-nowrap transition-all cursor-pointer" data-category="github">GitHub</button>
+<button class="filter-btn bg-[#191c1e] border border-white/10 text-on-surface-variant hover:text-white rounded-full px-4 py-1.5 text-sm whitespace-nowrap transition-all cursor-pointer" data-category="entertainment">Entertainment</button></div>
+<div class="flex justify-between items-end mb-md">
+<span class="text-on-surface-variant font-body-sm text-body-sm" id="items-count-badge">2 Items</span>
+</div>
+<!-- Bento Grid / List of Vault Items -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-md" data-dynamic-vault="enabled" id="vault-items-grid"><!-- Entry Card 1: Email / Google -->
+<div class="password-card bg-[#191c1e] hover:bg-surface-container-high border border-white/5 rounded-2xl p-md flex items-center justify-between gap-md group cursor-pointer transition-all active:scale-[0.99]" data-categories="all google email personal" data-id="email">
+<div class="flex items-center gap-md flex-1 min-w-0">
+<div class="w-14 h-14 rounded-2xl bg-[#323537] flex items-center justify-center text-[#0080ff] shrink-0">
+<span class="material-symbols-outlined text-[28px]" data-icon="vpn_key" style="font-variation-settings: &quot;FILL&quot; 1;">vpn_key</span>
+</div>
+<div class="flex-1 min-w-0">
+<h3 class="text-white font-bold text-base leading-snug truncate">Email</h3>
+<p class="text-on-surface-variant font-body-sm text-sm truncate">dvknavya@gmail.com</p>
+<div class="flex items-center gap-1 mt-1 text-[11px] text-on-surface-variant/70">
+<span class="material-symbols-outlined text-[12px]">schedule</span>
+<span class="card-timestamp truncate">Edited 10m ago</span>
+</div>
+</div>
+</div>
+<div class="text-on-surface-variant group-hover:text-white transition-colors shrink-0 flex items-center pr-1"><img alt="Arrow" class="w-3.5 h-3.5 object-contain invert" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBicfuyUNQPwYkD-3NzHQlx9aM5S3xliszdNIN63PyTu_IzbC5KFE1JV25UEW6-3-FCToatrwItHTi9mNR_kw3je62w-2Fu3BPfjUFiyD0F4K5SSAw_ttABqtF80mgSuHfKNyfb94wJP5-unsdt0OMOo5ItrcOIB48l9X5ewBEEwDhi8D6gGPtG52q1I_qwDaRh7gX4mYAahlWH7CX1i-wG5SkolwoB22cUbnGyjekBVY0Uh_3f9pFhob_cAT-Qwz8xegA"></div>
+</div>
+<!-- Entry Card 2: Netflix -->
+<div class="password-card bg-[#191c1e] hover:bg-surface-container-high border border-white/5 rounded-2xl p-md flex items-center justify-between gap-md group cursor-pointer transition-all active:scale-[0.99]" data-categories="all entertainment" data-id="netflix">
+<div class="flex items-center gap-md flex-1 min-w-0">
+<div class="w-14 h-14 rounded-2xl bg-[#323537] flex items-center justify-center text-[#0080ff] shrink-0">
+<span class="material-symbols-outlined text-[28px]" data-icon="movie" style="font-variation-settings: &quot;FILL&quot; 1;">movie</span>
+</div>
+<div class="flex-1 min-w-0">
+<h3 class="text-white font-bold text-base leading-snug truncate">Netflix</h3>
+<p class="text-on-surface-variant font-body-sm text-sm truncate">john.doe@gmail.com</p>
+<div class="flex items-center gap-1 mt-1 text-[11px] text-on-surface-variant/70">
+<span class="material-symbols-outlined text-[12px]">schedule</span>
+<span class="card-timestamp truncate">Edited 2h ago</span>
+</div>
+</div>
+</div>
+<div class="text-on-surface-variant group-hover:text-white transition-colors shrink-0 flex items-center pr-1"><img alt="Arrow" class="w-3.5 h-3.5 object-contain invert" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCSvEmXoriPGmVBNoGL_cLTKErLlxmsM_YXYbKdfmqiF0oiZ_iy1AdbTPdIdmTWtn8JqlD1oWPBfyA4mQKVHXkEjLj7npSUmCIbCNp90oqVl61PP8pXODVlh7cjAEtcLeTPO_qWSdwNOLMVxwyNnlNQqkfly9SSAdJfBKEzafaZPsEtZYfHm_5dsU3dSjTwkT3O3YjOGwxYQwFiPdv164Y3I-T9h6VExg7MliPTT5_04ZPfwWj7Hx8-V8RVs5zBTuQSj3A"></div>
+</div>
+<!-- Entry Card 3: Chase Bank -->
+<div class="password-card bg-[#191c1e] hover:bg-surface-container-high border border-white/5 rounded-2xl p-md flex items-center justify-between gap-md group cursor-pointer transition-all active:scale-[0.99]" data-categories="all bank finance" data-id="chase">
+<div class="flex items-center gap-md flex-1 min-w-0">
+<div class="w-14 h-14 rounded-2xl bg-[#323537] flex items-center justify-center text-[#0080ff] shrink-0">
+<span class="material-symbols-outlined text-[28px]" data-icon="account_balance" style="font-variation-settings: &quot;FILL&quot; 1;">account_balance</span>
+</div>
+<div class="flex-1 min-w-0">
+<h3 class="text-white font-bold text-base leading-snug truncate">Chase Bank</h3>
+<p class="text-on-surface-variant font-body-sm text-sm truncate">jdoe_finance99</p>
+<div class="flex items-center gap-1 mt-1 text-[11px] text-on-surface-variant/70">
+<span class="material-symbols-outlined text-[12px]">schedule</span>
+<span class="card-timestamp truncate">Edited yesterday</span>
+</div>
+</div>
+</div>
+<div class="text-on-surface-variant group-hover:text-white transition-colors shrink-0 flex items-center pr-1"><img alt="Arrow" class="w-3.5 h-3.5 object-contain invert" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBnRvASQaEZ2Aro5IZj0r1Ihry_CuyCqSfdxx0gJomEd8r_ornMVKrQl8gUa5CGe-dxT89Lhqob0CiBJzmy-t8ZBZHiA1JpNV5y2QZXjaJgwiFtnaQ4CAI8MOLlk42Nq39zdsPPVWIbCsGqzjyoUUuiYlzRVw1-CDmk2WlSokMZUehvhzcZFlFrhoqRdRW0FgZEjmF7oD6c5dCNDeGJoXg3FrI0t6v0fL6jnX8yJwoGZcoBrLO7-pTBXK_UjLlEI9KoBmk"></div>
+</div>
+<!-- Entry Card 4: GitHub -->
+<div class="password-card bg-[#191c1e] hover:bg-surface-container-high border border-white/5 rounded-2xl p-md flex items-center justify-between gap-md group cursor-pointer transition-all active:scale-[0.99]" data-categories="all github work" data-id="github">
+<div class="flex items-center gap-md flex-1 min-w-0">
+<div class="w-14 h-14 rounded-2xl bg-[#323537] flex items-center justify-center text-[#0080ff] shrink-0">
+<span class="material-symbols-outlined text-[28px]" data-icon="work" style="font-variation-settings: &quot;FILL&quot; 1;">work</span>
+</div>
+<div class="flex-1 min-w-0">
+<h3 class="text-white font-bold text-base leading-snug truncate">GitHub (Work)</h3>
+<p class="text-on-surface-variant font-body-sm text-sm truncate">dev_jdoe</p>
+<div class="flex items-center gap-1 mt-1 text-[11px] text-on-surface-variant/70">
+<span class="material-symbols-outlined text-[12px]">schedule</span>
+<span class="card-timestamp truncate">Edited 3d ago</span>
+</div>
+</div>
+</div>
+<div class="text-on-surface-variant group-hover:text-white transition-colors shrink-0 flex items-center pr-1"><img alt="Arrow" class="w-3.5 h-3.5 object-contain invert" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBx9zX5oVAusXIN3pU92_Fg0Qf9kbyJRtYw6l-35bFumbXw-cZwhasmziVQq2gPnsZUWfGECNfk1T0FIR4suU8rCpm9BC67sClvsGuCC4ALN3Kibau2EIWJGU7ECPtZGnLR48MNbGGsdhlIVPfhop6GwN1SUvbZ86t90rJuFdhvQDR5MHX992TA-CKne61GVkK6Nd_cLXCw6nEWmcTuh4AkjBWsYDFYpvLqvYjYhpzE-QZrIQrTg88G2TJTJko9L9-ZhRg"></div>
+</div>
+<!-- Entry Card 5: Instagram -->
+<div class="password-card bg-[#191c1e] hover:bg-surface-container-high border border-white/5 rounded-2xl p-md flex items-center justify-between gap-md group cursor-pointer transition-all active:scale-[0.99]" data-categories="all instagram social personal" data-id="instagram">
+<div class="flex items-center gap-md flex-1 min-w-0">
+<div class="w-14 h-14 rounded-2xl bg-[#323537] flex items-center justify-center text-[#0080ff] shrink-0">
+<span class="material-symbols-outlined text-[28px]" data-icon="photo_camera" style="font-variation-settings: &quot;FILL&quot; 1;">photo_camera</span>
+</div>
+<div class="flex-1 min-w-0">
+<h3 class="text-white font-bold text-base leading-snug truncate">Instagram</h3>
+<p class="text-on-surface-variant font-body-sm text-sm truncate">@johndoe_official</p>
+<div class="flex items-center gap-1 mt-1 text-[11px] text-on-surface-variant/70">
+<span class="material-symbols-outlined text-[12px]">schedule</span>
+<span class="card-timestamp truncate">Edited 1w ago</span>
+</div>
+</div>
+</div>
+<div class="text-on-surface-variant group-hover:text-white transition-colors shrink-0 flex items-center pr-1"><img alt="Arrow" class="w-3.5 h-3.5 object-contain invert" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDXU_uSFq5wAGM9zvEjvDmFGHG0ub88980LQLpzMegUe65hkYohXhG-ySrcOcmSssXst7nvyVDOu9iYoaqd7GE_JhgH5zC1UmOZA_4ymbys-0Q9-pbV-xoyyFMt54K9M-XpE17ucNOffRKOvfOTR7GBVAQ0rtx86IaCLTqC6f1OEAGxvocVCv3D1URenlepQCzpodoIBtJC-jC1G-hK_eGXliFFquJRlh5Ksf3Ne6rh4MdgxEwwVNPnsy-9qsna4tK2IeE"></div>
+</div></div>
+<!-- Sleek Empty State for Categories with 0 items -->
+<div class="hidden flex-col items-center justify-center py-16 px-4 text-center glass-card rounded-2xl border border-white/5 mt-4" id="empty-state">
+<div class="w-14 h-14 rounded-full bg-surface-container-high flex items-center justify-center text-on-surface-variant mb-4">
+<span class="material-symbols-outlined text-[30px]" data-icon="folder_off">folder_off</span>
+</div>
+<h4 class="text-base font-semibold text-white mb-1">No passwords found</h4>
+<p class="text-on-surface-variant text-sm max-w-xs" id="empty-state-message">No passwords found in this category</p>
+</div>
+</section>
+</main>
+<!-- BottomNavBar (Mobile Floating Pill Dock) -->
+<nav class="md:hidden fixed bottom-6 left-1/2 -translate-x-1/2 z-50 flex items-center justify-center bg-[#25282a]/95 backdrop-blur-md px-3 py-2 rounded-full shadow-2xl border border-white/5 gap-2">
+<a class="bg-[#0080ff] text-white px-5 py-2.5 rounded-full flex items-center justify-center shadow-md transition-all" href="#" title="Passwords"><span class="material-symbols-outlined text-[22px]" data-icon="vpn_key" style="font-variation-settings: &quot;FILL&quot; 1;">vpn_key</span></a>
+<a class="text-[#a0a5aa] hover:text-white p-2.5 flex items-center justify-center transition-colors" href="#" title="Wallet"><span class="material-symbols-outlined text-[22px]" data-icon="account_balance_wallet">account_balance_wallet</span></a>
+<a class="text-[#a0a5aa] hover:text-white p-2.5 flex items-center justify-center transition-colors" href="#" title="Generator">
+<span class="material-symbols-outlined text-[22px]" data-icon="grid_view">grid_view</span>
+</a>
+<a class="text-[#a0a5aa] hover:text-white p-2.5 flex items-center justify-center transition-colors" href="#" title="Settings">
+<span class="material-symbols-outlined text-[22px]" data-icon="settings">settings</span>
+</a>
+</nav>
+<!-- Edit Password Modal (Pop-up Overlay matching SCREEN_2 design) -->
+<div class="fixed inset-0 z-[100] hidden items-end sm:items-center justify-center transition-all duration-300" id="password-modal">
+<!-- Backdrop -->
+<div class="absolute inset-0 bg-black/80 backdrop-blur-sm opacity-0 transition-opacity duration-300" id="modal-backdrop"></div>
+<!-- Modal Sheet / Dialog -->
+<div class="relative w-full max-w-lg bg-[#020617] sm:rounded-3xl rounded-t-3xl border border-white/10 shadow-2xl overflow-hidden flex flex-col max-h-[92vh] transform translate-y-full sm:translate-y-6 sm:scale-95 opacity-0 transition-all duration-300 ease-out z-10" id="modal-sheet">
+<!-- Top Action Bar -->
+<div class="px-5 pt-4 pb-2 flex items-center justify-between">
+<button aria-label="Close" class="w-9 h-9 rounded-full bg-[#191c1e] border border-white/10 flex items-center justify-center text-on-surface-variant hover:text-white active:scale-95 transition-all" id="modal-close-btn">
+<span class="material-symbols-outlined text-[20px]">close</span>
+</button>
+<div class="flex items-center gap-2">
+<button class="text-[#0080ff] hover:text-[#3c90ff] font-semibold text-[15px] px-3 py-1 active:opacity-75 transition-all rounded-lg" id="modal-edit-toggle-btn">Edit</button>
+</div>
+</div>
+<!-- Scrollable Modal Content -->
+<div class="px-5 pb-8 overflow-y-auto scrollbar-none space-y-5">
+<!-- Service Identity Header -->
+<div class="flex flex-col items-center justify-center pt-2 pb-1 text-center">
+<div class="w-20 h-20 rounded-full bg-[#1e293b] border border-white/10 flex items-center justify-center text-white text-3xl font-bold shadow-lg mb-3" id="modal-avatar">
+          E
+        </div>
+<!-- View Title -->
+<h2 class="text-2xl font-bold text-white tracking-tight" id="modal-title">Email</h2>
+<!-- Edit Title Input -->
+<div class="hidden w-full max-w-xs mt-1" id="modal-title-edit-container">
+<input class="w-full text-center bg-[#191c1e] border border-secondary text-white font-bold text-lg rounded-xl px-3 py-1.5 focus:outline-none focus:ring-1 focus:ring-secondary transition-all" id="modal-title-input" placeholder="Service name" type="text">
+</div>
+<p class="text-sm text-on-surface-variant mt-0.5" id="modal-subtitle">dvknavya@gmail.com</p>
+<!-- Modal Last Edited Indicator -->
+<div class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white/5 border border-white/10 text-[12px] text-on-surface-variant mt-2.5" id="modal-last-edited-badge">
+<span class="material-symbols-outlined text-[14px] text-on-surface-variant">schedule</span>
+<span id="modal-last-edited-text" class="">Edited 10m ago</span>
+</div>
+</div>
+<!-- CREDENTIALS Card -->
+<div>
+<div class="text-[11px] font-bold text-on-surface-variant/80 tracking-wider uppercase px-1 mb-2">CREDENTIALS</div>
+<div class="bg-[#191c1e] border border-white/10 rounded-2xl divide-y divide-white/5 overflow-hidden">
+<!-- Username row -->
+<div class="p-3.5 flex items-center justify-between gap-3">
+<div class="min-w-0 flex-1">
+<span class="text-[11px] text-on-surface-variant block font-medium">Username</span>
+<div id="modal-username-view-wrap">
+<span class="text-white text-sm font-medium block truncate select-all" id="modal-username">dvknavya@gmail.com</span>
+</div>
+<div class="hidden mt-1" id="modal-username-edit-wrap">
+<input class="w-full bg-[#0b0f10] border border-white/15 focus:border-secondary focus:ring-1 focus:ring-secondary rounded-lg px-3 py-1.5 text-sm text-white focus:outline-none transition-all" id="modal-username-input" placeholder="Username or email" type="text">
+</div>
+</div>
+<button class="p-2 rounded-xl bg-surface-container-high/60 hover:bg-surface-container-highest text-on-surface-variant hover:text-white transition-all active:scale-90 shrink-0" id="copy-username-btn" title="Copy username">
+<span class="material-symbols-outlined text-[19px]">content_copy</span>
+</button>
+</div>
+<!-- Password row -->
+<div class="p-3.5 flex items-center justify-between gap-3">
+<div class="min-w-0 flex-1">
+<span class="text-[11px] text-on-surface-variant block font-medium">Password</span>
+<div id="modal-password-view-wrap">
+<span class="text-white text-sm font-label-mono tracking-widest block truncate select-all" id="modal-password-display">••••••••••••••••</span>
+</div>
+<div class="hidden mt-1" id="modal-password-edit-wrap">
+<input class="w-full bg-[#0b0f10] border border-white/15 focus:border-secondary focus:ring-1 focus:ring-secondary rounded-lg px-3 py-1.5 text-sm font-label-mono text-white focus:outline-none transition-all" id="modal-password-input" placeholder="Password" type="text">
+</div>
+</div>
+<div class="flex items-center gap-1.5 shrink-0" id="password-actions-group">
+<button class="p-2 rounded-xl bg-surface-container-high/60 hover:bg-surface-container-highest text-on-surface-variant hover:text-white transition-all active:scale-90" id="toggle-password-btn" title="Toggle visibility">
+<span class="material-symbols-outlined text-[19px]" id="password-eye-icon">visibility</span>
+</button>
+<button class="p-2 rounded-xl bg-surface-container-high/60 hover:bg-surface-container-highest text-on-surface-variant hover:text-white transition-all active:scale-90" id="copy-password-btn" title="Copy password">
+<span class="material-symbols-outlined text-[19px]">content_copy</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+<!-- SAFE & SECURE Banner -->
+<div class="bg-emerald-950/40 border border-emerald-500/20 rounded-2xl p-3.5 flex items-center gap-3" id="modal-security-banner">
+<div class="w-10 h-10 rounded-full bg-emerald-500/15 flex items-center justify-center text-emerald-400 shrink-0">
+<span class="material-symbols-outlined text-[22px]" style="font-variation-settings: 'FILL' 1;">verified_user</span>
+</div>
+<div class="min-w-0">
+<div class="text-emerald-300 font-semibold text-sm">Safe &amp; Secure</div>
+<div class="text-emerald-400/70 text-xs mt-0.5">No leaks detected in known data breaches.</div>
+</div>
+</div>
+<!-- DETAILS Card -->
+<div>
+<div class="text-[11px] font-bold text-on-surface-variant/80 tracking-wider uppercase px-1 mb-2">DETAILS</div>
+<div class="bg-[#191c1e] border border-white/10 rounded-2xl divide-y divide-white/5 overflow-hidden">
+<!-- Website row -->
+<div class="p-3.5 flex items-center justify-between gap-3">
+<div class="min-w-0 flex-1">
+<span class="text-[11px] text-on-surface-variant block font-medium">Website</span>
+<div id="modal-website-view-wrap">
+<a class="text-[#0080ff] hover:underline text-sm font-medium block truncate" href="#" id="modal-website" target="_blank">https://mail.google.com</a>
+</div>
+<div class="hidden mt-1" id="modal-website-edit-wrap">
+<input class="w-full bg-[#0b0f10] border border-white/15 focus:border-secondary focus:ring-1 focus:ring-secondary rounded-lg px-3 py-1.5 text-sm text-white focus:outline-none transition-all" id="modal-website-input" placeholder="https://example.com" type="text">
+</div>
+</div>
+<a class="p-2 rounded-xl bg-surface-container-high/60 hover:bg-surface-container-highest text-on-surface-variant hover:text-white transition-all active:scale-90 shrink-0" href="#" id="modal-website-link" target="_blank" title="Visit website">
+<span class="material-symbols-outlined text-[19px]">open_in_new</span>
+</a>
+</div>
+<!-- Notes row -->
+<div class="p-3.5">
+<span class="text-[11px] text-on-surface-variant block font-medium">Notes</span>
+<div id="modal-notes-view-wrap">
+<p class="text-white text-sm font-normal mt-0.5 whitespace-pre-wrap" id="modal-notes">Primary work &amp; personal backup</p>
+</div>
+<div class="hidden mt-1" id="modal-notes-edit-wrap">
+<textarea class="w-full bg-[#0b0f10] border border-white/15 focus:border-secondary focus:ring-1 focus:ring-secondary rounded-lg px-3 py-2 text-sm text-white focus:outline-none resize-none transition-all" id="modal-notes-input" placeholder="Add notes or details..." rows="3"></textarea>
+</div>
+</div>
+</div>
+</div>
+<!-- Delete Button -->
+<div class="pt-2">
+<button class="w-full py-3 px-4 rounded-2xl text-red-500 hover:text-red-400 hover:bg-red-500/10 font-semibold text-sm flex items-center justify-center gap-2 border border-red-500/20 active:scale-[0.98] transition-all" id="modal-delete-btn">
+<span class="material-symbols-outlined text-[20px]">delete</span>
+          Delete Password
+        </button>
+</div>
+</div>
+</div>
+</div>
+<!-- Toast Feedback Notification -->
+<div class="fixed bottom-24 left-1/2 -translate-x-1/2 z-[110] bg-[#1e293b] border border-white/10 text-white text-xs font-medium px-4 py-2 rounded-full shadow-2xl flex items-center gap-2 pointer-events-none opacity-0 transition-opacity duration-200" id="toast">
+<span class="material-symbols-outlined text-emerald-400 text-[16px]">check_circle</span>
+<span class="" id="toast-text">Copied to clipboard</span>
+</div><script>
+(function() {
+    let isEditMode = false;
+
+    const editToggleBtn = document.getElementById('modal-edit-toggle-btn');
+    const modalTitleEl = document.getElementById('modal-title');
+    const modalTitleContainer = document.getElementById('modal-title-edit-container');
+    const modalTitleInput = document.getElementById('modal-title-input');
+    const modalSubtitleEl = document.getElementById('modal-subtitle');
+    const modalLastEditedText = document.getElementById('modal-last-edited-text');
+
+    const usernameViewWrap = document.getElementById('modal-username-view-wrap');
+    const usernameEditWrap = document.getElementById('modal-username-edit-wrap');
+    const usernameInput = document.getElementById('modal-username-input');
+
+    const passwordViewWrap = document.getElementById('modal-password-view-wrap');
+    const passwordEditWrap = document.getElementById('modal-password-edit-wrap');
+    const passwordInput = document.getElementById('modal-password-input');
+    const passwordActionsGroup = document.getElementById('password-actions-group');
+
+    const websiteViewWrap = document.getElementById('modal-website-view-wrap');
+    const websiteEditWrap = document.getElementById('modal-website-edit-wrap');
+    const websiteInput = document.getElementById('modal-website-input');
+    const websiteLinkBtn = document.getElementById('modal-website-link');
+
+    const notesViewWrap = document.getElementById('modal-notes-view-wrap');
+    const notesEditWrap = document.getElementById('modal-notes-edit-wrap');
+    const notesInput = document.getElementById('modal-notes-input');
+
+    function setEditState(editing) {
+        isEditMode = editing;
+        if (isEditMode) {
+            editToggleBtn.textContent = 'Done';
+            editToggleBtn.classList.remove('text-[#0080ff]', 'hover:text-[#3c90ff]');
+            editToggleBtn.classList.add('bg-[#0080ff]', 'text-white', 'hover:bg-[#0070e0]', 'px-4', 'py-1', 'shadow-sm');
+
+            modalTitleInput.value = currentItem ? currentItem.title : '';
+            usernameInput.value = currentItem ? currentItem.username : '';
+            passwordInput.value = currentItem ? currentItem.passwordRaw : '';
+            websiteInput.value = currentItem ? currentItem.website : '';
+            notesInput.value = currentItem ? currentItem.notes : '';
+
+            modalTitleEl.classList.add('hidden');
+            modalTitleContainer.classList.remove('hidden');
+
+            usernameViewWrap.classList.add('hidden');
+            usernameEditWrap.classList.remove('hidden');
+
+            passwordViewWrap.classList.add('hidden');
+            passwordEditWrap.classList.remove('hidden');
+            if (passwordActionsGroup) passwordActionsGroup.classList.add('hidden');
+
+            websiteViewWrap.classList.add('hidden');
+            websiteEditWrap.classList.remove('hidden');
+            if (websiteLinkBtn) websiteLinkBtn.classList.add('hidden');
+
+            notesViewWrap.classList.add('hidden');
+            notesEditWrap.classList.remove('hidden');
+        } else {
+            editToggleBtn.textContent = 'Edit';
+            editToggleBtn.classList.remove('bg-[#0080ff]', 'text-white', 'hover:bg-[#0070e0]', 'px-4');
+            editToggleBtn.classList.add('text-[#0080ff]', 'hover:text-[#3c90ff]', 'px-3');
+
+            modalTitleEl.classList.remove('hidden');
+            modalTitleContainer.classList.add('hidden');
+
+            usernameViewWrap.classList.remove('hidden');
+            usernameEditWrap.classList.add('hidden');
+
+            passwordViewWrap.classList.remove('hidden');
+            passwordEditWrap.classList.add('hidden');
+            if (passwordActionsGroup) passwordActionsGroup.classList.remove('hidden');
+
+            websiteViewWrap.classList.remove('hidden');
+            websiteEditWrap.classList.add('hidden');
+            if (websiteLinkBtn) websiteLinkBtn.classList.remove('hidden');
+
+            notesViewWrap.classList.remove('hidden');
+            notesEditWrap.classList.add('hidden');
+        }
+    }
+
+    if (editToggleBtn) {
+        editToggleBtn.addEventListener('click', () => {
+            if (!isEditMode) {
+                setEditState(true);
+            } else {
+                if (currentItem) {
+                    const newTitle = modalTitleInput.value.trim() || currentItem.title;
+                    const newUsername = usernameInput.value.trim() || currentItem.username;
+                    const newPassword = passwordInput.value.trim() || currentItem.passwordRaw;
+                    const newWebsite = websiteInput.value.trim() || currentItem.website;
+                    const newNotes = notesInput.value.trim();
+
+                    // Update timestamp to 'Edited just now'
+                    const newLastEdited = 'Edited just now';
+                    currentItem.lastEdited = newLastEdited;
+
+                    currentItem.title = newTitle;
+                    currentItem.username = newUsername;
+                    currentItem.subtitle = newUsername;
+                    currentItem.passwordRaw = newPassword;
+                    currentItem.website = newWebsite;
+                    currentItem.notes = newNotes;
+                    currentItem.avatarChar = newTitle.charAt(0).toUpperCase();
+
+                    modalTitleEl.textContent = newTitle;
+                    modalSubtitleEl.textContent = newUsername;
+                    modalAvatar.textContent = currentItem.avatarChar;
+                    modalUsername.textContent = newUsername;
+                    modalWebsite.textContent = newWebsite;
+                    modalWebsite.href = newWebsite;
+                    if (modalWebsiteLink) modalWebsiteLink.href = newWebsite;
+                    modalNotes.textContent = newNotes || 'No notes added.';
+                    modalPasswordDisplay.textContent = isPasswordVisible ? newPassword : '••••••••••••••••';
+                    if (modalLastEditedText) modalLastEditedText.textContent = newLastEdited;
+
+                    // Update corresponding card on screen immediately
+                    const currentKey = Object.keys(credentialsData).find(k => credentialsData[k] === currentItem);
+                    const matchingCard = document.querySelector(`.password-card[data-id="${currentKey}"]`);
+                    if (matchingCard) {
+                        const cardTitle = matchingCard.querySelector('h3');
+                        const cardSub = matchingCard.querySelector('p');
+                        const cardTime = matchingCard.querySelector('.card-timestamp');
+                        if (cardTitle) cardTitle.textContent = newTitle;
+                        if (cardSub) cardSub.textContent = newUsername;
+                        if (cardTime) cardTime.textContent = newLastEdited;
+                    }
+                }
+                setEditState(false);
+                showToast('Changes saved successfully');
+            }
+        });
+    }
+
+    // Reset edit state whenever modal closes
+    const originalClose = closeModal;
+    window.closeModal = function() {
+        setEditState(false);
+        originalClose();
+    };
+    if (modalCloseBtn) modalCloseBtn.onclick = window.closeModal;
+    if (modalBackdrop) modalBackdrop.onclick = window.closeModal;
+})();
+</script>
+<script>
+    // Comprehensive credentials data lookup matching SCREEN_2 format
+    const credentialsData = {
+        email: {
+            title: "Email",
+            avatarChar: "E",
+            avatarBg: "#1e293b",
+            subtitle: "dvknavya@gmail.com",
+            username: "dvknavya@gmail.com",
+            passwordRaw: "k8#N9v$2qP!x90a",
+            website: "https://mail.google.com",
+            notes: "Primary work & personal backup. Two-factor authentication enabled.",
+            lastEdited: "Edited 10m ago"
+        },
+        netflix: {
+            title: "Netflix",
+            avatarChar: "N",
+            avatarBg: "#1e293b",
+            subtitle: "john.doe@gmail.com",
+            username: "john.doe@gmail.com",
+            passwordRaw: "Fl!xStream4k#2024",
+            website: "https://netflix.com",
+            notes: "Family account tier 4K. Billed on the 15th of each month.",
+            lastEdited: "Edited 2h ago"
+        },
+        chase: {
+            title: "Chase Bank",
+            avatarChar: "C",
+            avatarBg: "#1e293b",
+            subtitle: "jdoe_finance99",
+            username: "jdoe_finance99",
+            passwordRaw: "B@nkSecure$9847!",
+            website: "https://chase.com",
+            notes: "Checking & savings account. Requires hardware token for wire transfers.",
+            lastEdited: "Edited yesterday"
+        },
+        github: {
+            title: "GitHub (Work)",
+            avatarChar: "G",
+            avatarBg: "#1e293b",
+            subtitle: "dev_jdoe",
+            username: "dev_jdoe",
+            passwordRaw: "ghp_TokenSecur3Key!99",
+            website: "https://github.com",
+            notes: "Main developer account SSH linked. GPG commit signing key active.",
+            lastEdited: "Edited 3d ago"
+        },
+        instagram: {
+            title: "Instagram",
+            avatarChar: "I",
+            avatarBg: "#1e293b",
+            subtitle: "@johndoe_official",
+            username: "@johndoe_official",
+            passwordRaw: "Soc!alL1fe#99Insta",
+            website: "https://instagram.com",
+            notes: "Personal creator profile linked with meta verified badge.",
+            lastEdited: "Edited 1w ago"
+        }
+    };
+
+    // Modal elements
+    const modal = document.getElementById('password-modal');
+    const modalBackdrop = document.getElementById('modal-backdrop');
+    const modalSheet = document.getElementById('modal-sheet');
+    const modalCloseBtn = document.getElementById('modal-close-btn');
+
+    const modalAvatar = document.getElementById('modal-avatar');
+    const modalTitle = document.getElementById('modal-title');
+    const modalSubtitle = document.getElementById('modal-subtitle');
+    const modalLastEditedText = document.getElementById('modal-last-edited-text');
+    const modalUsername = document.getElementById('modal-username');
+    const modalPasswordDisplay = document.getElementById('modal-password-display');
+    const togglePasswordBtn = document.getElementById('toggle-password-btn');
+    const passwordEyeIcon = document.getElementById('password-eye-icon');
+    const copyUsernameBtn = document.getElementById('copy-username-btn');
+    const copyPasswordBtn = document.getElementById('copy-password-btn');
+    const modalWebsite = document.getElementById('modal-website');
+    const modalWebsiteLink = document.getElementById('modal-website-link');
+    const modalNotes = document.getElementById('modal-notes');
+    const toast = document.getElementById('toast');
+    const toastText = document.getElementById('toast-text');
+
+    let currentItem = null;
+    let isPasswordVisible = false;
+
+    function showToast(message) {
+        toastText.textContent = message;
+        toast.classList.remove('opacity-0');
+        toast.classList.add('opacity-100');
+        setTimeout(() => {
+            toast.classList.remove('opacity-100');
+            toast.classList.add('opacity-0');
+        }, 1800);
+    }
+
+    function openModal(id) {
+        const item = credentialsData[id] || credentialsData.email;
+        currentItem = item;
+        isPasswordVisible = false;
+
+        modalAvatar.textContent = item.avatarChar;
+        modalTitle.textContent = item.title;
+        modalSubtitle.textContent = item.subtitle;
+        if (modalLastEditedText) modalLastEditedText.textContent = item.lastEdited || 'Edited recently';
+        modalUsername.textContent = item.username;
+        modalPasswordDisplay.textContent = '••••••••••••••••';
+        passwordEyeIcon.textContent = 'visibility';
+        modalWebsite.textContent = item.website;
+        modalWebsite.href = item.website;
+        modalWebsiteLink.href = item.website;
+        modalNotes.textContent = item.notes;
+
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+
+        // Trigger animation
+        requestAnimationFrame(() => {
+            modalBackdrop.classList.remove('opacity-0');
+            modalBackdrop.classList.add('opacity-100');
+            modalSheet.classList.remove('translate-y-full', 'sm:translate-y-6', 'sm:scale-95', 'opacity-0');
+            modalSheet.classList.add('translate-y-0', 'sm:translate-y-0', 'sm:scale-100', 'opacity-100');
+        });
+    }
+
+    function closeModal() {
+        modalBackdrop.classList.remove('opacity-100');
+        modalBackdrop.classList.add('opacity-0');
+        modalSheet.classList.remove('translate-y-0', 'sm:translate-y-0', 'sm:scale-100', 'opacity-100');
+        modalSheet.classList.add('translate-y-full', 'sm:translate-y-6', 'sm:scale-95', 'opacity-0');
+
+        setTimeout(() => {
+            modal.classList.remove('flex');
+            modal.classList.add('hidden');
+        }, 280);
+    }
+
+    modalBackdrop.addEventListener('click', closeModal);
+    modalCloseBtn.addEventListener('click', closeModal);
+
+    // Password visibility toggle
+    togglePasswordBtn.addEventListener('click', () => {
+        if (!currentItem) return;
+        isPasswordVisible = !isPasswordVisible;
+        if (isPasswordVisible) {
+            modalPasswordDisplay.textContent = currentItem.passwordRaw;
+            passwordEyeIcon.textContent = 'visibility_off';
+        } else {
+            modalPasswordDisplay.textContent = '••••••••••••••••';
+            passwordEyeIcon.textContent = 'visibility';
+        }
+    });
+
+    // Copy actions
+    copyUsernameBtn.addEventListener('click', () => {
+        if (!currentItem) return;
+        navigator.clipboard.writeText(currentItem.username).catch(() => {});
+        showToast('Username copied to clipboard');
+    });
+
+    copyPasswordBtn.addEventListener('click', () => {
+        if (!currentItem) return;
+        navigator.clipboard.writeText(currentItem.passwordRaw).catch(() => {});
+        showToast('Password copied to clipboard');
+    });
+
+    // Delete password action feedback
+    const modalDeleteBtn = document.getElementById('modal-delete-btn');
+    modalDeleteBtn.addEventListener('click', () => {
+        showToast(`Password for ${currentItem?.title || 'item'} deleted`);
+        setTimeout(closeModal, 600);
+    });
+
+    // Hook card clicks
+    const cards = document.querySelectorAll('.password-card');
+    cards.forEach(card => {
+        card.addEventListener('click', () => {
+            const cardId = card.dataset.id || 'email';
+            openModal(cardId);
+        });
+    });
+
+    // Category Filter Functionality
+    const filterButtons = document.querySelectorAll('.filter-btn');
+    const countBadge = document.getElementById('items-count-badge');
+    const emptyState = document.getElementById('empty-state');
+    const emptyStateMsg = document.getElementById('empty-state-message');
+    const mobileSearch = document.getElementById('mobile-search');
+    const desktopSearch = document.getElementById('desktop-search');
+
+    let currentFilter = 'email';
+
+    const activeClasses = ['bg-[#0080ff]', 'text-white', 'shadow-sm'];
+    const inactiveClasses = ['bg-[#191c1e]', 'border', 'border-white/10', 'text-on-surface-variant'];
+
+    function applyFilter(category) {
+        currentFilter = category.toLowerCase().trim();
+
+        // 1. Update filter buttons UI
+        filterButtons.forEach(btn => {
+            const btnCat = btn.dataset.category.toLowerCase();
+            if (btnCat === currentFilter) {
+                btn.classList.remove(...inactiveClasses);
+                btn.classList.add(...activeClasses);
+            } else {
+                btn.classList.remove(...activeClasses);
+                btn.classList.add(...inactiveClasses);
+            }
+        });
+
+        // 2. Filter Cards
+        let visibleCount = 0;
+        cards.forEach(card => {
+            const cardCategories = (card.dataset.categories || '').toLowerCase().split(' ');
+            const matches = currentFilter === 'all' || cardCategories.includes(currentFilter);
+
+            if (matches) {
+                card.classList.remove('hidden');
+                visibleCount++;
+            } else {
+                card.classList.add('hidden');
+            }
+        });
+
+        // 3. Update count label
+        countBadge.textContent = visibleCount === 1 ? '1 Item' : `${visibleCount} Items`;
+
+        // 4. Handle empty state
+        if (visibleCount === 0) {
+            emptyState.classList.remove('hidden');
+            emptyState.classList.add('flex');
+            emptyStateMsg.textContent = `No passwords found in ${category.charAt(0).toUpperCase() + category.slice(1)}`;
+        } else {
+            emptyState.classList.remove('flex');
+            emptyState.classList.add('hidden');
+        }
+    }
+
+    // Attach click events to pills
+    filterButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+            applyFilter(btn.dataset.category);
+        });
+    });
+
+    // Text search synchronised with categories
+    function handleSearch(query) {
+        const q = query.toLowerCase().trim();
+        let visibleCount = 0;
+
+        cards.forEach(card => {
+            const cardCategories = (card.dataset.categories || '').toLowerCase().split(' ');
+            const title = (card.querySelector('h3')?.textContent || '').toLowerCase();
+            const subtitle = (card.querySelector('p')?.textContent || '').toLowerCase();
+            const matchesCat = currentFilter === 'all' || cardCategories.includes(currentFilter);
+            const matchesQuery = !q || title.includes(q) || subtitle.includes(q);
+
+            if (matchesCat && matchesQuery) {
+                card.classList.remove('hidden');
+                visibleCount++;
+            } else {
+                card.classList.add('hidden');
+            }
+        });
+
+        countBadge.textContent = visibleCount === 1 ? '1 Item' : `${visibleCount} Items`;
+        if (visibleCount === 0) {
+            emptyState.classList.remove('hidden');
+            emptyState.classList.add('flex');
+            emptyStateMsg.textContent = q ? `No results matching "${query}"` : "No passwords found in this category";
+        } else {
+            emptyState.classList.remove('flex');
+            emptyState.classList.add('hidden');
+        }
+    }
+
+    if (mobileSearch) {
+        mobileSearch.addEventListener('input', (e) => handleSearch(e.target.value));
+    }
+    if (desktopSearch) {
+        desktopSearch.addEventListener('input', (e) => handleSearch(e.target.value));
+    }
+
+    // Keyboard support: Escape closes modal
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && !modal.classList.contains('hidden')) {
+            closeModal();
+        }
+    });
+</script>
+
+
+<script id="category-sync-script">
+(function() {
+    const filterContainer = document.getElementById('filter-pills');
+    const countBadge = document.getElementById('items-count-badge');
+    const emptyState = document.getElementById('empty-state');
+    const emptyStateMsg = document.getElementById('empty-state-message');
+    const mobileSearch = document.getElementById('mobile-search');
+    const desktopSearch = document.getElementById('desktop-search');
+
+    let activeCategory = 'all';
+
+    const activeClasses = ['bg-[#0080ff]', 'text-white', 'shadow-sm'];
+    const inactiveClasses = ['bg-[#191c1e]', 'border', 'border-white/10', 'text-on-surface-variant'];
+
+    function getStoredCategories() {
+        const baseCategories = ['all', 'email', 'instagram', 'bank', 'github', 'entertainment'];
+        const collected = new Set(baseCategories);
+
+        const keysToCheck = ['neurokey_categories', 'vault_categories', 'categories', 'custom_categories'];
+        keysToCheck.forEach(key => {
+            try {
+                const raw = localStorage.getItem(key);
+                if (raw) {
+                    const parsed = JSON.parse(raw);
+                    if (Array.isArray(parsed)) {
+                        parsed.forEach(item => {
+                            const catName = (typeof item === 'string' ? item : (item.name || item.id || '')).trim().toLowerCase();
+                            if (catName) collected.add(catName);
+                        });
+                    }
+                }
+            } catch (e) {}
+        });
+
+        // Also inspect stored passwords or vault items
+        const pwKeys = ['neurokey_passwords', 'vault_passwords', 'passwords', 'saved_passwords'];
+        pwKeys.forEach(key => {
+            try {
+                const raw = localStorage.getItem(key);
+                if (raw) {
+                    const parsed = JSON.parse(raw);
+                    if (Array.isArray(parsed)) {
+                        parsed.forEach(p => {
+                            if (p && p.category) {
+                                const cat = p.category.toString().trim().toLowerCase();
+                                if (cat) collected.add(cat);
+                            }
+                            if (p && p.categories) {
+                                const cats = Array.isArray(p.categories) ? p.categories : p.categories.toString().split(/[ ,]+/);
+                                cats.forEach(c => { const cl = c.trim().toLowerCase(); if (cl) collected.add(cl); });
+                            }
+                        });
+                    }
+                }
+            } catch (e) {}
+        });
+
+        // Detect categories on DOM cards as well
+        document.querySelectorAll('.password-card').forEach(card => {
+            const cats = (card.dataset.categories || '').toLowerCase().split(/\s+/);
+            cats.forEach(c => { if (c && c !== 'personal' && c !== 'work' && c !== 'social' && c !== 'finance' && c !== 'google') collected.add(c); });
+        });
+
+        return Array.from(collected);
+    }
+
+    function formatCategoryLabel(cat) {
+        if (cat.toLowerCase() === 'github') return 'GitHub';
+        return cat.charAt(0).toUpperCase() + cat.slice(1);
+    }
+
+    function renderFilterPills() {
+        if (!filterContainer) return;
+        const categories = getStoredCategories();
+        filterContainer.innerHTML = '';
+
+        categories.forEach(cat => {
+            const btn = document.createElement('button');
+            btn.className = 'filter-btn rounded-full px-4 py-1.5 text-sm whitespace-nowrap transition-all cursor-pointer ';
+            btn.dataset.category = cat;
+            btn.textContent = formatCategoryLabel(cat);
+
+            if (cat === activeCategory) {
+                btn.classList.add(...activeClasses);
+            } else {
+                btn.classList.add(...inactiveClasses, 'hover:text-white');
+            }
+
+            btn.addEventListener('click', () => {
+                selectCategory(cat);
+            });
+
+            filterContainer.appendChild(btn);
+        });
+    }
+
+    function selectCategory(category) {
+        activeCategory = category.toLowerCase().trim();
+
+        // Update active classes on buttons
+        const buttons = filterContainer.querySelectorAll('.filter-btn');
+        buttons.forEach(btn => {
+            if (btn.dataset.category === activeCategory) {
+                btn.classList.remove(...inactiveClasses);
+                btn.classList.add(...activeClasses);
+            } else {
+                btn.classList.remove(...activeClasses);
+                btn.classList.add(...inactiveClasses, 'hover:text-white');
+            }
+        });
+
+        performFiltering();
+    }
+
+    function performFiltering() {
+        const cards = document.querySelectorAll('.password-card');
+        const q = ((desktopSearch && desktopSearch.value) || (mobileSearch && mobileSearch.value) || '').toLowerCase().trim();
+        let visibleCount = 0;
+
+        cards.forEach(card => {
+            const cardCategories = (card.dataset.categories || '').toLowerCase().split(/\s+/);
+            const title = (card.querySelector('h3')?.textContent || '').toLowerCase();
+            const subtitle = (card.querySelector('p')?.textContent || '').toLowerCase();
+
+            const matchesCategory = activeCategory === 'all' || cardCategories.includes(activeCategory);
+            const matchesQuery = !q || title.includes(q) || subtitle.includes(q);
+
+            if (matchesCategory && matchesQuery) {
+                card.classList.remove('hidden');
+                visibleCount++;
+            } else {
+                card.classList.add('hidden');
+            }
+        });
+
+        if (countBadge) {
+            countBadge.textContent = visibleCount === 1 ? '1 Item' : `${visibleCount} Items`;
+        }
+
+        if (emptyState) {
+            if (visibleCount === 0) {
+                emptyState.classList.remove('hidden');
+                emptyState.classList.add('flex');
+                if (emptyStateMsg) {
+                    emptyStateMsg.textContent = q ? `No results matching "${q}"` : `No passwords found in ${formatCategoryLabel(activeCategory)}`;
+                }
+            } else {
+                emptyState.classList.remove('flex');
+                emptyState.classList.add('hidden');
+            }
+        }
+    }
+
+    renderFilterPills();
+    selectCategory('all');
+
+    if (mobileSearch) {
+        mobileSearch.addEventListener('input', performFiltering);
+    }
+    if (desktopSearch) {
+        desktopSearch.addEventListener('input', performFiltering);
+    }
+
+    // Cross-window / Storage event listeners
+    window.addEventListener('storage', (e) => {
+        if (['neurokey_categories', 'vault_categories', 'categories', 'custom_categories', 'neurokey_passwords', 'vault_passwords', 'passwords'].includes(e.key)) {
+            renderFilterPills();
+            performFiltering();
+        }
+    });
+
+    // Listen to custom in-window category creation events
+    window.addEventListener('categoryAdded', () => {
+        renderFilterPills();
+        performFiltering();
+    });
+    window.addEventListener('passwordsUpdated', () => {
+        renderFilterPills();
+        performFiltering();
+    });
+})();
+</script><script id="theme-sync-script">
+(function() {
+    function applyTheme(theme) {
+        const isLight = theme === 'light' || theme === 'theme-light';
+        const docEl = document.documentElement;
+        const bodyEl = document.body;
+        
+        if (isLight) {
+            docEl.classList.remove('dark');
+            docEl.classList.add('light', 'theme-light');
+            bodyEl.classList.remove('dark');
+            bodyEl.classList.add('light', 'theme-light');
+        } else {
+            docEl.classList.remove('light', 'theme-light');
+            docEl.classList.add('dark');
+            bodyEl.classList.remove('light', 'theme-light');
+            bodyEl.classList.add('dark');
+        }
+    }
+
+    const savedTheme = localStorage.getItem('neurokey_theme') || 
+                       localStorage.getItem('vault_theme') || 
+                       localStorage.getItem('app_theme');
+    if (savedTheme) {
+        applyTheme(savedTheme);
+    }
+
+    window.addEventListener('storage', (e) => {
+        if (e.key === 'neurokey_theme' || e.key === 'vault_theme' || e.key === 'app_theme') {
+            applyTheme(e.newValue);
+        }
+    });
+})();
+</script>
+
+</body></html>
