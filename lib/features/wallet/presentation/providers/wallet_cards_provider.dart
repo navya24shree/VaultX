@@ -1,4 +1,4 @@
-﻿import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:neurokey/features/wallet/domain/wallet_card_entry.dart';
 
 class WalletCardsState {
@@ -105,6 +105,14 @@ class WalletCardsNotifier extends StateNotifier<WalletCardsState> {
   void deleteCard(String id) {
     final updatedList = state.allCards.where((c) => c.id != id).toList();
     state = state.copyWith(allCards: updatedList);
+  }
+
+  void saveCard(WalletCardEntry card) {
+    if (state.allCards.any((c) => c.id == card.id)) {
+      updateCard(card);
+    } else {
+      addCard(card);
+    }
   }
 }
 

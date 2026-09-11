@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:neurokey/core/theme/app_theme.dart';
 import 'package:neurokey/core/theme/theme_provider.dart';
 import 'package:neurokey/features/auth/presentation/providers/auth_session_provider.dart';
+import 'package:neurokey/features/sync/presentation/sync_screen.dart';
 
 /// Screen 8: Settings & Theme Switcher Screen
 ///
@@ -241,10 +242,9 @@ class SettingsScreen extends ConsumerWidget {
                       subtitle: const Text('Device-to-device mDNS & WSS pairing'),
                       trailing: const Icon(Icons.chevron_right_rounded),
                       onTap: () {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            backgroundColor: AppColors.primaryBlue,
-                            content: Text('Opening P2P Sync Discovery... (Phase 4 Ready)'),
+                        Navigator.of(context).push(
+                          MaterialPageRoute<void>(
+                            builder: (_) => const SyncScreen(),
                           ),
                         );
                       },

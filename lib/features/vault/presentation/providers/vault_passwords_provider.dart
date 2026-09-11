@@ -1,4 +1,4 @@
-﻿import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:neurokey/features/vault/domain/vault_password_entry.dart';
 
 class VaultPasswordsState {
@@ -129,6 +129,14 @@ class VaultPasswordsNotifier extends StateNotifier<VaultPasswordsState> {
   void deletePassword(String id) {
     final updatedList = state.allEntries.where((e) => e.id != id).toList();
     state = state.copyWith(allEntries: updatedList);
+  }
+
+  void saveEntry(VaultPasswordEntry entry) {
+    if (state.allEntries.any((e) => e.id == entry.id)) {
+      updatePassword(entry);
+    } else {
+      addPassword(entry);
+    }
   }
 }
 
