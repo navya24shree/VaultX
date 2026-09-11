@@ -1,7 +1,14 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'core/theme/app_theme.dart';
 import 'core/theme/theme_provider.dart';
+import 'core/widgets/floating_nav_dock.dart';
+import 'features/auth/presentation/login_sign_up_screen.dart';
+import 'features/auth/presentation/providers/auth_session_provider.dart';
+import 'features/vault/presentation/passwords_vault_screen.dart';
+import 'features/vault/presentation/password_generator_screen.dart';
+import 'features/wallet/presentation/digital_wallet_screen.dart';
+import 'features/settings/presentation/settings_screen.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -21,78 +28,69 @@ class NeuroKeyApp extends ConsumerWidget {
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,
       themeMode: themeMode,
-      home: const NeuroKeyPlaceholderHome(),
+      home: const AuthGate(),
     );
   }
 }
 
-class NeuroKeyPlaceholderHome extends ConsumerWidget {
-  const NeuroKeyPlaceholderHome({super.key});
+class AuthGate extends ConsumerWidget {
+  const AuthGate({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final authState = ref.watch(authSessionProvider);
+
+    if (!authState.isAuthenticated) {
+      return const LoginSignUpScreen();
+    }
+
+    return const MainAppShell();
+  }
+}
+
+class MainAppShell extends StatefulWidget {
+  final NavTab initialTab;
+
+  const MainAppShell({super.key, this.initialTab = NavTab.passwords});
+
+  @override
+  State<MainAppShell> createState() => _MainAppShellState();
+}
+
+class _MainAppShellState extends State<MainAppShell> {
+  late NavTab _currentTab;
+
+  @override
+  void initState() {
+    super.initState();
+    _currentTab = widget.initialTab;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final screens = <Widget>[
+      const PasswordsVaultScreen(),
+      const DigitalWalletScreen(),
+      const PasswordGeneratorScreen(),
+      const SettingsScreen(),
+    ];
+
+    final activeIndex = NavTab.values.indexOf(_currentTab);
 
     return Scaffold(
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Container(
-              width: 80,
-              height: 80,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                gradient: const LinearGradient(
-                  colors: [AppColors.primaryBlue, AppColors.brandPurple],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
-                boxShadow: [
-                  BoxShadow(
-                    color: AppColors.primaryBlue.withValues(alpha: 0.35),
-                    blurRadius: 20,
-                    offset: const Offset(0, 8),
-                  ),
-                ],
-              ),
-              child: const Icon(
-                Icons.lock_person,
-                color: Colors.white,
-                size: 44,
-              ),
-            ),
-            const SizedBox(height: 24),
-            Text(
-              'NeuroKey',
-              style: TextStyle(
-                fontSize: 32,
-                fontWeight: FontWeight.bold,
-                letterSpacing: -0.5,
-                color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary,
-              ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              'Your mind, secured.',
-              style: TextStyle(
-                fontSize: 16,
-                color: isDark ? AppColors.darkTextMuted : AppColors.lightTextMuted,
-              ),
-            ),
-            const SizedBox(height: 32),
-            ElevatedButton.icon(
-              onPressed: () {
-                ref.read(themeModeProvider.notifier).toggleTheme();
-              },
-              icon: Icon(
-                isDark ? Icons.light_mode : Icons.dark_mode,
-                size: 20,
-              ),
-              label: Text(isDark ? 'Switch to Light Mode' : 'Switch to Dark Mode'),
-            ),
-          ],
-        ),
+      body: Stack(
+        children: [
+          IndexedStack(
+            index: activeIndex,
+            children: screens,
+          ),
+          FloatingNavDock(
+            currentTab: _currentTab,
+            onTabSelected: (tab) {
+              setState(() => _currentTab = tab);
+            },
+          ),
+        ],
       ),
     );
   }
