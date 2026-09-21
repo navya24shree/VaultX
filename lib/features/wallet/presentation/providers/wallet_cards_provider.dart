@@ -1,4 +1,4 @@
-﻿import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:vaultx/features/wallet/domain/wallet_card_entry.dart';
 
 class WalletCardsState {
@@ -40,46 +40,7 @@ class WalletCardsState {
 }
 
 class WalletCardsNotifier extends StateNotifier<WalletCardsState> {
-  WalletCardsNotifier() : super(WalletCardsState(allCards: _initialCards));
-
-  static final List<WalletCardEntry> _initialCards = [
-    WalletCardEntry(
-      id: 'card-1',
-      title: 'Chase Sapphire Reserve',
-      cardholderName: 'ALEX MORGAN',
-      cardNumber: '4532 8921 7843 7890',
-      expiry: '08/29',
-      cvv: '382',
-      network: 'Visa',
-      cardTheme: 'chase_sapphire',
-      createdAt: DateTime.now().subtract(const Duration(days: 120)),
-      updatedAt: DateTime.now().subtract(const Duration(days: 2)),
-    ),
-    WalletCardEntry(
-      id: 'card-2',
-      title: 'Apple Card Titanium',
-      cardholderName: 'ALEX MORGAN',
-      cardNumber: '5412 7534 8901 2345',
-      expiry: '11/28',
-      cvv: '914',
-      network: 'Mastercard',
-      cardTheme: 'apple_titanium',
-      createdAt: DateTime.now().subtract(const Duration(days: 90)),
-      updatedAt: DateTime.now().subtract(const Duration(days: 10)),
-    ),
-    WalletCardEntry(
-      id: 'card-3',
-      title: 'Plexee Sovereign',
-      cardholderName: 'ALEX MORGAN',
-      cardNumber: '6011 3902 4819 5678',
-      expiry: '04/30',
-      cvv: '520',
-      network: 'Plexee',
-      cardTheme: 'plexee_sovereign',
-      createdAt: DateTime.now().subtract(const Duration(days: 45)),
-      updatedAt: DateTime.now().subtract(const Duration(days: 5)),
-    ),
-  ];
+  WalletCardsNotifier() : super(const WalletCardsState());
 
   void setSearchQuery(String query) {
     state = state.copyWith(searchQuery: query);

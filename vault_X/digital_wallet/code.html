@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html><html class="dark" lang="en"><head>
+<!DOCTYPE html><html class="dark" lang="en"><head>
 <meta charset="utf-8">
 <meta content="width=device-width, initial-scale=1.0" name="viewport">
 <title>Wallet</title>
@@ -795,54 +795,6 @@
       }
     }
 
-    const defaultCards = [
-      { 
-        id: 'card_default_1', 
-        bankName: 'Chase Sapphire Reserve', 
-        cardholderName: 'ALEXANDER DRAFT', 
-        cardNumber: '4532 8901 2345 7890', 
-        pin: '4921', 
-        expiryDate: '08/28', 
-        cvv: '891', 
-        cardType: 'visa', 
-        network: 'Visa', 
-        tier: 'Infinite Credit',
-        gradient: 'from-[#0a192f] via-[#0d2238] to-[#040d1a]',
-        accent: '#38bdf8',
-        notes: 'Preferred travel card. $300 annual travel credit and priority pass lounge access.' 
-      },
-      { 
-        id: 'card_default_2', 
-        bankName: 'Apple Card Titanium', 
-        cardholderName: 'ALEXANDER DRAFT', 
-        cardNumber: '5412 7534 8901 2345', 
-        pin: '1839', 
-        expiryDate: '11/27', 
-        cvv: '432', 
-        cardType: 'mastercard', 
-        network: 'Mastercard', 
-        tier: 'World Elite',
-        gradient: 'from-[#2c2f33] via-[#1e2124] to-[#121316]',
-        accent: '#e2e8f0',
-        notes: '2% daily cash back on Apple Pay purchases. Titanium card offline.' 
-      },
-      { 
-        id: 'card_default_3', 
-        bankName: 'Plexee Sovereign Gold', 
-        cardholderName: 'ALEXANDER DRAFT', 
-        cardNumber: '6011 4820 9942 5519', 
-        pin: '9021', 
-        expiryDate: '05/30', 
-        cvv: '662', 
-        cardType: 'plexee', 
-        network: 'Plexee', 
-        tier: 'Decentralized Vault',
-        gradient: 'from-[#2a1b02] via-[#3d2703] to-[#150d01]',
-        accent: '#f59e0b',
-        notes: 'Zero-knowledge hardware encrypted ledger pass with auto-rotating seed verification.' 
-      }
-    ];
-
     function getStoredCards() {
       try {
         const raw = localStorage.getItem(STORAGE_KEY);
@@ -853,7 +805,7 @@
       } catch (e) {
         // fallback
       }
-      return defaultCards;
+      return [];
     }
 
     function saveStoredCards(cards) {
