@@ -129,11 +129,11 @@ void main() {
       );
     }
 
-    testWidgets('renders NeuroKey wordmark and tagline', (tester) async {
+    testWidgets('renders VaultX wordmark and tagline', (tester) async {
       await tester.pumpWidget(buildLogin());
       await tester.pumpAndSettle();
 
-      expect(find.textContaining('NeuroKey'), findsWidgets);
+      expect(find.textContaining('VaultX'), findsWidgets);
       expect(find.textContaining('secured'), findsWidgets);
     });
 
@@ -210,9 +210,12 @@ void main() {
   // ---------------------------------------------------------------------------
 
   group('Screen 2 — PasswordsVaultScreen', () {
-    Widget buildVault({List<VaultPasswordEntry> entries = const []}) {
+    Widget buildVault({
+      List<VaultPasswordEntry> entries = const [],
+      List<String> customCategories = const [],
+    }) {
       final vaultNotifier = MockVaultPasswordsNotifier(
-          VaultPasswordsState(allEntries: entries));
+          VaultPasswordsState(allEntries: entries, customCategories: customCategories));
       return buildTestApp(
         const PasswordsVaultScreen(),
         overrides: [
@@ -254,6 +257,13 @@ void main() {
       await tester.pump();
 
       expect(find.text('All'), findsWidgets);
+    });
+
+    testWidgets('reflects custom category in filter pills', (tester) async {
+      await tester.pumpWidget(buildVault(customCategories: ['Crypto']));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Crypto'), findsWidgets);
     });
 
     testWidgets('multiple entries all render their titles', (tester) async {
@@ -332,6 +342,44 @@ void main() {
           find.byIcon(Icons.arrow_back).evaluate().isNotEmpty ||
           find.byIcon(Icons.arrow_back_ios).evaluate().isNotEmpty;
       expect(hasCancel, isTrue);
+    });
+
+    testWidgets('renders Add Category pill and opens dialog on tap', (tester) async {
+      await tester.pumpWidget(buildAddPassword());
+      await tester.pumpAndSettle();
+
+      final addCategoryChip = find.text('Add Category');
+      expect(addCategoryChip, findsOneWidget);
+
+      await tester.tap(addCategoryChip);
+      await tester.pumpAndSettle();
+
+      expect(find.text('New Category'), findsOneWidget);
+      expect(find.text('Category Name'), findsOneWidget);
+    });
+
+    testWidgets('adding category via dialog creates and selects new category pill', (tester) async {
+      final realNotifier = VaultPasswordsNotifier();
+      await tester.pumpWidget(
+        buildTestApp(
+          const AddPasswordScreen(),
+          overrides: [
+            vaultPasswordsProvider.overrideWith((_) => realNotifier),
+          ],
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.text('Add Category'));
+      await tester.pumpAndSettle();
+
+      final categoryField = find.widgetWithText(TextField, 'Category Name');
+      await tester.enterText(categoryField, 'Gaming');
+      await tester.tap(find.text('Add'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('New Category'), findsNothing);
+      expect(find.text('Gaming'), findsOneWidget);
     });
   });
 

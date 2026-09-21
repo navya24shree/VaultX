@@ -21,14 +21,61 @@ class PasswordsVaultScreen extends ConsumerStatefulWidget {
 class _PasswordsVaultScreenState extends ConsumerState<PasswordsVaultScreen> {
   final _searchController = TextEditingController();
 
-  static const List<String> _categories = [
-    'All',
-    'Email',
-    'Instagram',
-    'Bank',
-    'GitHub',
-    'Entertainment',
-  ];
+  void _showAddCategoryDialog() {
+    final textController = TextEditingController();
+    showDialog<void>(
+      context: context,
+      builder: (ctx) {
+        final isDark = Theme.of(ctx).brightness == Brightness.dark;
+        return AlertDialog(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          title: const Text(
+            'New Category',
+            style: TextStyle(fontWeight: FontWeight.w700, fontSize: 18),
+          ),
+          content: TextField(
+            controller: textController,
+            autofocus: true,
+            textCapitalization: TextCapitalization.words,
+            decoration: InputDecoration(
+              labelText: 'Category Name',
+              hintText: 'e.g. Work, Gaming, Crypto',
+              filled: true,
+              fillColor: isDark ? AppColors.darkInputSurface : AppColors.lightInputSurface,
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(14),
+              ),
+            ),
+            onSubmitted: (val) => _submitNewCategory(val, ctx),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(ctx).pop(),
+              child: const Text('Cancel'),
+            ),
+            FilledButton(
+              onPressed: () => _submitNewCategory(textController.text, ctx),
+              style: FilledButton.styleFrom(
+                backgroundColor: AppColors.primaryBlue,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              ),
+              child: const Text('Add'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _submitNewCategory(String name, BuildContext dialogContext) {
+    final trimmed = name.trim();
+    if (trimmed.isEmpty) return;
+
+    ref.read(vaultPasswordsProvider.notifier).addCategory(trimmed);
+    ref.read(vaultPasswordsProvider.notifier).setSelectedCategory(trimmed);
+    HapticFeedback.mediumImpact();
+    Navigator.of(dialogContext).pop();
+  }
 
   @override
   void dispose() {
@@ -60,6 +107,7 @@ class _PasswordsVaultScreenState extends ConsumerState<PasswordsVaultScreen> {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final vaultState = ref.watch(vaultPasswordsProvider);
     final entries = vaultState.filteredEntries;
+    final categories = ['All', ...vaultState.allCategories];
 
     final cardBg = isDark ? AppColors.darkCardSurface : AppColors.lightCardSurface;
     final inputBg = isDark ? AppColors.darkInputSurface : AppColors.lightInputSurface;
@@ -144,10 +192,43 @@ class _PasswordsVaultScreenState extends ConsumerState<PasswordsVaultScreen> {
                 child: ListView.separated(
                   padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
                   scrollDirection: Axis.horizontal,
-                  itemCount: _categories.length,
+                  itemCount: categories.length + 1,
                   separatorBuilder: (_, __) => const SizedBox(width: 8),
                   itemBuilder: (context, index) {
-                    final cat = _categories[index];
+                    if (index == categories.length) {
+                      return GestureDetector(
+                        onTap: _showAddCategoryDialog,
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                          decoration: BoxDecoration(
+                            color: cardBg,
+                            borderRadius: BorderRadius.circular(20),
+                            border: Border.all(
+                              color: AppColors.primaryBlue.withAlpha(140),
+                              width: 1.2,
+                            ),
+                          ),
+                          alignment: Alignment.center,
+                          child: const Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(Icons.add_rounded, size: 16, color: AppColors.primaryBlue),
+                              SizedBox(width: 4),
+                              Text(
+                                'Add',
+                                style: TextStyle(
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w700,
+                                  color: AppColors.primaryBlue,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      );
+                    }
+
+                    final cat = categories[index];
                     final isSelected = vaultState.selectedCategory.toLowerCase() == cat.toLowerCase();
 
                     return Semantics(

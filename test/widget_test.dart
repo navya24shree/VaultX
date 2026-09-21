@@ -29,13 +29,13 @@ class _FakeAuthSessionNotifier extends StateNotifier<AuthSessionState>
 }
 
 void main() {
-  testWidgets('NeuroKey app smoke test — renders login screen', (tester) async {
+  testWidgets('VaultX app smoke test — renders login screen', (tester) async {
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
           authSessionProvider.overrideWith((_) => _FakeAuthSessionNotifier()),
         ],
-        child: const NeuroKeyApp(),
+        child: const VaultXApp(),
       ),
     );
     await tester.pumpAndSettle();
@@ -43,8 +43,8 @@ void main() {
     // AuthGate should redirect to LoginSignUpScreen since isAuthenticated=false
     expect(find.byType(MaterialApp), findsOneWidget);
 
-    // NeuroKey wordmark should be on screen
-    expect(find.textContaining('NeuroKey'), findsWidgets);
+    // VaultX wordmark should be on screen
+    expect(find.textContaining('VaultX'), findsWidgets);
 
     // Tagline should appear
     expect(find.textContaining('secured'), findsWidgets);

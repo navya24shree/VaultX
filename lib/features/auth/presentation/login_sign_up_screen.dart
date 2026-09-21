@@ -162,7 +162,7 @@ class _LoginSignUpScreenState extends ConsumerState<LoginSignUpScreen> {
                       colors: [AppColors.primaryBlue, AppColors.brandPurple],
                     ).createShader(bounds),
                     child: const Text(
-                      'NeuroKey',
+                      'VaultX',
                       style: TextStyle(
                         fontSize: 32,
                         fontWeight: FontWeight.w800,

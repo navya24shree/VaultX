@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:neurokey/core/theme/app_theme.dart';
@@ -100,9 +100,20 @@ class _AddCardScreenState extends ConsumerState<AddCardScreen> {
       appBar: AppBar(
         leading: TextButton(
           onPressed: () => Navigator.of(context).pop(),
-          child: const Text('Cancel', style: TextStyle(color: AppColors.primaryBlue, fontSize: 16)),
+          style: TextButton.styleFrom(
+            padding: const EdgeInsets.symmetric(horizontal: 8),
+          ),
+          child: const Text(
+            'Cancel',
+            maxLines: 1,
+            softWrap: false,
+            style: TextStyle(
+              color: AppColors.primaryBlue,
+              fontSize: 16,
+            ),
+          ),
         ),
-        leadingWidth: 72,
+        leadingWidth: 84,
         title: const Text(
           'Add Card',
           style: TextStyle(fontSize: 17, fontWeight: FontWeight.w700),
@@ -113,6 +124,8 @@ class _AddCardScreenState extends ConsumerState<AddCardScreen> {
             onPressed: _save,
             child: const Text(
               'Save',
+              maxLines: 1,
+              softWrap: false,
               style: TextStyle(
                 color: AppColors.primaryBlue,
                 fontSize: 16,

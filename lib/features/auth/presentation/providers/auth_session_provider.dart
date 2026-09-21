@@ -166,7 +166,7 @@ class AuthSessionNotifier extends StateNotifier<AuthSessionState> {
     }
     try {
       final success = await _biometricAuth.authenticate(
-        localizedReason: 'Authenticate to unlock your NeuroKey vault',
+        localizedReason: 'Authenticate to unlock your VaultX vault',
       );
       if (success) {
         final storedKey = await _secureStorage.getMasterKey();

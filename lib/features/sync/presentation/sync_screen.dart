@@ -34,7 +34,7 @@ class _SyncScreenState extends ConsumerState<SyncScreen> with SingleTickerProvid
       if (_tabController.indexIsChanging) {
         if (_tabController.index == 0) {
           // Switch to Host Mode
-          ref.read(syncOrchestratorProvider.notifier).startHostMode(deviceName: 'NeuroKey Device');
+          ref.read(syncOrchestratorProvider.notifier).startHostMode(deviceName: 'VaultX Device');
         } else {
           // Switch to Receive / Scan Mode
           ref.read(syncOrchestratorProvider.notifier).cancel();
@@ -45,7 +45,7 @@ class _SyncScreenState extends ConsumerState<SyncScreen> with SingleTickerProvid
     // Default start in host mode if currently idle
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted && ref.read(syncOrchestratorProvider).status == SyncStatus.idle) {
-        ref.read(syncOrchestratorProvider.notifier).startHostMode(deviceName: 'NeuroKey Device');
+        ref.read(syncOrchestratorProvider.notifier).startHostMode(deviceName: 'VaultX Device');
       }
     });
   }
@@ -67,11 +67,11 @@ class _SyncScreenState extends ConsumerState<SyncScreen> with SingleTickerProvid
           setState(() => _isScannerActive = false);
           ref.read(syncOrchestratorProvider.notifier).startClientMode(
                 rendezvous: payload,
-                deviceName: 'NeuroKey Client',
+                deviceName: 'VaultX Client',
               );
           break;
         } catch (_) {
-          // Not a valid NeuroKey rendezvous payload
+          // Not a valid VaultX rendezvous payload
         }
       }
     }
@@ -103,7 +103,7 @@ class _SyncScreenState extends ConsumerState<SyncScreen> with SingleTickerProvid
 
       ref.read(syncOrchestratorProvider.notifier).startClientMode(
             rendezvous: payload,
-            deviceName: 'NeuroKey Client',
+            deviceName: 'VaultX Client',
           );
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(

@@ -29,14 +29,63 @@ class _AddPasswordScreenState extends ConsumerState<AddPasswordScreen> {
   String _selectedCategory = 'Email';
   bool _obscurePassword = true;
 
-  static const List<String> _categories = [
-    'Email',
-    'Instagram',
-    'Bank',
-    'GitHub',
-    'Entertainment',
-    'Social',
-  ];
+  void _showAddCategoryDialog() {
+    final textController = TextEditingController();
+    showDialog<void>(
+      context: context,
+      builder: (ctx) {
+        final isDark = Theme.of(ctx).brightness == Brightness.dark;
+        return AlertDialog(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          title: const Text(
+            'New Category',
+            style: TextStyle(fontWeight: FontWeight.w700, fontSize: 18),
+          ),
+          content: TextField(
+            controller: textController,
+            autofocus: true,
+            textCapitalization: TextCapitalization.words,
+            decoration: InputDecoration(
+              labelText: 'Category Name',
+              hintText: 'e.g. Work, Gaming, Crypto',
+              filled: true,
+              fillColor: isDark ? AppColors.darkInputSurface : AppColors.lightInputSurface,
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(14),
+              ),
+            ),
+            onSubmitted: (val) => _submitNewCategory(val, ctx),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(ctx).pop(),
+              child: const Text('Cancel'),
+            ),
+            FilledButton(
+              onPressed: () => _submitNewCategory(textController.text, ctx),
+              style: FilledButton.styleFrom(
+                backgroundColor: AppColors.primaryBlue,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              ),
+              child: const Text('Add'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _submitNewCategory(String name, BuildContext dialogContext) {
+    final trimmed = name.trim();
+    if (trimmed.isEmpty) return;
+
+    ref.read(vaultPasswordsProvider.notifier).addCategory(trimmed);
+    setState(() {
+      _selectedCategory = trimmed;
+    });
+    HapticFeedback.mediumImpact();
+    Navigator.of(dialogContext).pop();
+  }
 
   @override
   void dispose() {
@@ -106,14 +155,26 @@ class _AddPasswordScreenState extends ConsumerState<AddPasswordScreen> {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final cardBg = isDark ? AppColors.darkCardSurface : AppColors.lightCardSurface;
     final borderCol = isDark ? AppColors.darkBorder : AppColors.lightBorder;
+    final categories = ref.watch(vaultPasswordsProvider).allCategories;
 
     return Scaffold(
       appBar: AppBar(
         leading: TextButton(
           onPressed: () => Navigator.of(context).pop(),
-          child: const Text('Cancel', style: TextStyle(color: AppColors.primaryBlue, fontSize: 16)),
+          style: TextButton.styleFrom(
+            padding: const EdgeInsets.symmetric(horizontal: 8),
+          ),
+          child: const Text(
+            'Cancel',
+            maxLines: 1,
+            softWrap: false,
+            style: TextStyle(
+              color: AppColors.primaryBlue,
+              fontSize: 16,
+            ),
+          ),
         ),
-        leadingWidth: 72,
+        leadingWidth: 84,
         title: const Text(
           'Add Password',
           style: TextStyle(fontSize: 17, fontWeight: FontWeight.w700),
@@ -124,6 +185,8 @@ class _AddPasswordScreenState extends ConsumerState<AddPasswordScreen> {
             onPressed: _save,
             child: const Text(
               'Save',
+              maxLines: 1,
+              softWrap: false,
               style: TextStyle(
                 color: AppColors.primaryBlue,
                 fontSize: 16,
@@ -154,11 +217,37 @@ class _AddPasswordScreenState extends ConsumerState<AddPasswordScreen> {
                 height: 40,
                 child: ListView.separated(
                   scrollDirection: Axis.horizontal,
-                  itemCount: _categories.length,
+                  itemCount: categories.length + 1,
                   separatorBuilder: (_, __) => const SizedBox(width: 8),
                   itemBuilder: (context, index) {
-                    final cat = _categories[index];
-                    final isSelected = _selectedCategory == cat;
+                    if (index == 0) {
+                      // Add Category Pill
+                      return ActionChip(
+                        avatar: const Icon(
+                          Icons.add_rounded,
+                          size: 18,
+                          color: AppColors.primaryBlue,
+                        ),
+                        label: const Text('Add Category'),
+                        backgroundColor: cardBg,
+                        labelStyle: const TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w700,
+                          color: AppColors.primaryBlue,
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20),
+                          side: BorderSide(
+                            color: AppColors.primaryBlue.withAlpha(140),
+                            width: 1.2,
+                          ),
+                        ),
+                        onPressed: _showAddCategoryDialog,
+                      );
+                    }
+
+                    final cat = categories[index - 1];
+                    final isSelected = _selectedCategory.toLowerCase() == cat.toLowerCase();
                     return ChoiceChip(
                       label: Text(cat),
                       selected: isSelected,

@@ -5,12 +5,39 @@ class VaultPasswordsState {
   final List<VaultPasswordEntry> allEntries;
   final String searchQuery;
   final String selectedCategory;
+  final List<String> customCategories;
+
+  static const List<String> defaultCategories = [
+    'Email',
+    'Instagram',
+    'Bank',
+    'GitHub',
+    'Entertainment',
+    'Social',
+  ];
 
   const VaultPasswordsState({
     this.allEntries = const [],
     this.searchQuery = '',
     this.selectedCategory = 'All',
+    this.customCategories = const [],
   });
+
+  List<String> get allCategories {
+    final list = <String>[...customCategories];
+    for (final c in defaultCategories) {
+      if (!list.any((existing) => existing.toLowerCase() == c.toLowerCase())) {
+        list.add(c);
+      }
+    }
+    for (final entry in allEntries) {
+      final c = entry.category.trim();
+      if (c.isNotEmpty && !list.any((existing) => existing.toLowerCase() == c.toLowerCase())) {
+        list.add(c);
+      }
+    }
+    return list;
+  }
 
   List<VaultPasswordEntry> get filteredEntries {
     return allEntries.where((entry) {
@@ -30,11 +57,13 @@ class VaultPasswordsState {
     List<VaultPasswordEntry>? allEntries,
     String? searchQuery,
     String? selectedCategory,
+    List<String>? customCategories,
   }) {
     return VaultPasswordsState(
       allEntries: allEntries ?? this.allEntries,
       searchQuery: searchQuery ?? this.searchQuery,
       selectedCategory: selectedCategory ?? this.selectedCategory,
+      customCategories: customCategories ?? this.customCategories,
     );
   }
 }
@@ -113,9 +142,26 @@ class VaultPasswordsNotifier extends StateNotifier<VaultPasswordsState> {
     state = state.copyWith(selectedCategory: category);
   }
 
+  void addCategory(String category) {
+    final trimmed = category.trim();
+    if (trimmed.isEmpty) return;
+    if (!state.allCategories.any((c) => c.toLowerCase() == trimmed.toLowerCase())) {
+      state = state.copyWith(
+        customCategories: [...state.customCategories, trimmed],
+      );
+    }
+  }
+
   void addPassword(VaultPasswordEntry entry) {
+    final trimmedCat = entry.category.trim();
+    final updatedCustom = [...state.customCategories];
+    if (trimmedCat.isNotEmpty &&
+        !state.allCategories.any((c) => c.toLowerCase() == trimmedCat.toLowerCase())) {
+      updatedCustom.add(trimmedCat);
+    }
     state = state.copyWith(
       allEntries: [entry, ...state.allEntries],
+      customCategories: updatedCustom,
     );
   }
 

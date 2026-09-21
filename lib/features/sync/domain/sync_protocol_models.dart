@@ -44,7 +44,7 @@ class SyncRendezvousPayload {
     final map = jsonDecode(jsonStr) as Map<String, dynamic>;
     return SyncRendezvousPayload(
       sessionId: map['sid'] as String,
-      deviceName: map['dev'] as String? ?? 'NeuroKey Peer',
+      deviceName: map['dev'] as String? ?? 'VaultX Peer',
       ipAddresses: (map['ips'] as List<dynamic>).cast<String>(),
       port: map['prt'] as int,
       relayUrl: map['rly'] as String?,

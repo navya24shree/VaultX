@@ -19,7 +19,7 @@ class DiscoveredPeer {
 
 /// Service handling mDNS LAN discovery and service advertisement per §6.2.1.
 class LanDiscoveryService {
-  static const String serviceType = '_neurokey-sync._tcp';
+  static const String serviceType = '_vaultx-sync._tcp';
 
   BonsoirBroadcast? _broadcast;
   BonsoirDiscovery? _discovery;
