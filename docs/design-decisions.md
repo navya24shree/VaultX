@@ -1,4 +1,4 @@
-# NeuroKey â€” Design & Architecture Decisions (Phase 0)
+ï»¿# VaultX â€” Design & Architecture Decisions (Phase 0)
 
 **Date:** 2026-09-07  
 **Status:** Approved for Review  
@@ -11,17 +11,17 @@
 ### Context & Historical Drift
 During planning and design export, the project branding drifted across three disparate names:
 1. **"Sentinel Core"**: Appeared exclusively in design-file metadata (`sentinel_core/DESIGN.md` line 2: `name: Sentinel Core`). Never used in user-facing UI copy.
-2. **"NeuroKey"**: The explicit on-screen wordmark rendered on Screen 1 (`login_sign_up`) hero section (`<span class="text-gradient">NeuroKey</span>`), accompanied by the slogan *"Your mind, secured."* Used in page titles (`<title>View & Edit Password - NeuroKey</title>`) and data storage namespaces (`neurokey_theme`, `neurokey_vault_passwords`, `neurokey_wallet_cards`). Also matches the title of this build brief: `NeuroKey â€” Senior Agent Build Brief (v2)`.
+2. **"VaultX"**: The explicit on-screen wordmark rendered on Screen 1 (`login_sign_up`) hero section (`<span class="text-gradient">VaultX</span>`), accompanied by the slogan *"Your mind, secured."* Used in page titles (`<title>View & Edit Password - VaultX</title>`) and data storage namespaces (`VaultX_theme`, `VaultX_vault_passwords`, `VaultX_wallet_cards`). Also matches the title of this build brief: `VaultX â€” Senior Agent Build Brief (v2)`.
 3. **"VaultX"**: Used as the host folder and repo placeholder name during early scaffolding (`D:\VaultX\vault_X`).
 
 ### Decision
-The single canonical brand name is **NeuroKey**.
-- **Display Name (User-facing):** `NeuroKey`
-- **Application Package / Bundle ID:** `com.neurokey.vault`
-- **Flutter Project / Pubspec Name:** `neurokey`
-- **Repository Root:** `neurokey` (aliased in current workspace)
-- **Data Namespace:** `neurokey_*`
-- **All User-Facing Copy:** Always `NeuroKey`. "Sentinel Core" and "VaultX" are retired from all customer-facing surfaces and code references.
+The single canonical brand name is **VaultX**.
+- **Display Name (User-facing):** `VaultX`
+- **Application Package / Bundle ID:** `com.VaultX.vault`
+- **Flutter Project / Pubspec Name:** `VaultX`
+- **Repository Root:** `VaultX` (aliased in current workspace)
+- **Data Namespace:** `VaultX_*`
+- **All User-Facing Copy:** Always `VaultX`. "Sentinel Core" and "VaultX" are retired from all customer-facing surfaces and code references.
 
 ---
 
@@ -132,7 +132,7 @@ In a zero-knowledge local-first vault, vault records are encrypted at rest with 
 
 ---
 
-## 6. Phase 6 Packaging — Platform Artifact Decisions
+## 6. Phase 6 Packaging ï¿½ Platform Artifact Decisions
 
 **Date updated:** 2026-09-12
 
@@ -141,21 +141,21 @@ In a zero-knowledge local-first vault, vault records are encrypted at rest with 
 - **Release signing flag:** Production-signed APK/AAB requires an Android keystore. No keystore is available in this environment; the CI workflow is prepared for signing (gradle config in place) but the signing step is documented as a post-environment credential step. The build brief exit criterion of "an installable artifact" is satisfied by the debug APK artifact.
 
 ### iOS
-- **FLAG (per Phase 6 brief §8):** iOS packaging requires macOS + Xcode + Apple Developer Program membership with a provisioning profile and distribution certificate. **This environment runs Windows.** A signed `.ipa` cannot be produced locally or without credentials.
-- **Decision:** CI (`macos-latest`) performs `flutter build ios --no-codesign --debug` (simulator build) as compilation evidence per §0.1. The no-codesign build artifact is uploaded. This is the maximum that can be produced without Apple Developer credentials. This limitation is explicitly flagged here and in the README — it is not silently skipped.
+- **FLAG (per Phase 6 brief ï¿½8):** iOS packaging requires macOS + Xcode + Apple Developer Program membership with a provisioning profile and distribution certificate. **This environment runs Windows.** A signed `.ipa` cannot be produced locally or without credentials.
+- **Decision:** CI (`macos-latest`) performs `flutter build ios --no-codesign --debug` (simulator build) as compilation evidence per ï¿½0.1. The no-codesign build artifact is uploaded. This is the maximum that can be produced without Apple Developer credentials. This limitation is explicitly flagged here and in the README ï¿½ it is not silently skipped.
 
 ### Windows
 - **Decision:** CI (`windows-latest`) produces a Windows debug executable artifact. Locally, `flutter build windows --debug` succeeds; release mode requires Developer Mode (symlink support) which requires elevated system privileges not available in this agent environment.
-- **MSIX packaging:** Not implemented in this phase — MSIX requires a code signing certificate. The portable exe build (debug) serves as the installable artifact. MSIX production packaging is logged as a post-credential step.
+- **MSIX packaging:** Not implemented in this phase ï¿½ MSIX requires a code signing certificate. The portable exe build (debug) serves as the installable artifact. MSIX production packaging is logged as a post-credential step.
 
 ### macOS
-- **FLAG (per Phase 6 brief §8):** macOS `.app` notarization requires Apple Developer credentials and code signing certificates. **The host machine is Windows.**
-- **Decision:** CI (`macos-latest`) produces an unsigned macOS `.app` via `flutter build macos --debug` as compilation evidence. This is uploaded as a CI artifact. Notarization is documented as requiring explicit Apple Developer credentials — not silently skipped.
+- **FLAG (per Phase 6 brief ï¿½8):** macOS `.app` notarization requires Apple Developer credentials and code signing certificates. **The host machine is Windows.**
+- **Decision:** CI (`macos-latest`) produces an unsigned macOS `.app` via `flutter build macos --debug` as compilation evidence. This is uploaded as a CI artifact. Notarization is documented as requiring explicit Apple Developer credentials ï¿½ not silently skipped.
 
-### Summary — Artifacts Produced
+### Summary ï¿½ Artifacts Produced
 | Platform | Artifact | Source | Signed? |
 |---|---|---|---|
-| Android | `app-debug.apk`, `app-debug.aab` | CI `ubuntu-latest` | No (debug) — release signing is a credential step |
-| iOS | `.app` (no-codesign simulator) | CI `macos-latest` | No — Apple Developer credentials required |
-| Windows | `neurokey.exe` + DLLs | CI `windows-latest` | No (debug) — MSIX signing is a credential step |
-| macOS | `neurokey.app` (unsigned) | CI `macos-latest` | No — notarization requires Apple credentials |
+| Android | `app-debug.apk`, `app-debug.aab` | CI `ubuntu-latest` | No (debug) ï¿½ release signing is a credential step |
+| iOS | `.app` (no-codesign simulator) | CI `macos-latest` | No ï¿½ Apple Developer credentials required |
+| Windows | `VaultX.exe` + DLLs | CI `windows-latest` | No (debug) ï¿½ MSIX signing is a credential step |
+| macOS | `VaultX.app` (unsigned) | CI `macos-latest` | No ï¿½ notarization requires Apple credentials |

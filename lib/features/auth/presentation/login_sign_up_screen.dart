@@ -1,11 +1,11 @@
-import 'dart:async';
+﻿import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:neurokey/core/theme/app_theme.dart';
-import 'package:neurokey/features/auth/presentation/providers/auth_session_provider.dart';
-import 'package:neurokey/features/settings/presentation/providers/biometric_preference_provider.dart';
+import 'package:vaultx/core/theme/app_theme.dart';
+import 'package:vaultx/features/auth/presentation/providers/auth_session_provider.dart';
+import 'package:vaultx/features/settings/presentation/providers/biometric_preference_provider.dart';
 
 enum AuthMode { login, signup }
 

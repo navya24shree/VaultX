@@ -1,9 +1,9 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:neurokey/core/theme/app_theme.dart';
-import 'package:neurokey/features/vault/domain/vault_password_entry.dart';
-import 'package:neurokey/features/vault/presentation/providers/vault_passwords_provider.dart';
+import 'package:vaultx/core/theme/app_theme.dart';
+import 'package:vaultx/features/vault/domain/vault_password_entry.dart';
+import 'package:vaultx/features/vault/presentation/providers/vault_passwords_provider.dart';
 
 /// Screen 4: Edit Password / View Credential Screen
 ///

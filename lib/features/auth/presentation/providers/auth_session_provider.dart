@@ -1,8 +1,8 @@
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:neurokey/core/crypto/kdf_service.dart';
-import 'package:neurokey/core/crypto/biometric_auth_service.dart';
-import 'package:neurokey/core/crypto/lockout_policy.dart';
-import 'package:neurokey/core/storage/secure_key_storage.dart';
+﻿import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:vaultx/core/crypto/kdf_service.dart';
+import 'package:vaultx/core/crypto/biometric_auth_service.dart';
+import 'package:vaultx/core/crypto/lockout_policy.dart';
+import 'package:vaultx/core/storage/secure_key_storage.dart';
 
 class AuthSessionState {
   final bool isInitialized;

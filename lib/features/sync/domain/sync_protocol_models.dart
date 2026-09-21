@@ -1,7 +1,7 @@
-import 'dart:convert';
-import 'package:neurokey/core/crypto/vault_cipher.dart';
-import 'package:neurokey/features/vault/domain/vault_password_entry.dart';
-import 'package:neurokey/features/wallet/domain/wallet_card_entry.dart';
+﻿import 'dart:convert';
+import 'package:vaultx/core/crypto/vault_cipher.dart';
+import 'package:vaultx/features/vault/domain/vault_password_entry.dart';
+import 'package:vaultx/features/wallet/domain/wallet_card_entry.dart';
 
 /// Rendezvous payload encoded into the pairing QR code and manual connection string.
 ///

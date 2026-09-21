@@ -4,7 +4,7 @@ import 'dart:typed_data';
 
 import 'package:crypto/crypto.dart' as standard_crypto;
 import 'package:cryptography/cryptography.dart';
-import 'package:neurokey/core/crypto/vault_cipher.dart';
+import 'package:vaultx/core/crypto/vault_cipher.dart';
 
 /// Cryptographic engine governing secure device-to-device sync pairing.
 ///
@@ -106,7 +106,7 @@ class SyncCryptoService {
     return await hkdf.deriveKey(
       secretKey: sharedSecret,
       nonce: saltDigest,
-      info: utf8.encode('neurokey-sync-session-v1'),
+      info: utf8.encode('vaultx-sync-session-v1'),
     );
   }
 

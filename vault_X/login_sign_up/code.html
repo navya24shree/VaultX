@@ -1,7 +1,7 @@
-<!DOCTYPE html><html class="dark" lang="en" style=""><head>
+﻿<!DOCTYPE html><html class="dark" lang="en" style=""><head>
 <meta charset="utf-8">
 <meta content="width=device-width, initial-scale=1.0" name="viewport">
-<title>NeuroKey - Sign Up</title><style>
+<title>VAULTX - Sign Up</title><style>
   input:-webkit-autofill,
   input:-webkit-autofill:hover,
   input:-webkit-autofill:focus,
@@ -64,7 +64,7 @@
 <span class="material-symbols-outlined text-[64px] logo-gradient" style="font-variation-settings: &quot;FILL&quot; 0, &quot;wght&quot; 300;">lock_person</span>
 </div>
 <h1 class="font-headline-lg-mobile text-headline-lg-mobile md:font-headline-lg md:text-headline-lg text-center font-bold tracking-tight mb-xs">
-<span class="text-gradient">NeuroKey</span>
+<span class="text-gradient">VAULTX</span>
 </h1>
 <p class="font-body-md text-on-surface-variant text-center">Your mind, secured.</p>
 </header>
@@ -387,7 +387,7 @@
 <script id="theme-sync-script">
   (function() {
     const getSavedTheme = () => {
-      return localStorage.getItem('neurokey_theme') || 
+      return localStorage.getItem('VAULTX_theme') || 
              localStorage.getItem('vault_theme') || 
              localStorage.getItem('app_theme') || 
              'dark';
@@ -432,7 +432,7 @@
 
     // Listen for storage events synchronized with Settings / other tabs
     window.addEventListener('storage', (e) => {
-      if (['neurokey_theme', 'vault_theme', 'app_theme'].includes(e.key)) {
+      if (['VAULTX_theme', 'vault_theme', 'app_theme'].includes(e.key)) {
         applyTheme(e.newValue || 'dark');
       }
     });
@@ -443,7 +443,7 @@
       toggleBtn.addEventListener('click', () => {
         const current = getSavedTheme();
         const next = current === 'light' ? 'dark' : 'light';
-        localStorage.setItem('neurokey_theme', next);
+        localStorage.setItem('VAULTX_theme', next);
         localStorage.setItem('vault_theme', next);
         localStorage.setItem('app_theme', next);
         applyTheme(next);

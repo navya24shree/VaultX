@@ -1,4 +1,4 @@
-# Phase 0 Todo List — Ingestion & Decisions
+﻿# Phase 0 Todo List — Ingestion & Decisions
 
 **Phase:** Phase 0 — Ingestion & Decisions  
 **Owner:** Orchestrator  
@@ -19,7 +19,7 @@
   - [x] **0.2.7** `add_card` (Card network picker, card number formatter, PIN toggle, security banner)
   - [x] **0.2.8** `settings_theme_switcher` (Appearance, Security, Data, About, Danger Zone, full Light/Dark CSS rules)
 - [x] **0.3** Systematically cross-check `sentinel_core/DESIGN.md` YAML frontmatter against rendered HTML/CSS tokens in `code.html` (colors, typography, elevation, border-radius, pill buttons).
-- [x] **0.4** Resolve brand name drift between "Sentinel Core", "NeuroKey", and "VaultX" per §0.2, formulating a firm recommendation and canonical naming convention.
+- [x] **0.4** Resolve brand name drift between "Sentinel Core", "VaultX", and "VaultX" per §0.2, formulating a firm recommendation and canonical naming convention.
 - [x] **0.5** Produce `docs/design-audit.md` containing detailed analysis for each screen:
   - Screen purpose & user flow
   - UI components & layout structure

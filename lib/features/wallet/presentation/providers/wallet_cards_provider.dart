@@ -1,5 +1,5 @@
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:neurokey/features/wallet/domain/wallet_card_entry.dart';
+﻿import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:vaultx/features/wallet/domain/wallet_card_entry.dart';
 
 class WalletCardsState {
   final List<WalletCardEntry> allCards;

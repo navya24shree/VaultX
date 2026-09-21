@@ -79,7 +79,7 @@ class VaultCipher {
     );
 
     final masterSecretKey = SecretKey(masterKey);
-    final entryContext = utf8.encode('neurokey_entry_key_$entryId');
+    final entryContext = utf8.encode('vaultx_entry_key_$entryId');
     final salt = utf8.encode(entryId);
 
     final derived = await hkdf.deriveKey(

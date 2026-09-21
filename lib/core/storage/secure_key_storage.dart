@@ -6,8 +6,8 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 /// NOTE: The master password is NEVER stored here or anywhere else on disk.
 /// Only the derived master key is persisted in the platform secure enclave/keychain.
 class SecureKeyStorage {
-  static const String _keyMasterKey = 'neurokey_master_key';
-  static const String _keyInstallSalt = 'neurokey_install_salt';
+  static const String _keyMasterKey = 'vaultx_master_key';
+  static const String _keyInstallSalt = 'vaultx_install_salt';
 
   final FlutterSecureStorage _storage;
 

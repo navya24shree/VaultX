@@ -1,4 +1,4 @@
-# Phase 1 Todo List — Project Scaffold & CI Matrix
+﻿# Phase 1 Todo List — Project Scaffold & CI Matrix
 
 **Phase:** Phase 1 — Project Scaffold & CI Matrix  
 **Owner:** Architect  
@@ -11,13 +11,13 @@
 - [x] **1.1** Ensure Flutter SDK environment is available on host machine:
   - Cloned Flutter 3.47.2 stable SDK into `D:\flutter`.
   - Added `D:\flutter\bin` to user PATH and environment.
-- [x] **1.2** Initialize Flutter application named `neurokey` with package ID `com.neurokey.vault` targeting Android, iOS, Windows, and macOS:
-  - Executed: `flutter create --org com.neurokey --project-name neurokey --platforms=android,ios,windows,macos .`
-  - Configured `applicationId = "com.neurokey.vault"` and `minSdk = 23` in `android/app/build.gradle.kts`.
-  - Configured permissions (biometric, network, camera) and label `NeuroKey` in `android/app/src/main/AndroidManifest.xml`.
-  - Configured `CFBundleDisplayName = "NeuroKey"` and privacy descriptions (Face ID, Camera, Bonjour, Local Network) in `ios/Runner/Info.plist`.
-  - Configured `PRODUCT_NAME = "NeuroKey"` and `PRODUCT_BUNDLE_IDENTIFIER = "com.neurokey.vault"` in `macos/Runner/Configs/AppInfo.xcconfig`.
-  - Configured `NeuroKey` window title and product details in `windows/runner/main.cpp` and `windows/runner/Runner.rc`.
+- [x] **1.2** Initialize Flutter application named `VaultX` with package ID `com.VaultX.vault` targeting Android, iOS, Windows, and macOS:
+  - Executed: `flutter create --org com.VaultX --project-name VaultX --platforms=android,ios,windows,macos .`
+  - Configured `applicationId = "com.VaultX.vault"` and `minSdk = 23` in `android/app/build.gradle.kts`.
+  - Configured permissions (biometric, network, camera) and label `VaultX` in `android/app/src/main/AndroidManifest.xml`.
+  - Configured `CFBundleDisplayName = "VaultX"` and privacy descriptions (Face ID, Camera, Bonjour, Local Network) in `ios/Runner/Info.plist`.
+  - Configured `PRODUCT_NAME = "VaultX"` and `PRODUCT_BUNDLE_IDENTIFIER = "com.VaultX.vault"` in `macos/Runner/Configs/AppInfo.xcconfig`.
+  - Configured `VaultX` window title and product details in `windows/runner/main.cpp` and `windows/runner/Runner.rc`.
 - [x] **1.3** Establish feature-first folder architecture per §5/§8:
   - `lib/core/crypto/` (Argon2id KDF, AES-256-GCM, X25519 ECDH, HKDF)
   - `lib/core/storage/` (Drift SQLite database, Secure Storage service)

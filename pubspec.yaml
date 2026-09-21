@@ -1,4 +1,4 @@
-name: neurokey
+name: vaultx
 description: "A local-first, offline-capable password and card vault."
 publish_to: 'none'
 version: 1.0.0+1

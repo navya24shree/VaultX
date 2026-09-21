@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:neurokey/core/crypto/biometric_auth_service.dart';
+import 'package:vaultx/core/crypto/biometric_auth_service.dart';
 
 /// Persists the user's preference for biometric unlock.
 ///
@@ -11,7 +11,7 @@ class BiometricPreferenceNotifier extends StateNotifier<bool> {
   final FlutterSecureStorage _storage;
   final BiometricAuthService _biometricAuth;
 
-  static const _key = 'neurokey_biometric_enabled';
+  static const _key = 'vaultx_biometric_enabled';
 
   BiometricPreferenceNotifier({
     FlutterSecureStorage? storage,

@@ -1,13 +1,13 @@
-import 'dart:convert';
+﻿import 'dart:convert';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:local_auth/local_auth.dart';
-import 'package:neurokey/core/crypto/kdf_service.dart';
-import 'package:neurokey/core/crypto/vault_cipher.dart';
-import 'package:neurokey/core/crypto/lockout_policy.dart';
-import 'package:neurokey/core/crypto/biometric_auth_service.dart';
-import 'package:neurokey/core/storage/secure_key_storage.dart';
+import 'package:vaultx/core/crypto/kdf_service.dart';
+import 'package:vaultx/core/crypto/vault_cipher.dart';
+import 'package:vaultx/core/crypto/lockout_policy.dart';
+import 'package:vaultx/core/crypto/biometric_auth_service.dart';
+import 'package:vaultx/core/storage/secure_key_storage.dart';
 
 class MockFlutterSecureStorage extends Mock implements FlutterSecureStorage {}
 class MockLocalAuthentication extends Mock implements LocalAuthentication {}

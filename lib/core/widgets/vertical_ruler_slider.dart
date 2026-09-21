@@ -1,6 +1,6 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:neurokey/core/theme/app_theme.dart';
+import 'package:vaultx/core/theme/app_theme.dart';
 
 /// Tactile vertical ruler/ladder slider for setting password length (8 to 32 characters)
 /// with rung markers, glowing thumb, drag physics, and direct tap selection.

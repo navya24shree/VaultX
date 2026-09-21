@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-/// Domain model representing a payment or identity card in the NeuroKey digital wallet.
+/// Domain model representing a payment or identity card in the VaultX digital wallet.
 class WalletCardEntry {
   final String id;
   final String title;

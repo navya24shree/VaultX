@@ -83,7 +83,7 @@ class LanDiscoveryService {
     _broadcast = null;
   }
 
-  /// Starts discovery browsing for nearby NeuroKey sync peers.
+  /// Starts discovery browsing for nearby VaultX sync peers.
   Future<void> startDiscovery() async {
     try {
       _discoveredPeers.clear();

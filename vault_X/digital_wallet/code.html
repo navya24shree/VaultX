@@ -1,4 +1,4 @@
-<!DOCTYPE html><html class="dark" lang="en"><head>
+﻿<!DOCTYPE html><html class="dark" lang="en"><head>
 <meta charset="utf-8">
 <meta content="width=device-width, initial-scale=1.0" name="viewport">
 <title>Wallet</title>
@@ -681,7 +681,7 @@
 </div>
 <script>
   (function() {
-    const STORAGE_KEY = 'neurokey_wallet_cards';
+    const STORAGE_KEY = 'VAULTX_wallet_cards';
     const container = document.getElementById('cards-container');
     const emptyState = document.getElementById('empty-state');
     const emptyMsg = document.getElementById('empty-state-message');
@@ -860,7 +860,7 @@
       try {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(cards));
       } catch (e) {}
-      window.dispatchEvent(new CustomEvent('neurokey_wallet_updated', { detail: { cards } }));
+      window.dispatchEvent(new CustomEvent('VAULTX_wallet_updated', { detail: { cards } }));
     }
 
     function maskNumber(num) {
@@ -1481,7 +1481,7 @@
       }
     });
 
-    window.addEventListener('neurokey_wallet_updated', () => {
+    window.addEventListener('VAULTX_wallet_updated', () => {
       renderCards();
     });
 

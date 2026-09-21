@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:neurokey/core/crypto/vault_cipher.dart';
-import 'package:neurokey/core/theme/app_theme.dart';
-import 'package:neurokey/features/sync/data/sync_client.dart';
-import 'package:neurokey/features/sync/data/sync_server.dart';
-import 'package:neurokey/features/sync/domain/sync_crypto_service.dart';
-import 'package:neurokey/features/sync/domain/sync_protocol_models.dart';
-import 'package:neurokey/features/sync/domain/vault_merge_engine.dart';
-import 'package:neurokey/features/sync/presentation/providers/sync_provider.dart';
-import 'package:neurokey/features/sync/presentation/sync_screen.dart';
-import 'package:neurokey/features/vault/domain/vault_password_entry.dart';
+import 'package:vaultx/core/crypto/vault_cipher.dart';
+import 'package:vaultx/core/theme/app_theme.dart';
+import 'package:vaultx/features/sync/data/sync_client.dart';
+import 'package:vaultx/features/sync/data/sync_server.dart';
+import 'package:vaultx/features/sync/domain/sync_crypto_service.dart';
+import 'package:vaultx/features/sync/domain/sync_protocol_models.dart';
+import 'package:vaultx/features/sync/domain/vault_merge_engine.dart';
+import 'package:vaultx/features/sync/presentation/providers/sync_provider.dart';
+import 'package:vaultx/features/sync/presentation/sync_screen.dart';
+import 'package:vaultx/features/vault/domain/vault_password_entry.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -453,7 +453,7 @@ void main() {
         sharedSecret: sharedSecret,
       );
 
-      const secretVaultData = '{"secret_password":"SUPER_CONFIDENTIAL_12345","cvv":"999"}';
+      const secretVaultData = '{"secret_password":"SUPER_CONFIDENTIAL_12345","cvv":"CONFIDENTIAL_CVV_999"}';
 
       final record = await cryptoService.encryptMessage(
         cleartextJson: secretVaultData,
@@ -470,7 +470,7 @@ void main() {
       // Assert that NO plaintext secret appears anywhere in the serialized transport frame
       expect(wireString.contains('SUPER_CONFIDENTIAL_12345'), isFalse);
       expect(wireString.contains('secret_password'), isFalse);
-      expect(wireString.contains('999'), isFalse);
+      expect(wireString.contains('CONFIDENTIAL_CVV_999'), isFalse);
 
       // Verify that deserialization + decryption accurately reconstructs the exact secret
       final decodedFrame = SyncTransportFrame.fromJsonString(wireString);

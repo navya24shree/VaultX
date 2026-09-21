@@ -1,4 +1,4 @@
-# Phase 3 Todo List — Screens & Theming
+﻿# Phase 3 Todo List — Screens & Theming
 
 **Phase:** Phase 3 — Screens & Theming  
 **Owner:** UI/Design Agent  
@@ -25,7 +25,7 @@
 
 ### Screen Implementations (8 Screens)
 - [x] **3.3** Screen 1: Login / Sign Up (lib/features/auth/presentation/login_sign_up_screen.dart):
-  - [x] Hero identity avatar with gradient lock icon, NeuroKey wordmark, tagline Your mind, secured.
+  - [x] Hero identity avatar with gradient lock icon, VaultX wordmark, tagline Your mind, secured.
   - [x] Segmented control toggle between Log In and Sign Up
   - [x] Master Password & Confirm Password inputs with eye toggle, email field
   - [x] One-tap Biometric unlock button (Face ID / Touch ID / Fingerprint)

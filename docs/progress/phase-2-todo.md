@@ -1,4 +1,4 @@
-# Phase 2 Todo List — Security Core
+﻿# Phase 2 Todo List — Security Core
 
 **Phase:** Phase 2 — Security Core  
 **Owner:** Security Engineer (High Thinking Level)  

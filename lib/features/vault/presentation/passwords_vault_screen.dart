@@ -1,11 +1,11 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:neurokey/core/theme/app_theme.dart';
-import 'package:neurokey/features/vault/domain/vault_password_entry.dart';
-import 'package:neurokey/features/vault/presentation/providers/vault_passwords_provider.dart';
-import 'package:neurokey/features/vault/presentation/add_password_screen.dart';
-import 'package:neurokey/features/vault/presentation/edit_password_screen.dart';
+import 'package:vaultx/core/theme/app_theme.dart';
+import 'package:vaultx/features/vault/domain/vault_password_entry.dart';
+import 'package:vaultx/features/vault/presentation/providers/vault_passwords_provider.dart';
+import 'package:vaultx/features/vault/presentation/add_password_screen.dart';
+import 'package:vaultx/features/vault/presentation/edit_password_screen.dart';
 
 /// Screen 2: Passwords Vault Screen (Home)
 ///

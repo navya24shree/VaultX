@@ -89,12 +89,12 @@ BEGIN
     BEGIN
         BLOCK "040904e4"
         BEGIN
-            VALUE "CompanyName", "com.neurokey" "\0"
+            VALUE "CompanyName", "com.vaultx" "\0"
             VALUE "FileDescription", "VaultX" "\0"
             VALUE "FileVersion", VERSION_AS_STRING "\0"
             VALUE "InternalName", "VaultX" "\0"
             VALUE "LegalCopyright", "Copyright (C) 2026 VaultX. All rights reserved." "\0"
-            VALUE "OriginalFilename", "neurokey.exe" "\0"
+            VALUE "OriginalFilename", "vaultx.exe" "\0"
             VALUE "ProductName", "VaultX" "\0"
             VALUE "ProductVersion", VERSION_AS_STRING "\0"
         END

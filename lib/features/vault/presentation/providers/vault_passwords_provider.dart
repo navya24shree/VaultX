@@ -1,5 +1,5 @@
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:neurokey/features/vault/domain/vault_password_entry.dart';
+﻿import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:vaultx/features/vault/domain/vault_password_entry.dart';
 
 class VaultPasswordsState {
   final List<VaultPasswordEntry> allEntries;

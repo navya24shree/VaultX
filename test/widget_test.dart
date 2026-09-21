@@ -1,8 +1,8 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:neurokey/main.dart';
-import 'package:neurokey/features/auth/presentation/providers/auth_session_provider.dart';
+import 'package:vaultx/main.dart';
+import 'package:vaultx/features/auth/presentation/providers/auth_session_provider.dart';
 
 class _FakeAuthSessionNotifier extends StateNotifier<AuthSessionState>
     implements AuthSessionNotifier {

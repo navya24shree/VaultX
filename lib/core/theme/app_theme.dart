@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-/// Semantic design tokens for NeuroKey Vault
+/// Semantic design tokens for VaultX
 class AppColors {
   AppColors._();
 

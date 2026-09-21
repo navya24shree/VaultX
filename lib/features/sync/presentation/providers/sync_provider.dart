@@ -1,11 +1,11 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:neurokey/features/sync/data/lan_discovery_service.dart';
-import 'package:neurokey/features/sync/data/sync_client.dart';
-import 'package:neurokey/features/sync/data/sync_server.dart';
-import 'package:neurokey/features/sync/domain/sync_protocol_models.dart';
-import 'package:neurokey/features/sync/domain/vault_merge_engine.dart';
-import 'package:neurokey/features/vault/presentation/providers/vault_passwords_provider.dart';
-import 'package:neurokey/features/wallet/presentation/providers/wallet_cards_provider.dart';
+import 'package:vaultx/features/sync/data/lan_discovery_service.dart';
+import 'package:vaultx/features/sync/data/sync_client.dart';
+import 'package:vaultx/features/sync/data/sync_server.dart';
+import 'package:vaultx/features/sync/domain/sync_protocol_models.dart';
+import 'package:vaultx/features/sync/domain/vault_merge_engine.dart';
+import 'package:vaultx/features/vault/presentation/providers/vault_passwords_provider.dart';
+import 'package:vaultx/features/wallet/presentation/providers/wallet_cards_provider.dart';
 
 enum SyncRole { none, host, client }
 
@@ -66,7 +66,7 @@ class SyncOrchestratorNotifier extends StateNotifier<SyncOrchestrationState> {
   SyncOrchestratorNotifier(this._ref) : super(const SyncOrchestrationState());
 
   /// Starts Host / Share Mode: Binds local WebSocket, advertises mDNS, and generates QR rendezvous.
-  Future<void> startHostMode({String deviceName = 'NeuroKey Device'}) async {
+  Future<void> startHostMode({String deviceName = 'VaultX Device'}) async {
     try {
       await cancel();
 
@@ -79,7 +79,7 @@ class SyncOrchestratorNotifier extends StateNotifier<SyncOrchestrationState> {
         deviceName: deviceName,
         ipAddresses: localIps,
         port: port,
-        relayUrl: 'wss://relay.neurokey.org:443',
+        relayUrl: 'wss://relay.vaultx.org:443',
       );
 
       state = state.copyWith(
@@ -121,7 +121,7 @@ class SyncOrchestratorNotifier extends StateNotifier<SyncOrchestrationState> {
   /// Starts Client / Receive Mode: Connects to peer host via scanned rendezvous info.
   Future<void> startClientMode({
     required SyncRendezvousPayload rendezvous,
-    String deviceName = 'NeuroKey Client',
+    String deviceName = 'VaultX Client',
   }) async {
     try {
       await cancel();

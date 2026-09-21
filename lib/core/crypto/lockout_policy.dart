@@ -22,8 +22,8 @@ class LockoutStatus {
 
 /// Manages failed unlock attempt counting, progressive time delays, and vault wipe enforcement.
 class AuthLockoutPolicy {
-  static const String _keyFailedAttempts = 'neurokey_failed_attempts';
-  static const String _keyLockoutUntil = 'neurokey_lockout_until';
+  static const String _keyFailedAttempts = 'vaultx_failed_attempts';
+  static const String _keyLockoutUntil = 'vaultx_lockout_until';
 
   final FlutterSecureStorage _storage;
   final int maxAttemptsBeforeWipe;

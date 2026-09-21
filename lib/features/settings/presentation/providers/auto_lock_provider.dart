@@ -27,7 +27,7 @@ enum AutoLockDuration {
 /// Manages and persists the user's preferred auto-lock timeout.
 class AutoLockNotifier extends StateNotifier<AutoLockDuration> {
   final FlutterSecureStorage _storage;
-  static const _storageKey = 'neurokey_auto_lock_duration';
+  static const _storageKey = 'vaultx_auto_lock_duration';
 
   AutoLockNotifier({FlutterSecureStorage? storage})
       : _storage = storage ?? const FlutterSecureStorage(),

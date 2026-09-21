@@ -1,5 +1,5 @@
-﻿import 'package:neurokey/features/vault/domain/vault_password_entry.dart';
-import 'package:neurokey/features/wallet/domain/wallet_card_entry.dart';
+﻿import 'package:vaultx/features/vault/domain/vault_password_entry.dart';
+import 'package:vaultx/features/wallet/domain/wallet_card_entry.dart';
 
 /// Detailed report of a vault synchronization merge operation.
 class VaultMergeReport {

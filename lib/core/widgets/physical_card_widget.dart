@@ -1,6 +1,6 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:neurokey/features/wallet/domain/wallet_card_entry.dart';
+import 'package:vaultx/features/wallet/domain/wallet_card_entry.dart';
 
 /// Renders a realistic physical payment card with tactile gradients,
 /// golden EMV microchip, contactless wave icon, and masked credentials.

@@ -1,6 +1,6 @@
-﻿import 'dart:convert';
+import 'dart:convert';
 
-/// Domain model representing an encrypted credential entry in the NeuroKey vault.
+/// Domain model representing an encrypted credential entry in the VaultX vault.
 class VaultPasswordEntry {
   final String id;
   final String title;

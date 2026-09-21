@@ -1,9 +1,9 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:neurokey/core/theme/app_theme.dart';
-import 'package:neurokey/features/wallet/domain/wallet_card_entry.dart';
-import 'package:neurokey/features/wallet/presentation/providers/wallet_cards_provider.dart';
+import 'package:vaultx/core/theme/app_theme.dart';
+import 'package:vaultx/features/wallet/domain/wallet_card_entry.dart';
+import 'package:vaultx/features/wallet/presentation/providers/wallet_cards_provider.dart';
 
 /// Screen 7: Add Card Screen
 ///

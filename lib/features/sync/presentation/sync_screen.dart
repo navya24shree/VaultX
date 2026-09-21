@@ -1,10 +1,10 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
-import 'package:neurokey/core/theme/app_theme.dart';
-import 'package:neurokey/features/sync/domain/sync_protocol_models.dart';
-import 'package:neurokey/features/sync/presentation/providers/sync_provider.dart';
+import 'package:vaultx/core/theme/app_theme.dart';
+import 'package:vaultx/features/sync/domain/sync_protocol_models.dart';
+import 'package:vaultx/features/sync/presentation/providers/sync_provider.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 
 /// Screen for device-to-device synchronization pairing (§6.2).

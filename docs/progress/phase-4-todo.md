@@ -26,7 +26,7 @@
 
 ### 4.3 Discovery & Transport Layer
 - [x] **4.3.1** Implement `LanDiscoveryService` (`lib/features/sync/data/lan_discovery_service.dart`):
-  - [x] mDNS service advertisement (`_neurokey-sync._tcp`) with Bonsoir fallback / local network binding
+  - [x] mDNS service advertisement (`_VaultX-sync._tcp`) with Bonsoir fallback / local network binding
   - [x] mDNS discovery/browsing for nearby peers on LAN
 - [x] **4.3.2** Implement `SyncServer` (`lib/features/sync/data/sync_server.dart`):
   - [x] Local WebSocket server listening on loopback / active network interface

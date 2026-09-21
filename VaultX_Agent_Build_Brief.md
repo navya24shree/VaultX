@@ -1,4 +1,4 @@
-# NeuroKey — Senior Agent Build Brief (v2)
+﻿# VaultX — Senior Agent Build Brief (v2)
 **Target runtime:** Antigravity CLI (`agy`), Gemini 3.8 Flash
 **Your role:** You are the executing agent. I am the senior engineer who wrote this brief; treat every instruction below as coming directly from me, not as background reading. You act as orchestrator across the phases — assigning sub-agent/sub-task context per phase where your host supports it, reviewing your own diffs, and running tests yourself before marking anything done.
 
@@ -7,7 +7,7 @@
 ## 0. Reality check — read this before you plan anything
 
 1. **You cannot build all four target platforms from one machine.** iOS and macOS builds require Xcode on real Apple hardware. Windows desktop builds require Windows with Visual Studio Build Tools installed. Only Android cross-compiles from anywhere. If you are running on a single OS, do not attempt to locally build the platforms that OS can't support — set up a CI matrix instead (GitHub Actions with `macos-latest`, `windows-latest`, `ubuntu-latest` runners is the standard solution) and treat CI-green as the actual exit criterion for "builds on all 4 platforms." Never report a platform as building successfully unless you have direct evidence (a local build log or a CI run) for that specific platform — don't infer it from the others compiling.
-2. **This project's branding has drifted across three names**: "Sentinel Core" (design-file metadata), "NeuroKey" (on-screen wordmark in the original export), "VaultX" (used in later planning). Pick exactly one in Phase 0 and use it everywhere — package IDs, bundle identifiers, repo name, user-facing strings.
+2. **This project's branding has drifted across three names**: "Sentinel Core" (design-file metadata), "VaultX" (on-screen wordmark in the original export), "VaultX" (used in later planning). Pick exactly one in Phase 0 and use it everywhere — package IDs, bundle identifiers, repo name, user-facing strings.
 3. **Security code is not subject to minimalism pressure.** If you install the `ponytail` skill (recommended below) for lean implementation, its own rules already exempt validation, encryption, auth, and accessibility from the "delete this" instinct — but confirm that exemption yourself before Phase 2, don't assume.
 
 ---

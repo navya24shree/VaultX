@@ -1,11 +1,11 @@
-import 'dart:math';
+﻿import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:neurokey/core/theme/app_theme.dart';
-import 'package:neurokey/core/widgets/swipe_to_create_slider.dart';
-import 'package:neurokey/features/vault/domain/vault_password_entry.dart';
-import 'package:neurokey/features/vault/presentation/providers/vault_passwords_provider.dart';
+import 'package:vaultx/core/theme/app_theme.dart';
+import 'package:vaultx/core/widgets/swipe_to_create_slider.dart';
+import 'package:vaultx/features/vault/domain/vault_password_entry.dart';
+import 'package:vaultx/features/vault/presentation/providers/vault_passwords_provider.dart';
 
 /// Screen 3: Add Password Screen
 ///

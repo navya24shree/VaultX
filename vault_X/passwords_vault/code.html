@@ -1,4 +1,4 @@
-<!DOCTYPE html><html class="dark" lang="en" style=""><head>
+﻿<!DOCTYPE html><html class="dark" lang="en" style=""><head>
 <meta charset="utf-8">
 <meta content="width=device-width, initial-scale=1.0" name="viewport">
 <title>Vault - Passwords</title>
@@ -783,7 +783,7 @@
         const baseCategories = ['all', 'email', 'instagram', 'bank', 'github', 'entertainment'];
         const collected = new Set(baseCategories);
 
-        const keysToCheck = ['neurokey_categories', 'vault_categories', 'categories', 'custom_categories'];
+        const keysToCheck = ['VAULTX_categories', 'vault_categories', 'categories', 'custom_categories'];
         keysToCheck.forEach(key => {
             try {
                 const raw = localStorage.getItem(key);
@@ -800,7 +800,7 @@
         });
 
         // Also inspect stored passwords or vault items
-        const pwKeys = ['neurokey_passwords', 'vault_passwords', 'passwords', 'saved_passwords'];
+        const pwKeys = ['VAULTX_passwords', 'vault_passwords', 'passwords', 'saved_passwords'];
         pwKeys.forEach(key => {
             try {
                 const raw = localStorage.getItem(key);
@@ -930,7 +930,7 @@
 
     // Cross-window / Storage event listeners
     window.addEventListener('storage', (e) => {
-        if (['neurokey_categories', 'vault_categories', 'categories', 'custom_categories', 'neurokey_passwords', 'vault_passwords', 'passwords'].includes(e.key)) {
+        if (['VAULTX_categories', 'vault_categories', 'categories', 'custom_categories', 'VAULTX_passwords', 'vault_passwords', 'passwords'].includes(e.key)) {
             renderFilterPills();
             performFiltering();
         }
@@ -966,7 +966,7 @@
         }
     }
 
-    const savedTheme = localStorage.getItem('neurokey_theme') || 
+    const savedTheme = localStorage.getItem('VAULTX_theme') || 
                        localStorage.getItem('vault_theme') || 
                        localStorage.getItem('app_theme');
     if (savedTheme) {
@@ -974,7 +974,7 @@
     }
 
     window.addEventListener('storage', (e) => {
-        if (e.key === 'neurokey_theme' || e.key === 'vault_theme' || e.key === 'app_theme') {
+        if (e.key === 'VAULTX_theme' || e.key === 'vault_theme' || e.key === 'app_theme') {
             applyTheme(e.newValue);
         }
     });

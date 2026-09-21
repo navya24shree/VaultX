@@ -1,13 +1,13 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:neurokey/core/theme/app_theme.dart';
-import 'package:neurokey/core/theme/theme_provider.dart';
-import 'package:neurokey/features/auth/presentation/providers/auth_session_provider.dart';
-import 'package:neurokey/features/settings/presentation/change_master_password_dialog.dart';
-import 'package:neurokey/features/settings/presentation/providers/auto_lock_provider.dart';
-import 'package:neurokey/features/settings/presentation/providers/biometric_preference_provider.dart';
-import 'package:neurokey/features/sync/presentation/sync_screen.dart';
+import 'package:vaultx/core/theme/app_theme.dart';
+import 'package:vaultx/core/theme/theme_provider.dart';
+import 'package:vaultx/features/auth/presentation/providers/auth_session_provider.dart';
+import 'package:vaultx/features/settings/presentation/change_master_password_dialog.dart';
+import 'package:vaultx/features/settings/presentation/providers/auto_lock_provider.dart';
+import 'package:vaultx/features/settings/presentation/providers/biometric_preference_provider.dart';
+import 'package:vaultx/features/sync/presentation/sync_screen.dart';
 
 /// Screen 8: Settings & Theme Switcher Screen
 ///

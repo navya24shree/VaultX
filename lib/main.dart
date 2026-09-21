@@ -34,9 +34,6 @@ class VaultXApp extends ConsumerWidget {
   }
 }
 
-/// Backwards compatibility alias
-typedef NeuroKeyApp = VaultXApp;
-
 /// Listens for app background/close lifecycle events and triggers auto-lock
 /// when elapsed time exceeds the configured AutoLockDuration.
 class AppLifecycleLockHandler extends ConsumerStatefulWidget {

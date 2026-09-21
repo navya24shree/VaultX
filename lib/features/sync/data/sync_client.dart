@@ -1,10 +1,10 @@
-import 'dart:async';
+﻿import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
 import 'package:cryptography/cryptography.dart';
-import 'package:neurokey/features/sync/domain/sync_crypto_service.dart';
-import 'package:neurokey/features/sync/domain/sync_protocol_models.dart';
+import 'package:vaultx/features/sync/domain/sync_crypto_service.dart';
+import 'package:vaultx/features/sync/domain/sync_protocol_models.dart';
 
 enum SyncClientState {
   idle,

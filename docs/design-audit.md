@@ -1,4 +1,4 @@
-# NeuroKey — Design Audit Report (Phase 0)
+﻿# VaultX — Design Audit Report (Phase 0)
 
 **Date:** 2026-09-07  
 **Auditor:** Orchestrator / Architect & Security Engineer  
@@ -12,7 +12,7 @@ The prototype export contains 8 screens defining an offline-capable, local-first
 
 Notably:
 1. `edit_password/screen.png` was exported as a corrupted/blank 4KB black image; however, `edit_password/code.html` is complete and fully functional (267 lines of code).
-2. The brand identity drifted across three names: "Sentinel Core" (frontmatter metadata), "NeuroKey" (on-screen hero logo, typography, and storage keys), and "VaultX" (host folder name).
+2. The brand identity drifted across three names: "Sentinel Core" (frontmatter metadata), "VaultX" (on-screen hero logo, typography, and storage keys), and "VaultX" (host folder name).
 3. `DESIGN.md` frontmatter defines a pastel M3 token scheme (`primary: #bec6e0`, `secondary: #a9c7ff`), whereas the actual screens consistently utilize a deep OLED dark palette (`#020617` / `#000000`) with high-contrast electric blue (`#0080ff` / `#0088ff`) and purple gradient accents.
 4. Component geometry across screens utilizes fully-rounded pills (`rounded-full`, `rounded-2xl`, `rounded-[32px]`), diverging from the frontmatter's default `rounded: 0.5rem (8px)`.
 
@@ -24,7 +24,7 @@ Notably:
 - **Purpose & User Flow:** Cold-start gateway gating access to the encrypted vault. Supports dual modes via segmented tab switcher: "Log In" (Email, Master Password, Biometric unlock, Forgot Password trigger) and "Sign Up" (Email, Master Password, Confirm Password, Account creation).
 - **Layout & Structure:**
   - Vertically centered card container on deep dark background (`bg-background` `#101415`).
-  - Hero header with lock avatar (`lock_person`) displaying a dynamic gradient (`linear-gradient(135deg, #0088ff, #a855f7)`) and stylized wordmark **NeuroKey** (`linear-gradient(90deg, #0088ff, #a855f7)`).
+  - Hero header with lock avatar (`lock_person`) displaying a dynamic gradient (`linear-gradient(135deg, #0088ff, #a855f7)`) and stylized wordmark **VaultX** (`linear-gradient(90deg, #0088ff, #a855f7)`).
   - Tagline: *"Your mind, secured."*
   - Form container in elevated dark surface (`#1a1a1a`) with rounded corners (`rounded-[32px]`) and subtle border (`#2a2a2a`).
   - Segmented control pills for Log In / Sign Up (`#2a2a2a` container, `#1a1a1a` active pill).
@@ -226,7 +226,7 @@ Notably:
 
 | Token Role | `DESIGN.md` Frontmatter | `DESIGN.md` Body Text | Rendered `code.html` (Dark) | Proposed Flutter Semantic Role |
 |---|---|---|---|---|
-| **App Name** | "Sentinel Core" | N/A | **NeuroKey** | `NeuroKey` |
+| **App Name** | "Sentinel Core" | N/A | **VaultX** | `VaultX` |
 | **Primary Accent** | `#bec6e0` (Light Slate) | `#0084ff` (Vibrant Blue) | `#0080ff` / `#0088ff` | `ColorScheme.primary = Color(0xFF0080FF)` |
 | **Secondary Accent** | `#a9c7ff` (Sky) | `#64748B` (Slate Gray) | `#a855f7` (Violet gradient) | `ColorScheme.secondary = Color(0xFFA855F7)` |
 | **Background (Dark)** | `#101415` | `#0F172A` | `#020617` / `#0B0F10` | `ColorScheme.surface = Color(0xFF020617)` |

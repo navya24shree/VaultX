@@ -1,10 +1,10 @@
-import 'dart:async';
+﻿import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:neurokey/core/theme/app_theme.dart';
-import 'package:neurokey/features/auth/presentation/providers/auth_session_provider.dart';
+import 'package:vaultx/core/theme/app_theme.dart';
+import 'package:vaultx/features/auth/presentation/providers/auth_session_provider.dart';
 
 /// Modal dialog that lets the authenticated user change their master password.
 ///

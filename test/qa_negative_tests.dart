@@ -1,8 +1,8 @@
-import 'package:flutter_test/flutter_test.dart';
-import 'package:neurokey/core/crypto/lockout_policy.dart';
-import 'package:neurokey/core/crypto/vault_cipher.dart';
-import 'package:neurokey/features/sync/domain/sync_crypto_service.dart';
-import 'package:neurokey/features/sync/domain/sync_protocol_models.dart';
+﻿import 'package:flutter_test/flutter_test.dart';
+import 'package:vaultx/core/crypto/lockout_policy.dart';
+import 'package:vaultx/core/crypto/vault_cipher.dart';
+import 'package:vaultx/features/sync/domain/sync_crypto_service.dart';
+import 'package:vaultx/features/sync/domain/sync_protocol_models.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();

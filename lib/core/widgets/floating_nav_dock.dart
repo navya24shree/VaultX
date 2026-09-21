@@ -1,6 +1,6 @@
-import 'dart:ui';
+﻿import 'dart:ui';
 import 'package:flutter/material.dart';
-import 'package:neurokey/core/theme/app_theme.dart';
+import 'package:vaultx/core/theme/app_theme.dart';
 
 enum NavTab { passwords, wallet, generator, settings }
 

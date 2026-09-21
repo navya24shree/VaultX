@@ -1,4 +1,4 @@
-package com.neurokey.neurokey
+package com.vaultx.vaultx
 
 import io.flutter.embedding.android.FlutterFragmentActivity
 

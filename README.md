@@ -2,7 +2,7 @@
 
 > **Your mind, secured.** — A local-first, offline-capable password and card vault.
 
-[![CI Matrix](https://github.com/your-org/neurokey/actions/workflows/ci.yml/badge.svg)](https://github.com/your-org/neurokey/actions/workflows/ci.yml)
+[![CI Matrix](https://github.com/navya24shree/VaultX/actions/workflows/ci.yml/badge.svg)](https://github.com/navya24shree/VaultX/actions/workflows/ci.yml)
 [![Flutter](https://img.shields.io/badge/Flutter-stable-blue?logo=flutter)](https://flutter.dev)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
@@ -10,7 +10,7 @@
 
 ## What is VaultX?
 
-NeuroKey is an open-source, cross-platform **password manager and digital wallet** built with Flutter. It targets Android, iOS, Windows, and macOS from a single codebase.
+VaultX is an open-source, cross-platform **password manager and digital wallet** built with Flutter. It targets Android, iOS, Windows, and macOS from a single codebase.
 
 **Core guarantees:**
 
@@ -73,7 +73,7 @@ lib/
 
 ### Device-to-device sync (§6.2)
 
-1. **Discovery:** mDNS (`_neurokey-sync._tcp`) on LAN; WSS/443 relay fallback cross-network.
+1. **Discovery:** mDNS (`_vaultx-sync._tcp`) on LAN; WSS/443 relay fallback cross-network.
 2. **Rendezvous:** QR code encodes local IP, port, and short-lived session ID (pure rendezvous — no crypto weight).
 3. **Key exchange:** Ephemeral X25519 keypair per session; ECDH shared secret.
 4. **Verification code:** 6-digit code derived from `SHA-256(pubKeyA ? pubKeyB ? sharedSecret) mod 1,000,000` — **never an independently transmitted PIN** (Signal/Bluetooth Numeric Comparison model).
@@ -117,8 +117,8 @@ No cloud-assisted recovery exists by design. During onboarding, a cryptographica
 
 ```bash
 # Clone the repository
-git clone https://github.com/your-org/neurokey.git
-cd neurokey
+git clone https://github.com/navya24shree/VaultX.git
+cd VaultX
 
 # Install Flutter dependencies
 flutter pub get
@@ -224,4 +224,4 @@ MIT License — see [LICENSE](LICENSE) for details.
 
 ---
 
-*NeuroKey — Built with ?? security-first principles.*
+*VaultX — Built with ?? security-first principles.*

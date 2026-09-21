@@ -1,25 +1,25 @@
-// ignore_for_file: avoid_print
+﻿// ignore_for_file: avoid_print
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
-import 'package:neurokey/core/theme/app_theme.dart';
-import 'package:neurokey/core/theme/theme_provider.dart';
-import 'package:neurokey/features/auth/presentation/login_sign_up_screen.dart';
-import 'package:neurokey/features/auth/presentation/providers/auth_session_provider.dart';
-import 'package:neurokey/features/vault/domain/vault_password_entry.dart';
-import 'package:neurokey/features/vault/presentation/passwords_vault_screen.dart';
-import 'package:neurokey/features/vault/presentation/add_password_screen.dart';
-import 'package:neurokey/features/vault/presentation/edit_password_screen.dart';
-import 'package:neurokey/features/vault/presentation/password_generator_screen.dart';
-import 'package:neurokey/features/vault/presentation/providers/vault_passwords_provider.dart';
-import 'package:neurokey/features/wallet/domain/wallet_card_entry.dart';
-import 'package:neurokey/features/wallet/presentation/digital_wallet_screen.dart';
-import 'package:neurokey/features/wallet/presentation/add_card_screen.dart';
-import 'package:neurokey/features/wallet/presentation/providers/wallet_cards_provider.dart';
-import 'package:neurokey/features/settings/presentation/settings_screen.dart';
+import 'package:vaultx/core/theme/app_theme.dart';
+import 'package:vaultx/core/theme/theme_provider.dart';
+import 'package:vaultx/features/auth/presentation/login_sign_up_screen.dart';
+import 'package:vaultx/features/auth/presentation/providers/auth_session_provider.dart';
+import 'package:vaultx/features/vault/domain/vault_password_entry.dart';
+import 'package:vaultx/features/vault/presentation/passwords_vault_screen.dart';
+import 'package:vaultx/features/vault/presentation/add_password_screen.dart';
+import 'package:vaultx/features/vault/presentation/edit_password_screen.dart';
+import 'package:vaultx/features/vault/presentation/password_generator_screen.dart';
+import 'package:vaultx/features/vault/presentation/providers/vault_passwords_provider.dart';
+import 'package:vaultx/features/wallet/domain/wallet_card_entry.dart';
+import 'package:vaultx/features/wallet/presentation/digital_wallet_screen.dart';
+import 'package:vaultx/features/wallet/presentation/add_card_screen.dart';
+import 'package:vaultx/features/wallet/presentation/providers/wallet_cards_provider.dart';
+import 'package:vaultx/features/settings/presentation/settings_screen.dart';
 
 // ---------------------------------------------------------------------------
 // Mock classes

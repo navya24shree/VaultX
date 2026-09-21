@@ -1,6 +1,6 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:neurokey/core/theme/app_theme.dart';
+import 'package:vaultx/core/theme/app_theme.dart';
 
 /// An interactive swipe-to-generate slider control with spark icon,
 /// smooth drag physics, and Apple HIG accessible tap fallback.
