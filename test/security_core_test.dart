@@ -413,6 +413,7 @@ void main() {
 
     setUp(() {
       mockAuth = MockLocalAuthentication();
+      when(() => mockAuth.getAvailableBiometrics()).thenAnswer((_) async => <BiometricType>[BiometricType.fingerprint]);
       service = BiometricAuthService(auth: mockAuth);
     });
 

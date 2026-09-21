@@ -66,13 +66,28 @@ class AuthSessionNotifier extends StateNotifier<AuthSessionState> {
   }
 
   Future<void> checkStatus() async {
-    final hasKey = await _secureStorage.hasMasterKey();
-    final canBio = await _biometricAuth.isBiometricAvailable();
+    // Run both async platform checks concurrently to minimise startup latency.
+    final hasKey = _secureStorage.hasMasterKey();
+    final canBio = _biometricAuth.isBiometricAvailable();
     state = state.copyWith(
       isInitialized: true,
-      hasMasterKey: hasKey,
-      isBiometricsAvailable: canBio,
+      hasMasterKey: await hasKey,
+      isBiometricsAvailable: await canBio,
     );
+
+    // On Xiaomi MIUI / Android 14, BiometricManager can transiently return
+    // BIOMETRIC_ERROR_HW_UNAVAILABLE for ~500 ms after a cold start even when
+    // fingerprints are enrolled. Retry once after a short delay so the biometric
+    // toggle is never permanently greyed on a device where biometrics do work.
+    if (!state.isBiometricsAvailable) {
+      Future<void>.delayed(const Duration(milliseconds: 700), () async {
+        if (!mounted) return;
+        final retry = await _biometricAuth.isBiometricAvailable();
+        if (mounted && retry) {
+          state = state.copyWith(isBiometricsAvailable: true);
+        }
+      });
+    }
   }
 
   Future<bool> setupMasterPassword(String password) async {
@@ -160,13 +175,14 @@ class AuthSessionNotifier extends StateNotifier<AuthSessionState> {
   }
 
   Future<bool> unlockWithBiometrics() async {
-    if (!state.isBiometricsAvailable) {
-      state = state.copyWith(errorMessage: 'Biometrics not available on this device.');
+    final isAvailable = state.isBiometricsAvailable || (await _biometricAuth.isBiometricAvailable());
+    if (!isAvailable) {
+      state = state.copyWith(errorMessage: 'Biometrics not available or enrolled on this device.');
       return false;
     }
     try {
       final success = await _biometricAuth.authenticate(
-        localizedReason: 'Authenticate to unlock your VaultX vault',
+        localizedReason: 'Scan your fingerprint to unlock VaultX',
       );
       if (success) {
         final storedKey = await _secureStorage.getMasterKey();
@@ -178,8 +194,16 @@ class AuthSessionNotifier extends StateNotifier<AuthSessionState> {
             clearError: true,
           );
           return true;
+        } else {
+          state = state.copyWith(
+            errorMessage: 'Vault not initialized. Please enter master password.',
+          );
+          return false;
         }
       }
+      state = state.copyWith(
+        errorMessage: 'Biometric authentication cancelled or not recognized.',
+      );
       return false;
     } catch (e) {
       state = state.copyWith(errorMessage: 'Biometric authentication failed: $e');
@@ -204,6 +228,75 @@ class AuthSessionNotifier extends StateNotifier<AuthSessionState> {
       hasMasterKey: false,
     );
   }
+
+  /// Changes the master password.
+  ///
+  /// Verifies [currentPassword] against the stored derived key first,
+  /// then derives a brand-new key from [newPassword] with a fresh salt and
+  /// overwrites secure storage atomically.
+  ///
+  /// Returns a [ChangeMasterPasswordResult] indicating success or failure reason.
+  Future<ChangeMasterPasswordResult> changeMasterPassword({
+    required String currentPassword,
+    required String newPassword,
+  }) async {
+    if (newPassword.length < 8) {
+      return ChangeMasterPasswordResult.weakNewPassword;
+    }
+
+    try {
+      final salt = await _secureStorage.getInstallSalt();
+      final storedKey = await _secureStorage.getMasterKey();
+
+      if (salt == null || storedKey == null) {
+        return ChangeMasterPasswordResult.vaultNotInitialized;
+      }
+
+      // Verify current password via constant-time comparison
+      final currentDerived = await _kdfService.deriveMasterKey(
+        masterPassword: currentPassword,
+        salt: salt,
+      );
+
+      bool matches = currentDerived.length == storedKey.length;
+      int diff = 0;
+      for (int i = 0; i < currentDerived.length; i++) {
+        diff |= currentDerived[i] ^ storedKey[i];
+      }
+      matches = matches && (diff == 0);
+
+      if (!matches) {
+        return ChangeMasterPasswordResult.incorrectCurrentPassword;
+      }
+
+      // Derive new key with fresh salt
+      final newSalt = _kdfService.generateSalt();
+      final newKey = await _kdfService.deriveMasterKey(
+        masterPassword: newPassword,
+        salt: newSalt,
+      );
+
+      // Atomically persist the new credentials
+      await _secureStorage.storeInstallSalt(newSalt);
+      await _secureStorage.storeMasterKey(newKey);
+
+      // Update active session key so the user stays logged in
+      state = state.copyWith(activeMasterKey: newKey, clearError: true);
+
+      return ChangeMasterPasswordResult.success;
+    } catch (e) {
+      return ChangeMasterPasswordResult.unexpectedError;
+    }
+  }
+}
+
+/// Result codes for the change-master-password operation.
+enum ChangeMasterPasswordResult {
+  success,
+  incorrectCurrentPassword,
+  weakNewPassword,
+  vaultNotInitialized,
+  unexpectedError,
 }
 
 final authSessionProvider =

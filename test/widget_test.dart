@@ -26,6 +26,12 @@ class _FakeAuthSessionNotifier extends StateNotifier<AuthSessionState>
   Future<void> wipeAllData() async {}
   @override
   Future<void> checkStatus() async {}
+  @override
+  Future<ChangeMasterPasswordResult> changeMasterPassword({
+    required String currentPassword,
+    required String newPassword,
+  }) async =>
+      ChangeMasterPasswordResult.success;
 }
 
 void main() {

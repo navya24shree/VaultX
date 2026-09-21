@@ -94,11 +94,60 @@ class AuthGate extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final authState = ref.watch(authSessionProvider);
 
+    // Show a branded splash while the auth state is being resolved from
+    // secure storage on first launch. This prevents a blank/white flash.
+    if (!authState.isInitialized) {
+      return const _SplashScreen();
+    }
+
     if (!authState.isAuthenticated) {
       return const LoginSignUpScreen();
     }
 
     return const MainAppShell();
+  }
+}
+
+/// Minimal branded splash shown for the fraction of a second while
+/// [AuthSessionNotifier.checkStatus()] resolves from secure storage.
+class _SplashScreen extends StatelessWidget {
+  const _SplashScreen();
+
+  @override
+  Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    return Scaffold(
+      backgroundColor: isDark ? const Color(0xFF0F1117) : const Color(0xFFF5F7FA),
+      body: Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 72,
+              height: 72,
+              decoration: const BoxDecoration(
+                shape: BoxShape.circle,
+                gradient: LinearGradient(
+                  colors: [Color(0xFF3B82F6), Color(0xFF8B5CF6)],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+              ),
+              child: const Icon(Icons.lock_rounded, size: 38, color: Colors.white),
+            ),
+            const SizedBox(height: 20),
+            const SizedBox(
+              width: 24,
+              height: 24,
+              child: CircularProgressIndicator(
+                strokeWidth: 2.5,
+                valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF3B82F6)),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }
 
@@ -113,35 +162,44 @@ class MainAppShell extends StatefulWidget {
 
 class _MainAppShellState extends State<MainAppShell> {
   late NavTab _currentTab;
+  // Tracks which tabs have been visited so we only build them on first visit.
+  final Set<NavTab> _visitedTabs = {};
 
   @override
   void initState() {
     super.initState();
     _currentTab = widget.initialTab;
+    _visitedTabs.add(_currentTab);
+  }
+
+  Widget _buildScreen(NavTab tab, Widget screen) {
+    // Defer building until first visit to keep startup fast.
+    if (!_visitedTabs.contains(tab)) {
+      return const SizedBox.shrink();
+    }
+    return Visibility(
+      visible: _currentTab == tab,
+      maintainState: true,
+      child: screen,
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    final screens = <Widget>[
-      const PasswordsVaultScreen(),
-      const DigitalWalletScreen(),
-      const PasswordGeneratorScreen(),
-      const SettingsScreen(),
-    ];
-
-    final activeIndex = NavTab.values.indexOf(_currentTab);
-
     return Scaffold(
       body: Stack(
         children: [
-          IndexedStack(
-            index: activeIndex,
-            children: screens,
-          ),
+          _buildScreen(NavTab.passwords, const PasswordsVaultScreen()),
+          _buildScreen(NavTab.wallet, const DigitalWalletScreen()),
+          _buildScreen(NavTab.generator, const PasswordGeneratorScreen()),
+          _buildScreen(NavTab.settings, const SettingsScreen()),
           FloatingNavDock(
             currentTab: _currentTab,
             onTabSelected: (tab) {
-              setState(() => _currentTab = tab);
+              setState(() {
+                _currentTab = tab;
+                _visitedTabs.add(tab); // mark visited → build on next frame
+              });
             },
           ),
         ],

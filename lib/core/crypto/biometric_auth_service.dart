@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:local_auth/local_auth.dart';
 
@@ -11,10 +12,17 @@ class BiometricAuthService {
   /// Determines if the device hardware supports biometrics and has enrolled biometrics.
   Future<bool> isBiometricAvailable() async {
     try {
-      final canCheck = await _auth.canCheckBiometrics;
       final isSupported = await _auth.isDeviceSupported();
-      return canCheck && isSupported;
-    } on PlatformException {
+      if (!isSupported) return false;
+      final canCheck = await _auth.canCheckBiometrics;
+      if (canCheck) return true;
+      final available = await _auth.getAvailableBiometrics();
+      return available.isNotEmpty;
+    } on PlatformException catch (e) {
+      debugPrint('BiometricAuthService.isBiometricAvailable PlatformException: ${e.code} - ${e.message}');
+      return false;
+    } catch (e) {
+      debugPrint('BiometricAuthService.isBiometricAvailable error: $e');
       return false;
     }
   }
@@ -23,7 +31,8 @@ class BiometricAuthService {
   Future<List<BiometricType>> getAvailableBiometrics() async {
     try {
       return await _auth.getAvailableBiometrics();
-    } on PlatformException {
+    } on PlatformException catch (e) {
+      debugPrint('BiometricAuthService.getAvailableBiometrics error: $e');
       return <BiometricType>[];
     }
   }
@@ -32,12 +41,13 @@ class BiometricAuthService {
   ///
   /// Returns `true` if authentication succeeded, `false` otherwise.
   Future<bool> authenticate({
-    String localizedReason = 'Authenticate to unlock your NeuroKey vault',
-    bool biometricOnly = true,
+    String localizedReason = 'Scan your fingerprint to authenticate',
+    bool biometricOnly = false,
   }) async {
     try {
       final available = await isBiometricAvailable();
       if (!available) {
+        debugPrint('BiometricAuthService: biometrics not available on device.');
         return false;
       }
 
@@ -49,7 +59,11 @@ class BiometricAuthService {
           useErrorDialogs: true,
         ),
       );
-    } on PlatformException {
+    } on PlatformException catch (e) {
+      debugPrint('BiometricAuthService.authenticate PlatformException: [${e.code}] ${e.message}');
+      return false;
+    } catch (e) {
+      debugPrint('BiometricAuthService.authenticate error: $e');
       return false;
     }
   }

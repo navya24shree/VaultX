@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:isolate';
 import 'dart:math';
 import 'package:cryptography/cryptography.dart';
 
@@ -51,6 +52,9 @@ class KdfService {
   }
 
   /// Derives a 256-bit (32-byte) master key from [masterPassword] and [salt] using Argon2id.
+  ///
+  /// The heavy Argon2id computation is offloaded to a background isolate via
+  /// [Isolate.run] so the UI thread is never blocked, keeping animations smooth.
   Future<List<int>> deriveMasterKey({
     required String masterPassword,
     required List<int> salt,
@@ -65,21 +69,40 @@ class KdfService {
 
     final effectiveParams = params ?? defaultParams;
 
-    final argon2id = Argon2id(
-      memory: effectiveParams.memory,
-      iterations: effectiveParams.iterations,
-      parallelism: effectiveParams.parallelism,
-      hashLength: effectiveParams.hashLength,
-    );
+    // Bundle all inputs into a single map for the isolate entry point.
+    final args = <String, dynamic>{
+      'password': masterPassword,
+      'salt': salt,
+      'memory': effectiveParams.memory,
+      'iterations': effectiveParams.iterations,
+      'parallelism': effectiveParams.parallelism,
+      'hashLength': effectiveParams.hashLength,
+    };
 
-    final passwordBytes = utf8.encode(masterPassword);
-    final secretKey = SecretKey(passwordBytes);
-
-    final derivedKey = await argon2id.deriveKey(
-      secretKey: secretKey,
-      nonce: salt,
-    );
-
-    return derivedKey.extractBytes();
+    // Run the CPU-intensive Argon2id on a background isolate so the UI
+    // thread stays free during the derivation (which can take 1-3 seconds).
+    return Isolate.run(() => _deriveInIsolate(args));
   }
+}
+
+/// Top-level function required by [Isolate.run].
+/// Must be a static or top-level function to be sendable across isolate boundaries.
+Future<List<int>> _deriveInIsolate(Map<String, dynamic> args) async {
+  final argon2id = Argon2id(
+    memory: args['memory'] as int,
+    iterations: args['iterations'] as int,
+    parallelism: args['parallelism'] as int,
+    hashLength: args['hashLength'] as int,
+  );
+
+  final passwordBytes = utf8.encode(args['password'] as String);
+  final secretKey = SecretKey(passwordBytes);
+  final salt = args['salt'] as List<int>;
+
+  final derivedKey = await argon2id.deriveKey(
+    secretKey: secretKey,
+    nonce: salt,
+  );
+
+  return derivedKey.extractBytes();
 }

@@ -1,8 +1,11 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:neurokey/core/theme/app_theme.dart';
 import 'package:neurokey/features/auth/presentation/providers/auth_session_provider.dart';
+import 'package:neurokey/features/settings/presentation/providers/biometric_preference_provider.dart';
 
 enum AuthMode { login, signup }
 
@@ -30,6 +33,29 @@ class _LoginSignUpScreenState extends ConsumerState<LoginSignUpScreen> {
   final _confirmController = TextEditingController();
 
   String? _errorMessage;
+  bool _hasAutoPrompted = false;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _checkAndAutoPromptBiometrics();
+    });
+  }
+
+  void _checkAndAutoPromptBiometrics() {
+    if (_hasAutoPrompted || _isLoading || _mode != AuthMode.login) return;
+    final authState = ref.read(authSessionProvider);
+    final bioEnabled = ref.read(biometricPreferenceProvider);
+    if (authState.hasMasterKey && authState.isBiometricsAvailable && bioEnabled && !authState.isAuthenticated) {
+      _hasAutoPrompted = true;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted && !ref.read(authSessionProvider).isAuthenticated) {
+          _triggerBiometrics();
+        }
+      });
+    }
+  }
 
   @override
   void dispose() {
@@ -77,9 +103,12 @@ class _LoginSignUpScreenState extends ConsumerState<LoginSignUpScreen> {
         await HapticFeedback.mediumImpact();
         if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
+          SnackBar(
             backgroundColor: AppColors.emerald500,
-            content: Row(
+            duration: const Duration(milliseconds: 1200),
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            content: const Row(
               children: [
                 Icon(Icons.check_circle_rounded, color: Colors.white, size: 20),
                 SizedBox(width: 8),
@@ -98,22 +127,74 @@ class _LoginSignUpScreenState extends ConsumerState<LoginSignUpScreen> {
   }
 
   void _triggerBiometrics() async {
+    final authState = ref.read(authSessionProvider);
+    final bioEnabled = ref.read(biometricPreferenceProvider);
+
+    if (!authState.isBiometricsAvailable) {
+      setState(() => _errorMessage = 'No biometrics enrolled on this device.');
+      return;
+    }
+    if (!bioEnabled) {
+      setState(() => _errorMessage = 'Biometric unlock is disabled. Enable it in Settings.');
+      return;
+    }
+
     final notifier = ref.read(authSessionProvider.notifier);
-    setState(() => _isLoading = true);
+    setState(() {
+      _isLoading = true;
+      _errorMessage = null;
+    });
+
     final success = await notifier.unlockWithBiometrics();
     if (mounted) {
       setState(() => _isLoading = false);
       if (success) {
-        await HapticFeedback.mediumImpact();
+        unawaited(HapticFeedback.mediumImpact());
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            backgroundColor: AppColors.emerald500,
+            duration: const Duration(milliseconds: 1200),
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            content: const Row(
+              children: [
+                Icon(Icons.check_circle_rounded, color: Colors.white, size: 20),
+                SizedBox(width: 8),
+                Text('Vault unlocked successfully'),
+              ],
+            ),
+          ),
+        );
         widget.onAuthenticated?.call();
       } else {
-        await HapticFeedback.lightImpact();
+        unawaited(HapticFeedback.lightImpact());
+        final err = ref.read(authSessionProvider).errorMessage;
+        if (err != null) {
+          setState(() => _errorMessage = err);
+        }
       }
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    ref.listen<AuthSessionState>(authSessionProvider, (prev, next) {
+      if (prev?.isAuthenticated == true && !next.isAuthenticated) {
+        _hasAutoPrompted = false;
+        _checkAndAutoPromptBiometrics();
+      } else if (next.hasMasterKey && next.isBiometricsAvailable && !next.isAuthenticated) {
+        _checkAndAutoPromptBiometrics();
+      }
+    });
+
+    ref.listen<bool>(biometricPreferenceProvider, (prev, next) {
+      if (next) {
+        _checkAndAutoPromptBiometrics();
+      }
+    });
+
+    final authState = ref.watch(authSessionProvider);
+    final bioEnabled = ref.watch(biometricPreferenceProvider);
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final cardBg = isDark ? AppColors.darkCardSurface : AppColors.lightCardSurface;
     final inputBg = isDark ? AppColors.darkInputSurface : AppColors.lightInputSurface;
@@ -347,48 +428,101 @@ class _LoginSignUpScreenState extends ConsumerState<LoginSignUpScreen> {
                         const SizedBox(height: 24),
 
                         // Primary Submit CTA Button
-                        ElevatedButton(
-                          onPressed: _isLoading ? null : _submit,
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: AppColors.primaryBlue,
-                            foregroundColor: Colors.white,
-                            shape: const StadiumBorder(),
-                            padding: const EdgeInsets.symmetric(vertical: 16),
+                        if (_mode == AuthMode.login &&
+                            authState.hasMasterKey &&
+                            authState.isBiometricsAvailable &&
+                            bioEnabled) ...[
+                          ElevatedButton.icon(
+                            onPressed: _isLoading ? null : _triggerBiometrics,
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: AppColors.primaryBlue,
+                              foregroundColor: Colors.white,
+                              shape: const StadiumBorder(),
+                              padding: const EdgeInsets.symmetric(vertical: 16),
+                              elevation: 2,
+                            ),
+                            icon: const Icon(Icons.fingerprint_rounded, size: 24),
+                            label: const Text(
+                              'Unlock with Fingerprint',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w700,
+                                letterSpacing: 0.2,
+                              ),
+                            ),
                           ),
-                          child: _isLoading
-                              ? const SizedBox(
-                                  height: 20,
-                                  width: 20,
-                                  child: CircularProgressIndicator(
-                                    strokeWidth: 2,
-                                    valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                          const SizedBox(height: 12),
+                          OutlinedButton(
+                            onPressed: _isLoading ? null : _submit,
+                            style: OutlinedButton.styleFrom(
+                              side: BorderSide(color: borderCol),
+                              shape: const StadiumBorder(),
+                              padding: const EdgeInsets.symmetric(vertical: 14),
+                            ),
+                            child: _isLoading
+                                ? const SizedBox(
+                                    height: 20,
+                                    width: 20,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                      valueColor: AlwaysStoppedAnimation<Color>(AppColors.primaryBlue),
+                                    ),
+                                  )
+                                : const Text(
+                                    'Unlock with Password',
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w600,
+                                    ),
                                   ),
-                                )
-                              : Text(
-                                  _mode == AuthMode.login ? 'Unlock Vault' : 'Create Vault',
-                                  style: const TextStyle(
-                                    fontSize: 15,
-                                    fontWeight: FontWeight.w700,
-                                    letterSpacing: 0.2,
+                          ),
+                        ] else ...[
+                          ElevatedButton(
+                            onPressed: _isLoading ? null : _submit,
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: AppColors.primaryBlue,
+                              foregroundColor: Colors.white,
+                              shape: const StadiumBorder(),
+                              padding: const EdgeInsets.symmetric(vertical: 16),
+                            ),
+                            child: _isLoading
+                                ? const SizedBox(
+                                    height: 20,
+                                    width: 20,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                      valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                                    ),
+                                  )
+                                : Text(
+                                    _mode == AuthMode.login ? 'Unlock Vault' : 'Create Vault',
+                                    style: const TextStyle(
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.w700,
+                                      letterSpacing: 0.2,
+                                    ),
                                   ),
-                                ),
-                        ),
-
-                        // Biometric Quick Unlock (When Available)
-                        const SizedBox(height: 12),
-                        OutlinedButton.icon(
-                          onPressed: _isLoading ? null : _triggerBiometrics,
-                          style: OutlinedButton.styleFrom(
-                            minimumSize: const Size(44, 48),
-                            side: BorderSide(color: borderCol),
-                            shape: const StadiumBorder(),
                           ),
-                          icon: const Icon(Icons.fingerprint_rounded, size: 22),
-                          label: const Text(
-                            'Unlock with Biometrics',
-                            style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
-                          ),
-                        ),
+                          if (_mode == AuthMode.login &&
+                              authState.hasMasterKey &&
+                              authState.isBiometricsAvailable &&
+                              !bioEnabled) ...[
+                            const SizedBox(height: 12),
+                            OutlinedButton.icon(
+                              onPressed: null,
+                              style: OutlinedButton.styleFrom(
+                                minimumSize: const Size(44, 48),
+                                side: BorderSide(color: borderCol),
+                                shape: const StadiumBorder(),
+                              ),
+                              icon: const Icon(Icons.fingerprint_rounded, size: 22),
+                              label: const Text(
+                                'Biometrics Disabled in Settings',
+                                style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+                              ),
+                            ),
+                          ],
+                        ],
                       ],
                     ),
                   ),

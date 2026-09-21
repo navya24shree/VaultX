@@ -4,7 +4,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:neurokey/core/theme/app_theme.dart';
 import 'package:neurokey/core/theme/theme_provider.dart';
 import 'package:neurokey/features/auth/presentation/providers/auth_session_provider.dart';
+import 'package:neurokey/features/settings/presentation/change_master_password_dialog.dart';
 import 'package:neurokey/features/settings/presentation/providers/auto_lock_provider.dart';
+import 'package:neurokey/features/settings/presentation/providers/biometric_preference_provider.dart';
 import 'package:neurokey/features/sync/presentation/sync_screen.dart';
 
 /// Screen 8: Settings & Theme Switcher Screen
@@ -232,6 +234,8 @@ class SettingsScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final themeMode = ref.watch(themeModeProvider);
     final autoLock = ref.watch(autoLockProvider);
+    final biometricEnabled = ref.watch(biometricPreferenceProvider);
+    final authState = ref.watch(authSessionProvider);
     final isDark = themeMode == ThemeMode.dark;
     final cardBg = isDark ? AppColors.darkCardSurface : AppColors.lightCardSurface;
     final borderCol = isDark ? AppColors.darkBorder : AppColors.lightBorder;
@@ -244,13 +248,30 @@ class SettingsScreen extends ConsumerWidget {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               // Header
-              const Text(
-                'Settings',
-                style: TextStyle(
-                  fontSize: 28,
-                  fontWeight: FontWeight.w800,
-                  letterSpacing: -0.5,
-                ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text(
+                    'Settings',
+                    style: TextStyle(
+                      fontSize: 28,
+                      fontWeight: FontWeight.w800,
+                      letterSpacing: -0.5,
+                    ),
+                  ),
+                  FilledButton.tonalIcon(
+                    onPressed: () {
+                      HapticFeedback.mediumImpact();
+                      ref.read(authSessionProvider.notifier).lockVault();
+                    },
+                    icon: const Icon(Icons.lock_rounded, size: 16),
+                    label: const Text('Lock Vault'),
+                    style: FilledButton.styleFrom(
+                      visualDensity: VisualDensity.compact,
+                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    ),
+                  ),
+                ],
               ),
               const SizedBox(height: 24),
 
@@ -298,20 +319,132 @@ class SettingsScreen extends ConsumerWidget {
                       title: const Text('Change Master Password', style: TextStyle(fontWeight: FontWeight.w600)),
                       trailing: const Icon(Icons.chevron_right_rounded),
                       onTap: () {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('Master password update available in next session')),
+                        HapticFeedback.lightImpact();
+                        showDialog<void>(
+                          context: context,
+                          barrierDismissible: false,
+                          builder: (_) => const ChangeMasterPasswordDialog(),
                         );
                       },
                     ),
                     Divider(height: 1, color: borderCol),
                     ListTile(
-                      leading: const Icon(Icons.fingerprint_rounded, color: AppColors.primaryBlue),
+                      leading: Icon(
+                        Icons.fingerprint_rounded,
+                        color: authState.isBiometricsAvailable
+                            ? AppColors.primaryBlue
+                            : (isDark ? AppColors.darkTextMuted : AppColors.lightTextMuted),
+                      ),
                       title: const Text('Biometric Authentication', style: TextStyle(fontWeight: FontWeight.w600)),
-                      subtitle: const Text('Touch ID / Face ID gate'),
+                      subtitle: Text(
+                        authState.isBiometricsAvailable
+                            ? (biometricEnabled ? 'Fingerprint unlock enabled' : 'Disabled — tap to verify fingerprint')
+                            : 'No biometrics enrolled on this device',
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: authState.isBiometricsAvailable
+                              ? null
+                              : AppColors.amber500,
+                        ),
+                      ),
+                      onTap: authState.isBiometricsAvailable
+                          ? () async {
+                              final targetVal = !biometricEnabled;
+                              if (targetVal) {
+                                final success = await ref
+                                    .read(biometricPreferenceProvider.notifier)
+                                    .setEnabled(true);
+                                if (context.mounted) {
+                                  if (success) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                        backgroundColor: AppColors.emerald500,
+                                        duration: Duration(milliseconds: 1200),
+                                        behavior: SnackBarBehavior.floating,
+                                        content: Row(
+                                          children: [
+                                            Icon(Icons.fingerprint_rounded, color: Colors.white, size: 20),
+                                            SizedBox(width: 8),
+                                            Text('Biometric authentication enabled'),
+                                          ],
+                                        ),
+                                      ),
+                                    );
+                                  } else {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                        backgroundColor: AppColors.rose500,
+                                        duration: Duration(milliseconds: 1200),
+                                        behavior: SnackBarBehavior.floating,
+                                        content: Text('Biometric verification cancelled or failed.'),
+                                      ),
+                                    );
+                                  }
+                                }
+                              } else {
+                                await ref.read(biometricPreferenceProvider.notifier).setEnabled(false);
+                                if (context.mounted) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                      duration: Duration(milliseconds: 1200),
+                                      behavior: SnackBarBehavior.floating,
+                                      content: Text('Biometric authentication disabled.'),
+                                    ),
+                                  );
+                                }
+                              }
+                            }
+                          : null,
                       trailing: Switch.adaptive(
-                        value: true,
+                        value: biometricEnabled,
                         activeThumbColor: AppColors.primaryBlue,
-                        onChanged: (val) {},
+                        onChanged: authState.isBiometricsAvailable
+                            ? (val) async {
+                                if (val) {
+                                  final success = await ref
+                                      .read(biometricPreferenceProvider.notifier)
+                                      .setEnabled(true);
+                                  if (context.mounted) {
+                                    if (success) {
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        const SnackBar(
+                                          backgroundColor: AppColors.emerald500,
+                                          duration: Duration(milliseconds: 1200),
+                                          behavior: SnackBarBehavior.floating,
+                                          content: Row(
+                                            children: [
+                                              Icon(Icons.fingerprint_rounded, color: Colors.white, size: 20),
+                                              SizedBox(width: 8),
+                                              Text('Biometric authentication enabled'),
+                                            ],
+                                          ),
+                                        ),
+                                      );
+                                    } else {
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        const SnackBar(
+                                          backgroundColor: AppColors.rose500,
+                                          duration: Duration(milliseconds: 1200),
+                                          behavior: SnackBarBehavior.floating,
+                                          content: Text('Biometric verification cancelled or failed.'),
+                                        ),
+                                      );
+                                    }
+                                  }
+                                } else {
+                                  await ref.read(biometricPreferenceProvider.notifier).setEnabled(false);
+                                  if (context.mounted) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                        duration: Duration(milliseconds: 1200),
+                                        behavior: SnackBarBehavior.floating,
+                                        content: Text('Biometric authentication disabled.'),
+                                      ),
+                                    );
+                                  }
+                                }
+                              }
+                            : null,
                       ),
                     ),
                     Divider(height: 1, color: borderCol),
@@ -334,6 +467,17 @@ class SettingsScreen extends ConsumerWidget {
                         ],
                       ),
                       onTap: () => _openAutoLockDialog(context, ref),
+                    ),
+                    Divider(height: 1, color: borderCol),
+                    ListTile(
+                      leading: const Icon(Icons.lock_rounded, color: AppColors.primaryBlue),
+                      title: const Text('Lock Vault Now', style: TextStyle(fontWeight: FontWeight.w600)),
+                      subtitle: const Text('Require authentication to re-enter'),
+                      trailing: const Icon(Icons.chevron_right_rounded),
+                      onTap: () {
+                        HapticFeedback.mediumImpact();
+                        ref.read(authSessionProvider.notifier).lockVault();
+                      },
                     ),
                   ],
                 ),
