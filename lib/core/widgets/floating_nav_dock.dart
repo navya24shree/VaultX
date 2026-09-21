@@ -27,55 +27,57 @@ class FloatingNavDock extends StatelessWidget {
 
     return Align(
       alignment: Alignment.bottomCenter,
-      child: Padding(
-        padding: const EdgeInsets.only(bottom: 24, left: 24, right: 24),
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(40),
-          child: BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 16, sigmaY: 16),
-            child: Container(
-              height: 64,
-              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-              decoration: BoxDecoration(
-                color: backgroundColor,
-                borderRadius: BorderRadius.circular(40),
-                border: Border.all(color: borderColor, width: 1.2),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withAlpha(isDark ? 80 : 30),
-                    blurRadius: 24,
-                    offset: const Offset(0, 10),
-                  ),
-                ],
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  _NavItem(
-                    icon: Icons.vpn_key_rounded,
-                    label: 'Passwords',
-                    isSelected: currentTab == NavTab.passwords,
-                    onTap: () => onTabSelected(NavTab.passwords),
-                  ),
-                  _NavItem(
-                    icon: Icons.account_balance_wallet_rounded,
-                    label: 'Wallet',
-                    isSelected: currentTab == NavTab.wallet,
-                    onTap: () => onTabSelected(NavTab.wallet),
-                  ),
-                  _NavItem(
-                    icon: Icons.auto_awesome_rounded,
-                    label: 'Generator',
-                    isSelected: currentTab == NavTab.generator,
-                    onTap: () => onTabSelected(NavTab.generator),
-                  ),
-                  _NavItem(
-                    icon: Icons.tune_rounded,
-                    label: 'Settings',
-                    isSelected: currentTab == NavTab.settings,
-                    onTap: () => onTabSelected(NavTab.settings),
-                  ),
-                ],
+      child: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.only(bottom: 12, left: 20, right: 20),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(40),
+            child: BackdropFilter(
+              filter: ImageFilter.blur(sigmaX: 16, sigmaY: 16),
+              child: Container(
+                height: 68,
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                decoration: BoxDecoration(
+                  color: backgroundColor,
+                  borderRadius: BorderRadius.circular(40),
+                  border: Border.all(color: borderColor, width: 1.2),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withAlpha(isDark ? 80 : 30),
+                      blurRadius: 24,
+                      offset: const Offset(0, 10),
+                    ),
+                  ],
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
+                    _NavItem(
+                      icon: Icons.vpn_key_rounded,
+                      label: 'Passwords',
+                      isSelected: currentTab == NavTab.passwords,
+                      onTap: () => onTabSelected(NavTab.passwords),
+                    ),
+                    _NavItem(
+                      icon: Icons.account_balance_wallet_rounded,
+                      label: 'Wallet',
+                      isSelected: currentTab == NavTab.wallet,
+                      onTap: () => onTabSelected(NavTab.wallet),
+                    ),
+                    _NavItem(
+                      icon: Icons.auto_awesome_rounded,
+                      label: 'Generator',
+                      isSelected: currentTab == NavTab.generator,
+                      onTap: () => onTabSelected(NavTab.generator),
+                    ),
+                    _NavItem(
+                      icon: Icons.tune_rounded,
+                      label: 'Settings',
+                      isSelected: currentTab == NavTab.settings,
+                      onTap: () => onTabSelected(NavTab.settings),
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
@@ -114,7 +116,7 @@ class _NavItem extends StatelessWidget {
         onTap: onTap,
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 200),
-          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
           decoration: BoxDecoration(
             color: isSelected ? activeColor.withAlpha(35) : Colors.transparent,
             borderRadius: BorderRadius.circular(24),
@@ -129,12 +131,17 @@ class _NavItem extends StatelessWidget {
                 color: isSelected ? activeColor : inactiveColor,
               ),
               const SizedBox(height: 2),
-              Text(
-                label,
-                style: TextStyle(
-                  fontSize: 10,
-                  fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
-                  color: isSelected ? activeColor : inactiveColor,
+              FittedBox(
+                fit: BoxFit.scaleDown,
+                child: Text(
+                  label,
+                  maxLines: 1,
+                  style: TextStyle(
+                    fontSize: 10,
+                    height: 1.1,
+                    fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
+                    color: isSelected ? activeColor : inactiveColor,
+                  ),
                 ),
               ),
             ],

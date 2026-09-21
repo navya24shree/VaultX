@@ -244,75 +244,77 @@ class _PasswordGeneratorScreenState extends State<PasswordGeneratorScreen> {
                 const SizedBox(height: 12),
 
                 // Dual Options Section (Toggles on Left, Vertical Ruler on Right)
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Toggles Column
-                    Expanded(
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: cardBg,
-                          borderRadius: BorderRadius.circular(22),
-                          border: Border.all(color: borderCol),
-                        ),
-                        child: Column(
-                          children: [
-                            _ToggleTile(
-                              title: 'Uppercase',
-                              subtitle: 'A-Z',
-                              value: _useUpper,
-                              onChanged: (val) {
-                                setState(() => _useUpper = val);
-                                _regenerate();
-                              },
-                            ),
-                            Divider(height: 1, color: borderCol),
-                            _ToggleTile(
-                              title: 'Lowercase',
-                              subtitle: 'a-z',
-                              value: _useLower,
-                              onChanged: (val) {
-                                setState(() => _useLower = val);
-                                _regenerate();
-                              },
-                            ),
-                            Divider(height: 1, color: borderCol),
-                            _ToggleTile(
-                              title: 'Numbers',
-                              subtitle: '0-9',
-                              value: _useNumbers,
-                              onChanged: (val) {
-                                setState(() => _useNumbers = val);
-                                _regenerate();
-                              },
-                            ),
-                            Divider(height: 1, color: borderCol),
-                            _ToggleTile(
-                              title: 'Symbols',
-                              subtitle: '!@#\$%^&*',
-                              value: _useSymbols,
-                              onChanged: (val) {
-                                setState(() => _useSymbols = val);
-                                _regenerate();
-                              },
-                            ),
-                          ],
+                IntrinsicHeight(
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      // Toggles Column
+                      Expanded(
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: cardBg,
+                            borderRadius: BorderRadius.circular(22),
+                            border: Border.all(color: borderCol),
+                          ),
+                          child: Column(
+                            children: [
+                              _ToggleTile(
+                                title: 'Uppercase',
+                                subtitle: 'A-Z',
+                                value: _useUpper,
+                                onChanged: (val) {
+                                  setState(() => _useUpper = val);
+                                  _regenerate();
+                                },
+                              ),
+                              Divider(height: 1, color: borderCol),
+                              _ToggleTile(
+                                title: 'Lowercase',
+                                subtitle: 'a-z',
+                                value: _useLower,
+                                onChanged: (val) {
+                                  setState(() => _useLower = val);
+                                  _regenerate();
+                                },
+                              ),
+                              Divider(height: 1, color: borderCol),
+                              _ToggleTile(
+                                title: 'Numbers',
+                                subtitle: '0-9',
+                                value: _useNumbers,
+                                onChanged: (val) {
+                                  setState(() => _useNumbers = val);
+                                  _regenerate();
+                                },
+                              ),
+                              Divider(height: 1, color: borderCol),
+                              _ToggleTile(
+                                title: 'Symbols',
+                                subtitle: '!@#\$%^&*',
+                                value: _useSymbols,
+                                onChanged: (val) {
+                                  setState(() => _useSymbols = val);
+                                  _regenerate();
+                                },
+                              ),
+                            ],
+                          ),
                         ),
                       ),
-                    ),
-                    const SizedBox(width: 14),
+                      const SizedBox(width: 14),
 
-                    // Vertical Ruler Ladder Slider
-                    VerticalRulerSlider(
-                      value: _length,
-                      min: 8,
-                      max: 32,
-                      onChanged: (val) {
-                        setState(() => _length = val);
-                        _regenerate();
-                      },
-                    ),
-                  ],
+                      // Vertical Ruler Ladder Slider (same height as options container)
+                      VerticalRulerSlider(
+                        value: _length,
+                        min: 8,
+                        max: 32,
+                        onChanged: (val) {
+                          setState(() => _length = val);
+                          _regenerate();
+                        },
+                      ),
+                    ],
+                  ),
                 ),
               ],
             ),

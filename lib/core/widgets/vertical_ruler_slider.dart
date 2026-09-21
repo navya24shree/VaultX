@@ -9,6 +9,7 @@ class VerticalRulerSlider extends StatelessWidget {
   final int min;
   final int max;
   final ValueChanged<int> onChanged;
+  final double? height;
 
   const VerticalRulerSlider({
     super.key,
@@ -16,19 +17,19 @@ class VerticalRulerSlider extends StatelessWidget {
     this.min = 8,
     this.max = 32,
     required this.onChanged,
+    this.height,
   });
 
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    const height = 280.0;
     const width = 68.0;
 
     return Semantics(
       slider: true,
-      value: ' characters',
-      increasedValue: ' characters',
-      decreasedValue: ' characters',
+      value: '$value characters',
+      increasedValue: '${(value + 1).clamp(min, max)} characters',
+      decreasedValue: '${(value - 1).clamp(min, max)} characters',
       onIncrease: () {
         if (value < max) onChanged(value + 1);
       },
@@ -39,10 +40,11 @@ class VerticalRulerSlider extends StatelessWidget {
         behavior: HitTestBehavior.opaque,
         onVerticalDragUpdate: (details) {
           final box = context.findRenderObject() as RenderBox?;
-          if (box != null) {
+          if (box != null && box.size.height > 0) {
             final localPos = box.globalToLocal(details.globalPosition);
+            final h = box.size.height;
             // Invert Y: top is max (32), bottom is min (8)
-            final fraction = (1.0 - (localPos.dy / height)).clamp(0.0, 1.0);
+            final fraction = (1.0 - (localPos.dy / h)).clamp(0.0, 1.0);
             final newValue = (min + (fraction * (max - min))).round();
             if (newValue != value) {
               HapticFeedback.selectionClick();
@@ -51,11 +53,15 @@ class VerticalRulerSlider extends StatelessWidget {
           }
         },
         onTapDown: (details) {
-          final fraction = (1.0 - (details.localPosition.dy / height)).clamp(0.0, 1.0);
-          final newValue = (min + (fraction * (max - min))).round();
-          if (newValue != value) {
-            HapticFeedback.selectionClick();
-            onChanged(newValue);
+          final box = context.findRenderObject() as RenderBox?;
+          if (box != null && box.size.height > 0) {
+            final h = box.size.height;
+            final fraction = (1.0 - (details.localPosition.dy / h)).clamp(0.0, 1.0);
+            final newValue = (min + (fraction * (max - min))).round();
+            if (newValue != value) {
+              HapticFeedback.selectionClick();
+              onChanged(newValue);
+            }
           }
         },
         child: Container(
@@ -70,7 +76,7 @@ class VerticalRulerSlider extends StatelessWidget {
             ),
           ),
           child: Stack(
-            alignment: Alignment.bottomCenter,
+            alignment: Alignment.center,
             children: [
               // Rung Tick Marks
               Column(
@@ -91,30 +97,36 @@ class VerticalRulerSlider extends StatelessWidget {
               ),
 
               // Positioned Active Indicator Thumb
-              Positioned(
-                bottom: (((value - min) / (max - min)) * (height - 52)).clamp(4.0, height - 52.0),
-                child: Container(
-                  width: 54,
-                  height: 44,
-                  decoration: BoxDecoration(
-                    color: AppColors.primaryBlue,
-                    borderRadius: BorderRadius.circular(22),
-                    boxShadow: [
-                      BoxShadow(
-                        color: AppColors.primaryBlue.withAlpha(90),
-                        blurRadius: 12,
-                        offset: const Offset(0, 4),
-                      ),
-                    ],
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 6),
+                child: Align(
+                  alignment: Alignment(
+                    0.0,
+                    1.0 - (2.0 * ((value - min) / (max - min)).clamp(0.0, 1.0)),
                   ),
-                  alignment: Alignment.center,
-                  child: Text(
-                    '$value',
-                    style: const TextStyle(
-                      fontFamily: 'JetBrains Mono',
-                      fontSize: 18,
-                      fontWeight: FontWeight.w700,
-                      color: Colors.white,
+                  child: Container(
+                    width: 54,
+                    height: 44,
+                    decoration: BoxDecoration(
+                      color: AppColors.primaryBlue,
+                      borderRadius: BorderRadius.circular(22),
+                      boxShadow: [
+                        BoxShadow(
+                          color: AppColors.primaryBlue.withAlpha(90),
+                          blurRadius: 12,
+                          offset: const Offset(0, 4),
+                        ),
+                      ],
+                    ),
+                    alignment: Alignment.center,
+                    child: Text(
+                      '$value',
+                      style: const TextStyle(
+                        fontFamily: 'JetBrains Mono',
+                        fontSize: 18,
+                        fontWeight: FontWeight.w700,
+                        color: Colors.white,
+                      ),
                     ),
                   ),
                 ),
