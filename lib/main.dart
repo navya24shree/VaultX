@@ -9,6 +9,7 @@ import 'features/vault/presentation/passwords_vault_screen.dart';
 import 'features/vault/presentation/password_generator_screen.dart';
 import 'features/wallet/presentation/digital_wallet_screen.dart';
 import 'features/settings/presentation/settings_screen.dart';
+import 'features/settings/presentation/providers/auto_lock_provider.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -28,13 +29,63 @@ class VaultXApp extends ConsumerWidget {
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,
       themeMode: themeMode,
-      home: const AuthGate(),
+      home: const AppLifecycleLockHandler(child: AuthGate()),
     );
   }
 }
 
 /// Backwards compatibility alias
 typedef NeuroKeyApp = VaultXApp;
+
+/// Listens for app background/close lifecycle events and triggers auto-lock
+/// when elapsed time exceeds the configured AutoLockDuration.
+class AppLifecycleLockHandler extends ConsumerStatefulWidget {
+  final Widget child;
+  const AppLifecycleLockHandler({super.key, required this.child});
+
+  @override
+  ConsumerState<AppLifecycleLockHandler> createState() => _AppLifecycleLockHandlerState();
+}
+
+class _AppLifecycleLockHandlerState extends ConsumerState<AppLifecycleLockHandler>
+    with WidgetsBindingObserver {
+  DateTime? _pausedAt;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.paused ||
+        state == AppLifecycleState.inactive ||
+        state == AppLifecycleState.hidden) {
+      _pausedAt ??= DateTime.now();
+    } else if (state == AppLifecycleState.resumed) {
+      if (_pausedAt != null) {
+        final elapsed = DateTime.now().difference(_pausedAt!);
+        final lockDuration = ref.read(autoLockProvider).duration;
+        if (elapsed >= lockDuration) {
+          ref.read(authSessionProvider.notifier).lockVault();
+        }
+        _pausedAt = null;
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return widget.child;
+  }
+}
 
 class AuthGate extends ConsumerWidget {
   const AuthGate({super.key});

@@ -735,6 +735,36 @@ void main() {
       expect(hasAutoLock, isTrue);
     });
 
+    testWidgets('auto-lock dialog opens with all options and allows selection', (tester) async {
+      await tester.pumpWidget(buildSettings());
+      await tester.pumpAndSettle();
+
+      final autoLockTile = find.text('Auto-Lock Duration');
+      expect(autoLockTile, findsOneWidget);
+      await tester.tap(autoLockTile);
+      await tester.pumpAndSettle();
+
+      // Verify dialog is visible
+      expect(find.byType(Dialog), findsOneWidget);
+
+      // Verify all requested options are present inside the dialog
+      final dialogFinder = find.byType(Dialog);
+      expect(find.descendant(of: dialogFinder, matching: find.text('30 Seconds')), findsOneWidget);
+      expect(find.descendant(of: dialogFinder, matching: find.text('1 Minute')), findsOneWidget);
+      expect(find.descendant(of: dialogFinder, matching: find.text('2 Minutes')), findsOneWidget);
+      expect(find.descendant(of: dialogFinder, matching: find.text('3 Minutes')), findsOneWidget);
+      expect(find.descendant(of: dialogFinder, matching: find.text('4 Minutes')), findsOneWidget);
+      expect(find.descendant(of: dialogFinder, matching: find.text('5 Minutes')), findsOneWidget);
+
+      // Select '1 Minute' inside dialog
+      await tester.tap(find.descendant(of: dialogFinder, matching: find.text('1 Minute')));
+      await tester.pumpAndSettle();
+
+      // Dialog dismissed and ListTile updated
+      expect(find.byType(Dialog), findsNothing);
+      expect(find.text('1 Minute'), findsOneWidget);
+    });
+
     testWidgets('has Sync / Backup setting', (tester) async {
       await tester.pumpWidget(buildSettings());
       await tester.pumpAndSettle();
