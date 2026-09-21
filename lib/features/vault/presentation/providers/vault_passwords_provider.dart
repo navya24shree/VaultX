@@ -1,4 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:vaultx/core/storage/vault_storage_service.dart';
+import 'package:vaultx/features/auth/presentation/providers/auth_session_provider.dart';
 import 'package:vaultx/features/vault/domain/vault_password_entry.dart';
 
 class VaultPasswordsState {
@@ -69,7 +71,36 @@ class VaultPasswordsState {
 }
 
 class VaultPasswordsNotifier extends StateNotifier<VaultPasswordsState> {
-  VaultPasswordsNotifier() : super(const VaultPasswordsState());
+  final Ref? ref;
+  final VaultStorageService _storage;
+
+  VaultPasswordsNotifier({this.ref, VaultStorageService? storage})
+      : _storage = storage ?? VaultStorageService(),
+        super(const VaultPasswordsState()) {
+    if (ref != null) {
+      final authState = ref!.read(authSessionProvider);
+      if (authState.isAuthenticated && authState.activeMasterKey != null) {
+        loadEntries(authState.activeMasterKey!);
+      }
+
+      ref!.listen<AuthSessionState>(authSessionProvider, (prev, next) {
+        if (next.isAuthenticated && next.activeMasterKey != null) {
+          loadEntries(next.activeMasterKey!);
+        } else if (prev?.isAuthenticated == true && !next.isAuthenticated) {
+          state = const VaultPasswordsState();
+        }
+      });
+    }
+  }
+
+  Future<void> loadEntries(List<int> masterKey) async {
+    final entries = await _storage.loadPasswords(masterKey);
+    final categories = await _storage.loadCustomCategories();
+    state = state.copyWith(
+      allEntries: entries,
+      customCategories: categories,
+    );
+  }
 
   void setSearchQuery(String query) {
     state = state.copyWith(searchQuery: query);
@@ -83,9 +114,9 @@ class VaultPasswordsNotifier extends StateNotifier<VaultPasswordsState> {
     final trimmed = category.trim();
     if (trimmed.isEmpty) return;
     if (!state.allCategories.any((c) => c.toLowerCase() == trimmed.toLowerCase())) {
-      state = state.copyWith(
-        customCategories: [...state.customCategories, trimmed],
-      );
+      final updated = [...state.customCategories, trimmed];
+      state = state.copyWith(customCategories: updated);
+      _storage.saveCustomCategories(updated);
     }
   }
 
@@ -100,6 +131,8 @@ class VaultPasswordsNotifier extends StateNotifier<VaultPasswordsState> {
       allEntries: [entry, ...state.allEntries],
       customCategories: updatedCustom,
     );
+    _persistEntry(entry);
+    _storage.saveCustomCategories(updatedCustom);
   }
 
   void updatePassword(VaultPasswordEntry updated) {
@@ -107,11 +140,13 @@ class VaultPasswordsNotifier extends StateNotifier<VaultPasswordsState> {
       return e.id == updated.id ? updated : e;
     }).toList();
     state = state.copyWith(allEntries: updatedList);
+    _persistEntry(updated);
   }
 
   void deletePassword(String id) {
     final updatedList = state.allEntries.where((e) => e.id != id).toList();
     state = state.copyWith(allEntries: updatedList);
+    _storage.deletePassword(id);
   }
 
   void saveEntry(VaultPasswordEntry entry) {
@@ -121,9 +156,17 @@ class VaultPasswordsNotifier extends StateNotifier<VaultPasswordsState> {
       addPassword(entry);
     }
   }
+
+  void _persistEntry(VaultPasswordEntry entry) {
+    final key = ref?.read(authSessionProvider).activeMasterKey;
+    if (key != null) {
+      _storage.savePassword(entry, key);
+    }
+  }
 }
 
 final vaultPasswordsProvider =
     StateNotifierProvider<VaultPasswordsNotifier, VaultPasswordsState>((ref) {
-  return VaultPasswordsNotifier();
+  final storage = ref.watch(vaultStorageServiceProvider);
+  return VaultPasswordsNotifier(ref: ref, storage: storage);
 });

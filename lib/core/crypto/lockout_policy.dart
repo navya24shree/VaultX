@@ -1,6 +1,8 @@
 import 'dart:math';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
+import 'package:vaultx/core/storage/app_secure_storage.dart';
+
 /// Status of the lockout policy evaluation.
 class LockoutStatus {
   final int failedAttempts;
@@ -35,7 +37,7 @@ class AuthLockoutPolicy {
     this.maxAttemptsBeforeWipe = 10,
     this.attemptsBeforeDelay = 3,
     this.onWipeVault,
-  }) : _storage = storage ?? const FlutterSecureStorage();
+  }) : _storage = storage ?? AppSecureStorage.instance;
 
   /// Calculates progressive delay based on consecutive failed attempts.
   Duration calculateLockoutDuration(int failedCount) {

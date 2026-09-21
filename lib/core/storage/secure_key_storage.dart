@@ -1,6 +1,8 @@
 import 'dart:convert';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
+import 'app_secure_storage.dart';
+
 /// Secure hardware-backed storage for the cryptographic master key and installation salt.
 ///
 /// NOTE: The master password is NEVER stored here or anywhere else on disk.
@@ -12,18 +14,7 @@ class SecureKeyStorage {
   final FlutterSecureStorage _storage;
 
   SecureKeyStorage({FlutterSecureStorage? storage})
-      : _storage = storage ??
-            const FlutterSecureStorage(
-              aOptions: AndroidOptions(
-                encryptedSharedPreferences: true,
-              ),
-              iOptions: IOSOptions(
-                accessibility: KeychainAccessibility.first_unlock_this_device,
-              ),
-              mOptions: MacOsOptions(
-                accessibility: KeychainAccessibility.first_unlock_this_device,
-              ),
-            );
+      : _storage = storage ?? AppSecureStorage.instance;
 
   /// Persists the derived 256-bit [masterKey] into hardware-backed secure storage.
   Future<void> storeMasterKey(List<int> masterKey) async {

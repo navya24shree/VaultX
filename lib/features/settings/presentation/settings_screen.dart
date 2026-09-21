@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:vaultx/core/theme/app_theme.dart';
@@ -248,30 +248,13 @@ class SettingsScreen extends ConsumerWidget {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               // Header
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  const Text(
-                    'Settings',
-                    style: TextStyle(
-                      fontSize: 28,
-                      fontWeight: FontWeight.w800,
-                      letterSpacing: -0.5,
-                    ),
-                  ),
-                  FilledButton.tonalIcon(
-                    onPressed: () {
-                      HapticFeedback.mediumImpact();
-                      ref.read(authSessionProvider.notifier).lockVault();
-                    },
-                    icon: const Icon(Icons.lock_rounded, size: 16),
-                    label: const Text('Lock Vault'),
-                    style: FilledButton.styleFrom(
-                      visualDensity: VisualDensity.compact,
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                    ),
-                  ),
-                ],
+              const Text(
+                'Settings',
+                style: TextStyle(
+                  fontSize: 28,
+                  fontWeight: FontWeight.w800,
+                  letterSpacing: -0.5,
+                ),
               ),
               const SizedBox(height: 24),
 
@@ -467,17 +450,6 @@ class SettingsScreen extends ConsumerWidget {
                         ],
                       ),
                       onTap: () => _openAutoLockDialog(context, ref),
-                    ),
-                    Divider(height: 1, color: borderCol),
-                    ListTile(
-                      leading: const Icon(Icons.lock_rounded, color: AppColors.primaryBlue),
-                      title: const Text('Lock Vault Now', style: TextStyle(fontWeight: FontWeight.w600)),
-                      subtitle: const Text('Require authentication to re-enter'),
-                      trailing: const Icon(Icons.chevron_right_rounded),
-                      onTap: () {
-                        HapticFeedback.mediumImpact();
-                        ref.read(authSessionProvider.notifier).lockVault();
-                      },
                     ),
                   ],
                 ),

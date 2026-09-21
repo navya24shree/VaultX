@@ -2,21 +2,26 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:vaultx/core/crypto/biometric_auth_service.dart';
+import 'package:vaultx/core/storage/app_secure_storage.dart';
+import 'package:vaultx/core/storage/app_settings_storage.dart';
 
 /// Persists the user's preference for biometric unlock.
 ///
-/// Stored in the hardware-backed secure enclave alongside other crypto keys.
+/// Stored in both file-backed AppSettingsStorage and hardware-backed secure storage.
 /// When the user enables biometrics, a fingerprint/biometric scan is required to confirm.
 class BiometricPreferenceNotifier extends StateNotifier<bool> {
-  final FlutterSecureStorage _storage;
+  final AppSettingsStorage _settingsStorage;
+  final FlutterSecureStorage _secureStorage;
   final BiometricAuthService _biometricAuth;
 
   static const _key = 'vaultx_biometric_enabled';
 
   BiometricPreferenceNotifier({
-    FlutterSecureStorage? storage,
+    AppSettingsStorage? settingsStorage,
+    FlutterSecureStorage? secureStorage,
     BiometricAuthService? biometricAuth,
-  })  : _storage = storage ?? const FlutterSecureStorage(),
+  })  : _settingsStorage = settingsStorage ?? AppSettingsStorage(),
+        _secureStorage = secureStorage ?? AppSecureStorage.instance,
         _biometricAuth = biometricAuth ?? BiometricAuthService(),
         super(false) {
     _loadPreference();
@@ -24,13 +29,18 @@ class BiometricPreferenceNotifier extends StateNotifier<bool> {
 
   Future<void> _loadPreference() async {
     try {
-      // Read the stored preference directly — do NOT gate it on isBiometricAvailable().
-      // The availability check is transient (especially on MIUI/Android 14 cold starts)
-      // and was silently resetting a saved 'true' preference to false every relaunch.
-      // UI interactability is already gated via authState.isBiometricsAvailable in the
-      // settings screen and login screen, so no duplicate guard is needed here.
-      final raw = await _storage.read(key: _key);
-      state = raw == 'true';
+      // 1. Try file-backed settings first
+      final settings = await _settingsStorage.readSettings();
+      if (settings.containsKey(_key)) {
+        state = settings[_key] == true;
+        return;
+      }
+
+      // 2. Fallback to secure storage
+      final raw = await _secureStorage.read(key: _key);
+      if (raw != null) {
+        state = raw == 'true';
+      }
     } catch (_) {
       state = false;
     }
@@ -52,8 +62,11 @@ class BiometricPreferenceNotifier extends StateNotifier<bool> {
       );
 
       if (authenticated) {
-        await _storage.write(key: _key, value: 'true');
         state = true;
+        await _settingsStorage.writeSetting(_key, true);
+        try {
+          await _secureStorage.write(key: _key, value: 'true');
+        } catch (_) {}
         return true;
       }
 
@@ -66,9 +79,10 @@ class BiometricPreferenceNotifier extends StateNotifier<bool> {
 
   /// Disables biometric unlock.
   Future<void> disable() async {
+    state = false;
+    await _settingsStorage.writeSetting(_key, false);
     try {
-      await _storage.write(key: _key, value: 'false');
-      state = false;
+      await _secureStorage.write(key: _key, value: 'false');
     } catch (_) {}
   }
 

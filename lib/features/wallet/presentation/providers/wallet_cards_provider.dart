@@ -1,4 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:vaultx/core/storage/vault_storage_service.dart';
+import 'package:vaultx/features/auth/presentation/providers/auth_session_provider.dart';
 import 'package:vaultx/features/wallet/domain/wallet_card_entry.dart';
 
 class WalletCardsState {
@@ -40,7 +42,32 @@ class WalletCardsState {
 }
 
 class WalletCardsNotifier extends StateNotifier<WalletCardsState> {
-  WalletCardsNotifier() : super(const WalletCardsState());
+  final Ref? ref;
+  final VaultStorageService _storage;
+
+  WalletCardsNotifier({this.ref, VaultStorageService? storage})
+      : _storage = storage ?? VaultStorageService(),
+        super(const WalletCardsState()) {
+    if (ref != null) {
+      final authState = ref!.read(authSessionProvider);
+      if (authState.isAuthenticated && authState.activeMasterKey != null) {
+        loadCards(authState.activeMasterKey!);
+      }
+
+      ref!.listen<AuthSessionState>(authSessionProvider, (prev, next) {
+        if (next.isAuthenticated && next.activeMasterKey != null) {
+          loadCards(next.activeMasterKey!);
+        } else if (prev?.isAuthenticated == true && !next.isAuthenticated) {
+          state = const WalletCardsState();
+        }
+      });
+    }
+  }
+
+  Future<void> loadCards(List<int> masterKey) async {
+    final cards = await _storage.loadCards(masterKey);
+    state = state.copyWith(allCards: cards);
+  }
 
   void setSearchQuery(String query) {
     state = state.copyWith(searchQuery: query);
@@ -54,6 +81,7 @@ class WalletCardsNotifier extends StateNotifier<WalletCardsState> {
     state = state.copyWith(
       allCards: [card, ...state.allCards],
     );
+    _persistCard(card);
   }
 
   void updateCard(WalletCardEntry updated) {
@@ -61,11 +89,13 @@ class WalletCardsNotifier extends StateNotifier<WalletCardsState> {
       return c.id == updated.id ? updated : c;
     }).toList();
     state = state.copyWith(allCards: updatedList);
+    _persistCard(updated);
   }
 
   void deleteCard(String id) {
     final updatedList = state.allCards.where((c) => c.id != id).toList();
     state = state.copyWith(allCards: updatedList);
+    _storage.deleteCard(id);
   }
 
   void saveCard(WalletCardEntry card) {
@@ -75,9 +105,17 @@ class WalletCardsNotifier extends StateNotifier<WalletCardsState> {
       addCard(card);
     }
   }
+
+  void _persistCard(WalletCardEntry card) {
+    final key = ref?.read(authSessionProvider).activeMasterKey;
+    if (key != null) {
+      _storage.saveCard(card, key);
+    }
+  }
 }
 
 final walletCardsProvider =
     StateNotifierProvider<WalletCardsNotifier, WalletCardsState>((ref) {
-  return WalletCardsNotifier();
+  final storage = ref.watch(vaultStorageServiceProvider);
+  return WalletCardsNotifier(ref: ref, storage: storage);
 });

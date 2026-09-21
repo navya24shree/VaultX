@@ -1,4 +1,4 @@
-﻿import 'dart:async';
+import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -38,6 +38,10 @@ class _LoginSignUpScreenState extends ConsumerState<LoginSignUpScreen> {
   @override
   void initState() {
     super.initState();
+    final hasKey = ref.read(authSessionProvider).hasMasterKey;
+    if (!hasKey) {
+      _mode = AuthMode.signup;
+    }
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _checkAndAutoPromptBiometrics();
     });
@@ -179,6 +183,13 @@ class _LoginSignUpScreenState extends ConsumerState<LoginSignUpScreen> {
   @override
   Widget build(BuildContext context) {
     ref.listen<AuthSessionState>(authSessionProvider, (prev, next) {
+      if (prev?.hasMasterKey != next.hasMasterKey) {
+        if (!next.hasMasterKey && _mode != AuthMode.signup) {
+          setState(() => _mode = AuthMode.signup);
+        } else if (next.hasMasterKey && _mode != AuthMode.login) {
+          setState(() => _mode = AuthMode.login);
+        }
+      }
       if (prev?.isAuthenticated == true && !next.isAuthenticated) {
         _hasAutoPrompted = false;
         _checkAndAutoPromptBiometrics();
@@ -349,12 +360,12 @@ class _LoginSignUpScreenState extends ConsumerState<LoginSignUpScreen> {
                           const SizedBox(height: 16),
                         ],
 
-                        // Email Field (Optional identifier)
+                        // Email Field
                         TextField(
                           controller: _emailController,
                           keyboardType: TextInputType.emailAddress,
                           decoration: InputDecoration(
-                            hintText: 'Email Address (Optional)',
+                            hintText: 'Email Address',
                             prefixIcon: const Icon(Icons.mail_outline_rounded, size: 20),
                             filled: true,
                             fillColor: inputBg,

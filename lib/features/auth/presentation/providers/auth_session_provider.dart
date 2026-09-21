@@ -1,8 +1,11 @@
-﻿import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:vaultx/core/crypto/kdf_service.dart';
 import 'package:vaultx/core/crypto/biometric_auth_service.dart';
 import 'package:vaultx/core/crypto/lockout_policy.dart';
 import 'package:vaultx/core/storage/secure_key_storage.dart';
+
+import 'package:vaultx/core/storage/app_settings_storage.dart';
+import 'package:vaultx/core/storage/vault_storage_service.dart';
 
 class AuthSessionState {
   final bool isInitialized;
@@ -51,16 +54,22 @@ class AuthSessionNotifier extends StateNotifier<AuthSessionState> {
   final KdfService _kdfService;
   final BiometricAuthService _biometricAuth;
   final AuthLockoutPolicy _lockoutPolicy;
+  final VaultStorageService _vaultStorage;
+  final AppSettingsStorage _settingsStorage;
 
   AuthSessionNotifier({
     SecureKeyStorage? secureStorage,
     KdfService? kdfService,
     BiometricAuthService? biometricAuth,
     AuthLockoutPolicy? lockoutPolicy,
+    VaultStorageService? vaultStorage,
+    AppSettingsStorage? settingsStorage,
   })  : _secureStorage = secureStorage ?? SecureKeyStorage(),
         _kdfService = kdfService ?? const KdfService(),
         _biometricAuth = biometricAuth ?? BiometricAuthService(),
         _lockoutPolicy = lockoutPolicy ?? AuthLockoutPolicy(),
+        _vaultStorage = vaultStorage ?? VaultStorageService(),
+        _settingsStorage = settingsStorage ?? AppSettingsStorage(),
         super(const AuthSessionState()) {
     checkStatus();
   }
@@ -222,6 +231,8 @@ class AuthSessionNotifier extends StateNotifier<AuthSessionState> {
   Future<void> wipeAllData() async {
     await _secureStorage.wipeAllKeys();
     await _lockoutPolicy.reset();
+    await _vaultStorage.wipeAll();
+    await _settingsStorage.wipe();
     state = const AuthSessionState(
       isInitialized: true,
       isAuthenticated: false,
@@ -276,6 +287,12 @@ class AuthSessionNotifier extends StateNotifier<AuthSessionState> {
         salt: newSalt,
       );
 
+      // Re-encrypt all vault passwords and cards with the new master key
+      await _vaultStorage.reEncryptAll(
+        oldMasterKey: currentDerived,
+        newMasterKey: newKey,
+      );
+
       // Atomically persist the new credentials
       await _secureStorage.storeInstallSalt(newSalt);
       await _secureStorage.storeMasterKey(newKey);
@@ -301,5 +318,6 @@ enum ChangeMasterPasswordResult {
 
 final authSessionProvider =
     StateNotifierProvider<AuthSessionNotifier, AuthSessionState>((ref) {
-  return AuthSessionNotifier();
+  final vaultStorage = ref.watch(vaultStorageServiceProvider);
+  return AuthSessionNotifier(vaultStorage: vaultStorage);
 });

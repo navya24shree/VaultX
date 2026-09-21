@@ -1,5 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:vaultx/core/storage/app_secure_storage.dart';
+import 'package:vaultx/core/storage/app_settings_storage.dart';
 
 /// Available auto-lock durations after the app is closed or backgrounded.
 enum AutoLockDuration {
@@ -26,20 +28,33 @@ enum AutoLockDuration {
 
 /// Manages and persists the user's preferred auto-lock timeout.
 class AutoLockNotifier extends StateNotifier<AutoLockDuration> {
-  final FlutterSecureStorage _storage;
+  final AppSettingsStorage _settingsStorage;
+  final FlutterSecureStorage _secureStorage;
   static const _storageKey = 'vaultx_auto_lock_duration';
 
-  AutoLockNotifier({FlutterSecureStorage? storage})
-      : _storage = storage ?? const FlutterSecureStorage(),
+  AutoLockNotifier({
+    AppSettingsStorage? settingsStorage,
+    FlutterSecureStorage? secureStorage,
+  })  : _settingsStorage = settingsStorage ?? AppSettingsStorage(),
+        _secureStorage = secureStorage ?? AppSecureStorage.instance,
         super(AutoLockDuration.min5) {
     _loadPreference();
   }
 
   Future<void> _loadPreference() async {
     try {
-      final savedId = await _storage.read(key: _storageKey);
+      // 1. Try file-backed settings storage
+      final settings = await _settingsStorage.readSettings();
+      final savedId = settings[_storageKey] as String?;
       if (savedId != null) {
         state = AutoLockDuration.fromId(savedId);
+        return;
+      }
+
+      // 2. Fallback to secure storage
+      final secureSavedId = await _secureStorage.read(key: _storageKey);
+      if (secureSavedId != null) {
+        state = AutoLockDuration.fromId(secureSavedId);
       }
     } catch (_) {
       // Fallback gracefully to default
@@ -48,11 +63,11 @@ class AutoLockNotifier extends StateNotifier<AutoLockDuration> {
 
   Future<void> setDuration(AutoLockDuration duration) async {
     state = duration;
+    // Persist immediately in both file-backed storage and secure storage
+    await _settingsStorage.writeSetting(_storageKey, duration.id);
     try {
-      await _storage.write(key: _storageKey, value: duration.id);
-    } catch (_) {
-      // Non-critical persistence failure
-    }
+      await _secureStorage.write(key: _storageKey, value: duration.id);
+    } catch (_) {}
   }
 }
 
