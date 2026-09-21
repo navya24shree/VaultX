@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'core/theme/app_theme.dart';
 import 'core/theme/theme_provider.dart';
@@ -12,18 +12,18 @@ import 'features/settings/presentation/settings_screen.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
-  runApp(const ProviderScope(child: NeuroKeyApp()));
+  runApp(const ProviderScope(child: VaultXApp()));
 }
 
-class NeuroKeyApp extends ConsumerWidget {
-  const NeuroKeyApp({super.key});
+class VaultXApp extends ConsumerWidget {
+  const VaultXApp({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final themeMode = ref.watch(themeModeProvider);
 
     return MaterialApp(
-      title: 'NeuroKey',
+      title: 'VaultX',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,
@@ -32,6 +32,9 @@ class NeuroKeyApp extends ConsumerWidget {
     );
   }
 }
+
+/// Backwards compatibility alias
+typedef NeuroKeyApp = VaultXApp;
 
 class AuthGate extends ConsumerWidget {
   const AuthGate({super.key});

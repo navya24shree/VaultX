@@ -46,7 +46,7 @@ jobs:
         run: flutter test --coverage
 
   build-android:
-    name: Build Android (APK)
+    name: Build Android (APK + AAB)
     needs: code-quality-and-security
     runs-on: ubuntu-latest
     steps:
@@ -68,8 +68,25 @@ jobs:
       - name: Install Dependencies
         run: flutter pub get
 
-      - name: Build Android APK
+      - name: Build Android APK (debug)
         run: flutter build apk --debug
+
+      - name: Build Android App Bundle AAB (debug)
+        run: flutter build appbundle --debug
+
+      - name: Upload Android APK Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: neurokey-android-apk-${{ github.sha }}
+          path: build/app/outputs/flutter-apk/app-debug.apk
+          retention-days: 30
+
+      - name: Upload Android AAB Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: neurokey-android-aab-${{ github.sha }}
+          path: build/app/outputs/bundle/debug/app-debug.aab
+          retention-days: 30
 
   build-windows:
     name: Build Windows Desktop
@@ -91,10 +108,22 @@ jobs:
       - name: Install Dependencies
         run: flutter pub get
 
-      - name: Build Windows Executable
+      - name: Build Windows Executable (debug)
         run: flutter build windows --debug
 
+      - name: Upload Windows Build Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: neurokey-windows-${{ github.sha }}
+          path: build/windows/x64/runner/Debug/
+          retention-days: 30
+
   build-apple:
+    # NOTE: Signed IPA (iOS) requires Apple Developer provisioning profile + certificate.
+    # NOTE: macOS notarization requires Apple Developer credentials.
+    # This job produces a no-codesign iOS simulator build and an unsigned macOS .app —
+    # sufficient as CI build evidence per section 0.1 of the build brief.
+    # Production signing is a separate step requiring explicit Apple Developer credentials.
     name: Build Apple Platforms (iOS & macOS)
     needs: code-quality-and-security
     runs-on: macos-latest
@@ -124,10 +153,26 @@ jobs:
       - name: Install Dependencies
         run: flutter pub get
 
-      - name: Build iOS Application (No Codesign)
+      - name: Build iOS Application (No Codesign — simulator build)
         if: matrix.target == 'ios'
         run: flutter build ios --no-codesign --debug
 
-      - name: Build macOS Application
+      - name: Build macOS Application (unsigned)
         if: matrix.target == 'macos'
         run: flutter build macos --debug
+
+      - name: Upload iOS Build Artifact (no-codesign simulator build)
+        if: matrix.target == 'ios'
+        uses: actions/upload-artifact@v4
+        with:
+          name: neurokey-ios-nocodesign-${{ github.sha }}
+          path: build/ios/iphonesimulator/
+          retention-days: 30
+
+      - name: Upload macOS Build Artifact (unsigned app)
+        if: matrix.target == 'macos'
+        uses: actions/upload-artifact@v4
+        with:
+          name: neurokey-macos-${{ github.sha }}
+          path: build/macos/Build/Products/Debug/neurokey.app
+          retention-days: 30

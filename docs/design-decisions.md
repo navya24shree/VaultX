@@ -129,3 +129,33 @@ In a zero-knowledge local-first vault, vault records are encrypted at rest with 
      - `windows-latest` (Windows desktop build)
      - `ubuntu-latest` (Android APK/AAB build & headless test execution)
    - Exit criterion for "builds on all 4 platforms" requires green CI runs or concrete build logs, not inferences.
+
+---
+
+## 6. Phase 6 Packaging — Platform Artifact Decisions
+
+**Date updated:** 2026-09-12
+
+### Android
+- **Decision:** CI (`ubuntu-latest`) produces a debug APK and a debug AAB on every push as downloadable GitHub Actions artifacts.
+- **Release signing flag:** Production-signed APK/AAB requires an Android keystore. No keystore is available in this environment; the CI workflow is prepared for signing (gradle config in place) but the signing step is documented as a post-environment credential step. The build brief exit criterion of "an installable artifact" is satisfied by the debug APK artifact.
+
+### iOS
+- **FLAG (per Phase 6 brief §8):** iOS packaging requires macOS + Xcode + Apple Developer Program membership with a provisioning profile and distribution certificate. **This environment runs Windows.** A signed `.ipa` cannot be produced locally or without credentials.
+- **Decision:** CI (`macos-latest`) performs `flutter build ios --no-codesign --debug` (simulator build) as compilation evidence per §0.1. The no-codesign build artifact is uploaded. This is the maximum that can be produced without Apple Developer credentials. This limitation is explicitly flagged here and in the README — it is not silently skipped.
+
+### Windows
+- **Decision:** CI (`windows-latest`) produces a Windows debug executable artifact. Locally, `flutter build windows --debug` succeeds; release mode requires Developer Mode (symlink support) which requires elevated system privileges not available in this agent environment.
+- **MSIX packaging:** Not implemented in this phase — MSIX requires a code signing certificate. The portable exe build (debug) serves as the installable artifact. MSIX production packaging is logged as a post-credential step.
+
+### macOS
+- **FLAG (per Phase 6 brief §8):** macOS `.app` notarization requires Apple Developer credentials and code signing certificates. **The host machine is Windows.**
+- **Decision:** CI (`macos-latest`) produces an unsigned macOS `.app` via `flutter build macos --debug` as compilation evidence. This is uploaded as a CI artifact. Notarization is documented as requiring explicit Apple Developer credentials — not silently skipped.
+
+### Summary — Artifacts Produced
+| Platform | Artifact | Source | Signed? |
+|---|---|---|---|
+| Android | `app-debug.apk`, `app-debug.aab` | CI `ubuntu-latest` | No (debug) — release signing is a credential step |
+| iOS | `.app` (no-codesign simulator) | CI `macos-latest` | No — Apple Developer credentials required |
+| Windows | `neurokey.exe` + DLLs | CI `windows-latest` | No (debug) — MSIX signing is a credential step |
+| macOS | `neurokey.app` (unsigned) | CI `macos-latest` | No — notarization requires Apple credentials |
