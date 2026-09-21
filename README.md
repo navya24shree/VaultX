@@ -1,6 +1,6 @@
-# NeuroKey
+# VaultX
 
-> **Your mind, secured.** — A local-first, offline-capable password and card vault.
+> **Your mind, secured.** â€” A local-first, offline-capable password and card vault.
 
 [![CI Matrix](https://github.com/your-org/neurokey/actions/workflows/ci.yml/badge.svg)](https://github.com/your-org/neurokey/actions/workflows/ci.yml)
 [![Flutter](https://img.shields.io/badge/Flutter-stable-blue?logo=flutter)](https://flutter.dev)
@@ -8,18 +8,18 @@
 
 ---
 
-## What is NeuroKey?
+## What is VaultX?
 
 NeuroKey is an open-source, cross-platform **password manager and digital wallet** built with Flutter. It targets Android, iOS, Windows, and macOS from a single codebase.
 
 **Core guarantees:**
 
-- ?? Vault data is **AES-256-GCM encrypted at rest** — every entry individually, with a unique nonce per write.
-- ?? The master key is derived via **Argon2id** from your master password — GPU-resistant, never stored in plaintext.
+- ?? Vault data is **AES-256-GCM encrypted at rest** â€” every entry individually, with a unique nonce per write.
+- ?? The master key is derived via **Argon2id** from your master password â€” GPU-resistant, never stored in plaintext.
 - ?? Master key lives **only in the platform secure enclave** (iOS/macOS Keychain, Android Keystore, Windows DPAPI).
 - ?? **Biometric unlock** (Face ID / Touch ID / fingerprint) gates key retrieval.
-- ?? **No cloud. No server. Zero knowledge.** Your data never leaves your devices in plaintext — including during sync.
-- ?? **Device-to-device sync** over local Wi-Fi (mDNS) with WSS/443 relay fallback — all traffic encrypted end-to-end via X25519 ECDH + AES-256-GCM.
+- ?? **No cloud. No server. Zero knowledge.** Your data never leaves your devices in plaintext â€” including during sync.
+- ?? **Device-to-device sync** over local Wi-Fi (mDNS) with WSS/443 relay fallback â€” all traffic encrypted end-to-end via X25519 ECDH + AES-256-GCM.
 
 ---
 
@@ -36,32 +36,32 @@ NeuroKey is an open-source, cross-platform **password manager and digital wallet
 ```
 lib/
 +-- core/
-¦   +-- crypto/               # Argon2id KDF, AES-256-GCM, X25519 ECDH, HKDF
-¦   ¦   +-- kdf_service.dart
-¦   ¦   +-- vault_cipher.dart
-¦   ¦   +-- biometric_auth_service.dart
-¦   ¦   +-- lockout_policy.dart
-¦   +-- storage/              # Drift SQLite index, secure key storage
-¦   +-- theme/                # Dual ColorScheme (dark + light), typography, shape tokens
-¦   +-- widgets/              # Shared reusable widgets (FloatingNavDock, SwipeToCreateSlider)
+Â¦   +-- crypto/               # Argon2id KDF, AES-256-GCM, X25519 ECDH, HKDF
+Â¦   Â¦   +-- kdf_service.dart
+Â¦   Â¦   +-- vault_cipher.dart
+Â¦   Â¦   +-- biometric_auth_service.dart
+Â¦   Â¦   +-- lockout_policy.dart
+Â¦   +-- storage/              # Drift SQLite index, secure key storage
+Â¦   +-- theme/                # Dual ColorScheme (dark + light), typography, shape tokens
+Â¦   +-- widgets/              # Shared reusable widgets (FloatingNavDock, SwipeToCreateSlider)
 +-- features/
-¦   +-- auth/                 # Login / Sign Up, master key unlock, biometric gate
-¦   +-- vault/                # Passwords vault list, add/edit, password generator
-¦   +-- wallet/               # Digital wallet card list, add card
-¦   +-- sync/                 # LAN mDNS discovery, QR rendezvous, WebSocket, relay client
-¦   +-- settings/             # Theme switcher, security options, danger zone wipe
+Â¦   +-- auth/                 # Login / Sign Up, master key unlock, biometric gate
+Â¦   +-- vault/                # Passwords vault list, add/edit, password generator
+Â¦   +-- wallet/               # Digital wallet card list, add card
+Â¦   +-- sync/                 # LAN mDNS discovery, QR rendezvous, WebSocket, relay client
+Â¦   +-- settings/             # Theme switcher, security options, danger zone wipe
 +-- main.dart
 ```
 
 ### State management
 
-**Riverpod** throughout — no `BuildContext`-coupled singletons, fully testable providers.
+**Riverpod** throughout â€” no `BuildContext`-coupled singletons, fully testable providers.
 
 ---
 
 ## Security Architecture
 
-### At rest (§6.1)
+### At rest (Â§6.1)
 
 | Layer | Implementation |
 |---|---|
@@ -71,19 +71,19 @@ lib/
 | Vault encryption | AES-256-GCM, each entry encrypted individually with a unique 96-bit nonce |
 | Lockout policy | Exponential backoff after 3 failed unlocks; full cryptographic wipe at 10 attempts |
 
-### Device-to-device sync (§6.2)
+### Device-to-device sync (Â§6.2)
 
 1. **Discovery:** mDNS (`_neurokey-sync._tcp`) on LAN; WSS/443 relay fallback cross-network.
-2. **Rendezvous:** QR code encodes local IP, port, and short-lived session ID (pure rendezvous — no crypto weight).
+2. **Rendezvous:** QR code encodes local IP, port, and short-lived session ID (pure rendezvous â€” no crypto weight).
 3. **Key exchange:** Ephemeral X25519 keypair per session; ECDH shared secret.
-4. **Verification code:** 6-digit code derived from `SHA-256(pubKeyA ? pubKeyB ? sharedSecret) mod 1,000,000` — **never an independently transmitted PIN** (Signal/Bluetooth Numeric Comparison model).
+4. **Verification code:** 6-digit code derived from `SHA-256(pubKeyA ? pubKeyB ? sharedSecret) mod 1,000,000` â€” **never an independently transmitted PIN** (Signal/Bluetooth Numeric Comparison model).
 5. **Session encryption:** HKDF from shared secret ? AES-256-GCM per message.
 6. **Session hygiene:** 60-second expiry, single-use verification code; master key never appears in QR or sync messages.
 7. **Merge logic:** Last-write-wins per field via timestamps; missing entries added without clobbering newer local edits; conflicts surfaced to the user.
 
 ### Master password recovery
 
-No cloud-assisted recovery exists by design. During onboarding, a cryptographically generated **Recovery Key** (256-bit / BIP-39 word list) is presented. The user must save this offline. If both master password and recovery key are lost, vault data is permanently unrecoverable — this is a feature, not a limitation.
+No cloud-assisted recovery exists by design. During onboarding, a cryptographically generated **Recovery Key** (256-bit / BIP-39 word list) is presented. The user must save this offline. If both master password and recovery key are lost, vault data is permanently unrecoverable â€” this is a feature, not a limitation.
 
 ---
 
@@ -108,7 +108,7 @@ No cloud-assisted recovery exists by design. During onboarding, a cryptographica
 
 ### Prerequisites
 
-- [Flutter SDK](https://flutter.dev/docs/get-started/install) — stable channel
+- [Flutter SDK](https://flutter.dev/docs/get-started/install) â€” stable channel
 - For Android: Android Studio + SDK (API 23+)
 - For iOS/macOS: Xcode 15+ on macOS (Apple Silicon or Intel)
 - For Windows: Visual Studio 2022 with "Desktop development with C++" workload
@@ -159,7 +159,7 @@ All four target platforms are verified via GitHub Actions:
 | iOS (no-codesign) | `macos-latest` | `flutter build ios --no-codesign --debug` |
 | macOS (unsigned) | `macos-latest` | `flutter build macos --debug` |
 
-> **Note on iOS/macOS signing:** CI builds are unsigned/no-codesign builds used as build-compilation evidence (per §0.1 of the build brief). Production-signed artifacts require Apple Developer Program credentials with provisioning profiles and certificates configured as CI secrets — this step is documented here but not automated since credentials are not available in this environment.
+> **Note on iOS/macOS signing:** CI builds are unsigned/no-codesign builds used as build-compilation evidence (per Â§0.1 of the build brief). Production-signed artifacts require Apple Developer Program credentials with provisioning profiles and certificates configured as CI secrets â€” this step is documented here but not automated since credentials are not available in this environment.
 
 ---
 
@@ -192,7 +192,7 @@ flutter test test/qa_negative_tests.dart
 
 - **Dark theme baseline:** `#020617` background, `#0080ff` primary, `#191c1e` surfaces, Hanken Grotesk / Inter / JetBrains Mono type scale, `#10b981` / `#f59e0b` / `#ef4444` status colors.
 - **Light theme:** `#f8fafc` background, `#ffffff` cards, `#0080ff` primary (brand consistency).
-- **Both themes** are built from day one as paired `ColorScheme`s from shared semantic tokens — not dark-first with light bolted on later.
+- **Both themes** are built from day one as paired `ColorScheme`s from shared semantic tokens â€” not dark-first with light bolted on later.
 - Every screen passed an **Apple HIG audit** (touch targets =44pt, contrast ratios, accessibility semantics).
 
 ---
@@ -203,7 +203,7 @@ flutter test test/qa_negative_tests.dart
 |---|---|
 | [`docs/design-audit.md`](docs/design-audit.md) | Per-screen audit against original design export |
 | [`docs/design-decisions.md`](docs/design-decisions.md) | Every conflict resolved, every assumption logged |
-| [`docs/progress/phase-N-todo.md`](docs/progress/) | Phase-by-phase task checklists (Phases 0–6) |
+| [`docs/progress/phase-N-todo.md`](docs/progress/) | Phase-by-phase task checklists (Phases 0â€“6) |
 
 ---
 
@@ -220,8 +220,8 @@ This project follows strict security-first development practices. Key rules:
 
 ## License
 
-MIT License — see [LICENSE](LICENSE) for details.
+MIT License â€” see [LICENSE](LICENSE) for details.
 
 ---
 
-*NeuroKey — Built with ?? security-first principles.*
+*NeuroKey â€” Built with ?? security-first principles.*
