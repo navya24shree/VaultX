@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:vaultx/core/theme/app_theme.dart';
@@ -100,6 +100,25 @@ class _PasswordsVaultScreenState extends ConsumerState<PasswordsVaultScreen> {
         builder: (_) => const AddPasswordScreen(),
       ),
     );
+  }
+
+  /// Returns a compact "27 Sep, 2:43 PM" style label for the last-edited time.
+  String _formatUpdatedAt(DateTime dt) {
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    final yesterday = today.subtract(const Duration(days: 1));
+    final date = DateTime(dt.year, dt.month, dt.day);
+
+    final hour = dt.hour % 12 == 0 ? 12 : dt.hour % 12;
+    final minute = dt.minute.toString().padLeft(2, '0');
+    final period = dt.hour >= 12 ? 'PM' : 'AM';
+    final time = '$hour:$minute $period';
+
+    if (date == today) return 'Today, $time';
+    if (date == yesterday) return 'Yesterday, $time';
+
+    const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    return '${dt.day} ${months[dt.month - 1]}, $time';
   }
 
   @override
@@ -385,31 +404,51 @@ class _PasswordsVaultScreenState extends ConsumerState<PasswordsVaultScreen> {
                                     ),
                                   ),
 
-                                  // Category Pill & Disclosure Chevron
-                                  Container(
-                                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                                    decoration: BoxDecoration(
-                                      color: inputBg,
-                                      borderRadius: BorderRadius.circular(8),
-                                    ),
-                                    child: Text(
-                                      entry.category,
-                                      style: TextStyle(
-                                        fontSize: 11,
-                                        fontWeight: FontWeight.w600,
-                                        color: isDark
-                                            ? AppColors.darkTextMuted
-                                            : AppColors.lightTextMuted,
+                                   // Category Pill, Timestamp & Disclosure Chevron
+                                  Column(
+                                    crossAxisAlignment: CrossAxisAlignment.end,
+                                    children: [
+                                      Row(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          Container(
+                                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                                            decoration: BoxDecoration(
+                                              color: inputBg,
+                                              borderRadius: BorderRadius.circular(8),
+                                            ),
+                                            child: Text(
+                                              entry.category,
+                                              style: TextStyle(
+                                                fontSize: 11,
+                                                fontWeight: FontWeight.w600,
+                                                color: isDark
+                                                    ? AppColors.darkTextMuted
+                                                    : AppColors.lightTextMuted,
+                                              ),
+                                            ),
+                                          ),
+                                          const SizedBox(width: 8),
+                                          Icon(
+                                            Icons.chevron_right_rounded,
+                                            color: isDark
+                                                ? AppColors.darkTextMuted
+                                                : AppColors.lightTextMuted,
+                                            size: 20,
+                                          ),
+                                        ],
                                       ),
-                                    ),
-                                  ),
-                                  const SizedBox(width: 8),
-                                  Icon(
-                                    Icons.chevron_right_rounded,
-                                    color: isDark
-                                        ? AppColors.darkTextMuted
-                                        : AppColors.lightTextMuted,
-                                    size: 20,
+                                      const SizedBox(height: 4),
+                                      Text(
+                                        _formatUpdatedAt(entry.updatedAt),
+                                        style: TextStyle(
+                                          fontSize: 10,
+                                          color: isDark
+                                              ? AppColors.darkTextMuted
+                                              : AppColors.lightTextMuted,
+                                        ),
+                                      ),
+                                    ],
                                   ),
                                 ],
                               ),
@@ -642,31 +681,82 @@ class _CredentialInspectionSheetState extends State<_CredentialInspectionSheet> 
           ),
           const SizedBox(height: 16),
 
-          // Security Breach Health Badge
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-            decoration: BoxDecoration(
-              color: AppColors.emerald950.withAlpha(120),
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: AppColors.emerald500.withAlpha(80)),
-            ),
-            child: const Row(
-              children: [
-                Icon(Icons.shield_rounded, color: AppColors.emerald400, size: 18),
-                SizedBox(width: 8),
-                Expanded(
-                  child: Text(
-                    'Safe & Secure — Zero leaks in known breaches',
-                    style: TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w500,
-                      color: Color(0xFFD1FAE5),
+          // Website URL Tile (shown only if provided)
+          if (widget.entry.websiteUrl.isNotEmpty) ...[
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+              decoration: BoxDecoration(
+                color: inputBg,
+                borderRadius: BorderRadius.circular(14),
+              ),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Website URL',
+                          style: TextStyle(
+                            fontSize: 11,
+                            fontWeight: FontWeight.w500,
+                            color: isDark ? AppColors.darkTextMuted : AppColors.lightTextMuted,
+                          ),
+                        ),
+                        Text(
+                          widget.entry.websiteUrl,
+                          style: const TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                ),
-              ],
+                  IconButton(
+                    icon: const Icon(Icons.copy_rounded, size: 18),
+                    tooltip: 'Copy URL',
+                    onPressed: () => _copyToClipboard(widget.entry.websiteUrl, 'URL'),
+                  ),
+                ],
+              ),
             ),
-          ),
+            const SizedBox(height: 10),
+          ],
+
+          // Notes Tile (shown only if provided)
+          if (widget.entry.notes.isNotEmpty) ...[
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+              decoration: BoxDecoration(
+                color: inputBg,
+                borderRadius: BorderRadius.circular(14),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Notes',
+                    style: TextStyle(
+                      fontSize: 11,
+                      fontWeight: FontWeight.w500,
+                      color: isDark ? AppColors.darkTextMuted : AppColors.lightTextMuted,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    widget.entry.notes,
+                    style: const TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 10),
+          ],
+
         ],
       ),
     );

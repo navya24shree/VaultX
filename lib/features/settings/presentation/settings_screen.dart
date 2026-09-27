@@ -126,6 +126,100 @@ class SettingsScreen extends ConsumerWidget {
     );
   }
 
+  void _showAppInfoDialog(BuildContext context, bool isDark) {
+    HapticFeedback.lightImpact();
+    final dialogBg = isDark ? AppColors.darkCardSurface : AppColors.lightCardSurface;
+    final borderCol = isDark ? AppColors.darkBorder : AppColors.lightBorder;
+    final mutedColor = isDark ? AppColors.darkTextMuted : AppColors.lightTextMuted;
+
+    showDialog<void>(
+      context: context,
+      builder: (ctx) => Dialog(
+        backgroundColor: dialogBg,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(24),
+          side: BorderSide(color: borderCol),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text(
+                    'App Version',
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.close_rounded, size: 20),
+                    onPressed: () => Navigator.of(ctx).pop(),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
+              // Version row
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                decoration: BoxDecoration(
+                  color: isDark ? AppColors.darkInputSurface : AppColors.lightInputSurface,
+                  borderRadius: BorderRadius.circular(14),
+                  border: Border.all(color: borderCol),
+                ),
+                child: Row(
+                  children: [
+                    const Icon(Icons.info_outline_rounded, color: AppColors.primaryBlue, size: 20),
+                    const SizedBox(width: 12),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text('Version', style: TextStyle(fontSize: 11, color: mutedColor, fontWeight: FontWeight.w500)),
+                        const Text(
+                          '1.0.0 (Build 1)',
+                          style: TextStyle(fontFamily: 'JetBrains Mono', fontSize: 14, fontWeight: FontWeight.w700),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 10),
+              // Architecture row
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                decoration: BoxDecoration(
+                  color: isDark ? AppColors.darkInputSurface : AppColors.lightInputSurface,
+                  borderRadius: BorderRadius.circular(14),
+                  border: Border.all(color: borderCol),
+                ),
+                child: Row(
+                  children: [
+                    const Icon(Icons.security_rounded, color: AppColors.emerald500, size: 20),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text('Security Architecture', style: TextStyle(fontSize: 11, color: mutedColor, fontWeight: FontWeight.w500)),
+                          const Text(
+                            'Argon2id KDF + AES-256-GCM\n+ Hardware Enclave',
+                            style: TextStyle(fontFamily: 'JetBrains Mono', fontSize: 13, fontWeight: FontWeight.w700),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   void _openAutoLockDialog(BuildContext context, WidgetRef ref) {
     HapticFeedback.lightImpact();
     showDialog<void>(
@@ -299,7 +393,7 @@ class SettingsScreen extends ConsumerWidget {
                   children: [
                     ListTile(
                       leading: const Icon(Icons.password_rounded, color: AppColors.primaryBlue),
-                      title: const Text('Change Master Password', style: TextStyle(fontWeight: FontWeight.w600)),
+                      title: const Text('Change Password', style: TextStyle(fontWeight: FontWeight.w600)),
                       trailing: const Icon(Icons.chevron_right_rounded),
                       onTap: () {
                         HapticFeedback.lightImpact();
@@ -505,26 +599,12 @@ class SettingsScreen extends ConsumerWidget {
                   side: BorderSide(color: borderCol),
                 ),
                 clipBehavior: Clip.antiAlias,
-                child: Column(
-                  children: [
-                    const ListTile(
-                      leading: Icon(Icons.security_rounded, color: AppColors.emerald500),
-                      title: Text('Security Architecture', style: TextStyle(fontWeight: FontWeight.w600)),
-                      subtitle: Text('Argon2id KDF + AES-256-GCM + Hardware Enclave'),
-                    ),
-                    Divider(height: 1, color: borderCol),
-                    ListTile(
-                      leading: const Icon(Icons.info_outline_rounded, color: AppColors.primaryBlue),
-                      title: const Text('App Version', style: TextStyle(fontWeight: FontWeight.w600)),
-                      trailing: Text(
-                        '1.0.0 (Build 1)',
-                        style: TextStyle(
-                          fontFamily: 'JetBrains Mono',
-                          color: isDark ? AppColors.darkTextMuted : AppColors.lightTextMuted,
-                        ),
-                      ),
-                    ),
-                  ],
+                child: ListTile(
+                  leading: const Icon(Icons.info_outline_rounded, color: AppColors.primaryBlue),
+                  title: const Text('App Version', style: TextStyle(fontWeight: FontWeight.w600)),
+                  subtitle: const Text('1.0.0 (Build 1)', style: TextStyle(fontFamily: 'JetBrains Mono', fontSize: 12)),
+                  trailing: const Icon(Icons.chevron_right_rounded),
+                  onTap: () => _showAppInfoDialog(context, isDark),
                 ),
               ),
               const SizedBox(height: 28),

@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:vaultx/core/theme/app_theme.dart';
 
@@ -69,7 +69,7 @@ class VerticalRulerSlider extends StatelessWidget {
           height: height,
           decoration: BoxDecoration(
             color: isDark ? AppColors.darkInputSurface : AppColors.lightInputSurface,
-            borderRadius: BorderRadius.circular(34),
+            borderRadius: BorderRadius.circular(22),
             border: Border.all(
               color: isDark ? AppColors.darkBorder : AppColors.lightBorder,
               width: 1.2,
@@ -96,37 +96,27 @@ class VerticalRulerSlider extends StatelessWidget {
                 }),
               ),
 
-              // Positioned Active Indicator Thumb
+              // Positioned Active Indicator Thumb (Medium-thick line)
               Padding(
-                padding: const EdgeInsets.symmetric(vertical: 6),
+                padding: const EdgeInsets.symmetric(vertical: 10),
                 child: Align(
                   alignment: Alignment(
                     0.0,
                     1.0 - (2.0 * ((value - min) / (max - min)).clamp(0.0, 1.0)),
                   ),
                   child: Container(
-                    width: 54,
-                    height: 44,
+                    width: 44,
+                    height: 6,
                     decoration: BoxDecoration(
                       color: AppColors.primaryBlue,
-                      borderRadius: BorderRadius.circular(22),
+                      borderRadius: BorderRadius.circular(3),
                       boxShadow: [
                         BoxShadow(
-                          color: AppColors.primaryBlue.withAlpha(90),
-                          blurRadius: 12,
-                          offset: const Offset(0, 4),
+                          color: AppColors.primaryBlue.withAlpha(140),
+                          blurRadius: 8,
+                          offset: const Offset(0, 1),
                         ),
                       ],
-                    ),
-                    alignment: Alignment.center,
-                    child: Text(
-                      '$value',
-                      style: const TextStyle(
-                        fontFamily: 'JetBrains Mono',
-                        fontSize: 18,
-                        fontWeight: FontWeight.w700,
-                        color: Colors.white,
-                      ),
                     ),
                   ),
                 ),

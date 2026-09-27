@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:vaultx/core/theme/app_theme.dart';
 
@@ -60,12 +60,7 @@ class _SwipeToCreateSliderState extends State<SwipeToCreateSlider>
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          const Icon(
-                            Icons.auto_awesome,
-                            size: 16,
-                            color: AppColors.primaryBlue,
-                          ),
-                          const SizedBox(width: 8),
+
                           Text(
                             widget.label,
                             style: TextStyle(
@@ -141,26 +136,6 @@ class _SwipeToCreateSliderState extends State<SwipeToCreateSlider>
               ),
             ),
 
-            // HIG Accessibility fallback: Direct tap button for screen readers & assistive touch
-            const SizedBox(height: 6),
-            Align(
-              alignment: Alignment.centerRight,
-              child: TextButton.icon(
-                style: TextButton.styleFrom(
-                  minimumSize: const Size(44, 44),
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                ),
-                onPressed: () {
-                  HapticFeedback.lightImpact();
-                  widget.onTrigger();
-                },
-                icon: const Icon(Icons.touch_app_rounded, size: 15),
-                label: const Text(
-                  'Tap here to generate automatically',
-                  style: TextStyle(fontSize: 11, fontWeight: FontWeight.w500),
-                ),
-              ),
-            ),
           ],
         );
       },

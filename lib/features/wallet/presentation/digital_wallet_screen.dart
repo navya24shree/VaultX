@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:vaultx/core/theme/app_theme.dart';
@@ -6,6 +6,7 @@ import 'package:vaultx/core/widgets/physical_card_widget.dart';
 import 'package:vaultx/features/wallet/domain/wallet_card_entry.dart';
 import 'package:vaultx/features/wallet/presentation/providers/wallet_cards_provider.dart';
 import 'package:vaultx/features/wallet/presentation/add_card_screen.dart';
+import 'package:vaultx/features/wallet/presentation/card_scanner/card_scanner_screen.dart';
 
 /// Screen 6: Digital Wallet Screen
 ///
@@ -35,11 +36,32 @@ class _DigitalWalletScreenState extends ConsumerState<DigitalWalletScreen> {
     super.dispose();
   }
 
-  void _navigateToAddCard() {
+  void _navigateToAddCard({
+    String? initialTitle,
+    String? initialNumber,
+    String? initialExpiry,
+    String? initialHolder,
+    String? initialNetwork,
+  }) {
     HapticFeedback.lightImpact();
     Navigator.of(context).push(
       MaterialPageRoute<void>(
-        builder: (_) => const AddCardScreen(),
+        builder: (_) => AddCardScreen(
+          initialTitle: initialTitle,
+          initialNumber: initialNumber,
+          initialExpiry: initialExpiry,
+          initialHolder: initialHolder,
+          initialNetwork: initialNetwork,
+        ),
+      ),
+    );
+  }
+
+  void _navigateToScanCard() {
+    HapticFeedback.lightImpact();
+    Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        builder: (_) => const CardScannerScreen(),
       ),
     );
   }
@@ -84,15 +106,32 @@ class _DigitalWalletScreenState extends ConsumerState<DigitalWalletScreen> {
                         letterSpacing: -0.5,
                       ),
                     ),
-                    IconButton.filled(
-                      onPressed: _navigateToAddCard,
-                      style: IconButton.styleFrom(
-                        backgroundColor: AppColors.primaryBlue,
-                        foregroundColor: Colors.white,
-                        minimumSize: const Size(44, 44),
-                      ),
-                      icon: const Icon(Icons.add_rounded, size: 22),
-                      tooltip: 'Add Card',
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        IconButton.filled(
+                          onPressed: _navigateToScanCard,
+                          style: IconButton.styleFrom(
+                            backgroundColor: inputBg,
+                            foregroundColor: AppColors.primaryBlue,
+                            minimumSize: const Size(44, 44),
+                            side: BorderSide(color: borderCol),
+                          ),
+                          icon: const Icon(Icons.document_scanner_rounded, size: 20),
+                          tooltip: 'Scan Card',
+                        ),
+                        const SizedBox(width: 8),
+                        IconButton.filled(
+                          onPressed: () => _navigateToAddCard(),
+                          style: IconButton.styleFrom(
+                            backgroundColor: AppColors.primaryBlue,
+                            foregroundColor: Colors.white,
+                            minimumSize: const Size(44, 44),
+                          ),
+                          icon: const Icon(Icons.add_rounded, size: 22),
+                          tooltip: 'Add Card',
+                        ),
+                      ],
                     ),
                   ],
                 ),

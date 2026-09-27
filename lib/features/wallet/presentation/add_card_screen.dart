@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:vaultx/core/theme/app_theme.dart';
@@ -10,7 +10,20 @@ import 'package:vaultx/features/wallet/presentation/providers/wallet_cards_provi
 /// Features network picker (Visa, Mastercard, Amex, Plexee), formatted card number input,
 /// expiry/CVV fields, theme style picker, and offline encryption assurance banner.
 class AddCardScreen extends ConsumerStatefulWidget {
-  const AddCardScreen({super.key});
+  final String? initialTitle;
+  final String? initialNumber;
+  final String? initialExpiry;
+  final String? initialHolder;
+  final String? initialNetwork;
+
+  const AddCardScreen({
+    super.key,
+    this.initialTitle,
+    this.initialNumber,
+    this.initialExpiry,
+    this.initialHolder,
+    this.initialNetwork,
+  });
 
   @override
   ConsumerState<AddCardScreen> createState() => _AddCardScreenState();
@@ -26,6 +39,26 @@ class _AddCardScreenState extends ConsumerState<AddCardScreen> {
   String _selectedNetwork = 'Visa';
   String _selectedTheme = 'chase_sapphire';
   bool _obscureCvv = true;
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.initialTitle != null) {
+      _titleController.text = widget.initialTitle!;
+    }
+    if (widget.initialNumber != null && widget.initialNumber!.isNotEmpty) {
+      _formatCardNumber(widget.initialNumber!);
+    }
+    if (widget.initialExpiry != null) {
+      _expiryController.text = widget.initialExpiry!;
+    }
+    if (widget.initialHolder != null) {
+      _holderController.text = widget.initialHolder!;
+    }
+    if (widget.initialNetwork != null && widget.initialNetwork!.isNotEmpty) {
+      _selectedNetwork = widget.initialNetwork!;
+    }
+  }
 
   @override
   void dispose() {

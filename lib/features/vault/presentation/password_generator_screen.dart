@@ -1,4 +1,4 @@
-﻿import 'dart:math';
+import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:vaultx/core/theme/app_theme.dart';
@@ -137,15 +137,21 @@ class _PasswordGeneratorScreenState extends State<PasswordGeneratorScreen> {
                   ),
                   child: Column(
                     children: [
-                      // Monospace Password
-                      SelectableText(
-                        _generatedPassword,
-                        textAlign: TextAlign.center,
-                        style: const TextStyle(
-                          fontFamily: 'JetBrains Mono',
-                          fontSize: 22,
-                          fontWeight: FontWeight.w700,
-                          letterSpacing: 1.2,
+                      // Monospace Password — fixed height, font scales down for long passwords
+                      SizedBox(
+                        height: 48,
+                        child: FittedBox(
+                          fit: BoxFit.scaleDown,
+                          child: SelectableText(
+                            _generatedPassword,
+                            textAlign: TextAlign.center,
+                            style: const TextStyle(
+                              fontFamily: 'JetBrains Mono',
+                              fontSize: 22,
+                              fontWeight: FontWeight.w700,
+                              letterSpacing: 1.2,
+                            ),
+                          ),
                         ),
                       ),
                       const SizedBox(height: 10),
@@ -223,16 +229,16 @@ class _PasswordGeneratorScreenState extends State<PasswordGeneratorScreen> {
                 const SizedBox(height: 24),
 
                 // Options Header
-                const Row(
+                Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(
+                    const Text(
                       'Options',
                       style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
                     ),
                     Text(
-                      'LENGTH: ',
-                      style: TextStyle(
+                      'LENGTH: $_length',
+                      style: const TextStyle(
                         fontFamily: 'JetBrains Mono',
                         fontSize: 13,
                         fontWeight: FontWeight.w700,
