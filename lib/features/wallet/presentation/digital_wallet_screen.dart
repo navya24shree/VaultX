@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:vaultx/core/theme/app_theme.dart';
+import 'package:vaultx/core/widgets/expressive/expressive.dart';
 import 'package:vaultx/core/widgets/physical_card_widget.dart';
 import 'package:vaultx/features/wallet/domain/wallet_card_entry.dart';
 import 'package:vaultx/features/wallet/presentation/providers/wallet_cards_provider.dart';
@@ -89,8 +90,13 @@ class _DigitalWalletScreenState extends ConsumerState<DigitalWalletScreen> {
     return Scaffold(
       body: SafeArea(
         bottom: false,
-        child: CustomScrollView(
-          slivers: [
+        child: Stack(
+          children: [
+            CustomScrollView(
+              physics: cards.isEmpty
+                  ? const NeverScrollableScrollPhysics()
+                  : const AlwaysScrollableScrollPhysics(),
+              slivers: [
             // Top Bar
             SliverToBoxAdapter(
               child: Padding(
@@ -109,25 +115,14 @@ class _DigitalWalletScreenState extends ConsumerState<DigitalWalletScreen> {
                     Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        IconButton.filled(
+                        ExpressiveIconButton.outlined(
                           onPressed: _navigateToScanCard,
-                          style: IconButton.styleFrom(
-                            backgroundColor: inputBg,
-                            foregroundColor: AppColors.primaryBlue,
-                            minimumSize: const Size(44, 44),
-                            side: BorderSide(color: borderCol),
-                          ),
                           icon: const Icon(Icons.document_scanner_rounded, size: 20),
                           tooltip: 'Scan Card',
                         ),
                         const SizedBox(width: 8),
-                        IconButton.filled(
+                        ExpressiveIconButton.filled(
                           onPressed: () => _navigateToAddCard(),
-                          style: IconButton.styleFrom(
-                            backgroundColor: AppColors.primaryBlue,
-                            foregroundColor: Colors.white,
-                            minimumSize: const Size(44, 44),
-                          ),
                           icon: const Icon(Icons.add_rounded, size: 22),
                           tooltip: 'Add Card',
                         ),
@@ -227,48 +222,23 @@ class _DigitalWalletScreenState extends ConsumerState<DigitalWalletScreen> {
               ),
             ),
 
-            // Card Count
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(20, 8, 20, 8),
-                child: Text(
-                  ' ',
-                  style: TextStyle(
-                    fontSize: 13,
-                    fontWeight: FontWeight.w600,
-                    color: isDark ? AppColors.darkTextMuted : AppColors.lightTextMuted,
+            if (cards.isNotEmpty) ...[
+              // Card Count
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(20, 8, 20, 8),
+                  child: Text(
+                    ' ',
+                    style: TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                      color: isDark ? AppColors.darkTextMuted : AppColors.lightTextMuted,
+                    ),
                   ),
                 ),
               ),
-            ),
 
-            // Cards List
-            if (cards.isEmpty)
-              SliverFillRemaining(
-                hasScrollBody: false,
-                child: Center(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(
-                        Icons.credit_card_off_rounded,
-                        size: 48,
-                        color: isDark ? AppColors.darkTextMuted : AppColors.lightTextMuted,
-                      ),
-                      const SizedBox(height: 12),
-                      Text(
-                        'No cards found',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                          color: isDark ? AppColors.darkTextMuted : AppColors.lightTextMuted,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              )
-            else
+              // Cards List
               SliverPadding(
                 padding: const EdgeInsets.fromLTRB(20, 4, 20, 110),
                 sliver: SliverList(
@@ -284,10 +254,39 @@ class _DigitalWalletScreenState extends ConsumerState<DigitalWalletScreen> {
                   ),
                 ),
               ),
+            ],
           ],
         ),
-      ),
-    );
+        if (cards.isEmpty)
+          Positioned.fill(
+            child: IgnorePointer(
+              child: Center(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      Icons.credit_card_off_rounded,
+                      size: 48,
+                      color: isDark ? AppColors.darkTextMuted : AppColors.lightTextMuted,
+                    ),
+                    const SizedBox(height: 12),
+                    Text(
+                      'No cards found',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                        color: isDark ? AppColors.darkTextMuted : AppColors.lightTextMuted,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+      ],
+    ),
+  ),
+);
   }
 }
 
@@ -487,20 +486,17 @@ class _CardDetailsSheet extends StatelessWidget {
               const SizedBox(height: 20),
 
               // Delete Card
-              ElevatedButton.icon(
+              ExpressiveButton.outlined(
+                isFullWidth: true,
+                customColor: AppColors.rose500,
+                foregroundColor: AppColors.rose400,
+                icon: const Icon(Icons.delete_outline_rounded, size: 18),
+                label: 'Delete Card',
                 onPressed: () {
                   ref.read(walletCardsProvider.notifier).deleteCard(card.id);
                   HapticFeedback.mediumImpact();
                   Navigator.of(context).pop();
                 },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.rose950.withAlpha(120),
-                  foregroundColor: AppColors.rose400,
-                  side: BorderSide(color: AppColors.rose500.withAlpha(80)),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-                ),
-                icon: const Icon(Icons.delete_outline_rounded, size: 18),
-                label: const Text('Delete Card'),
               ),
             ],
           ),

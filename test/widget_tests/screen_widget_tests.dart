@@ -1,4 +1,4 @@
-﻿// ignore_for_file: avoid_print
+// ignore_for_file: avoid_print
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -231,11 +231,16 @@ void main() {
       expect(find.text('Passwords'), findsWidgets);
     });
 
-    testWidgets('renders empty list without crash', (tester) async {
+    testWidgets('renders empty list with vertically centered No passwords found', (tester) async {
       await tester.pumpWidget(buildVault(entries: []));
       await tester.pumpAndSettle();
 
       expect(find.byType(Scaffold), findsOneWidget);
+      final emptyText = find.text('No passwords found');
+      expect(emptyText, findsOneWidget);
+      final center = tester.getCenter(emptyText);
+      final screenHeight = tester.view.physicalSize.height / tester.view.devicePixelRatio;
+      expect((center.dy - screenHeight / 2).abs(), lessThan(50));
     });
 
     testWidgets('renders entry card title', (tester) async {
@@ -279,6 +284,19 @@ void main() {
       expect(find.textContaining('Instagram'), findsWidgets);
       expect(find.textContaining('GitHub'), findsWidgets);
     });
+
+    testWidgets('tapping password card opens detail dialog with info button and created/edited timestamps', (tester) async {
+      final entry = _makeEntry(id: 'e1', title: 'Google');
+      await tester.pumpWidget(buildVault(entries: [entry]));
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.textContaining('Google').first);
+      await tester.pumpAndSettle();
+
+      expect(find.byIcon(Icons.info_outline_rounded), findsOneWidget);
+      expect(find.text('Created'), findsOneWidget);
+      expect(find.text('Edited'), findsOneWidget);
+    });
   });
 
   // ---------------------------------------------------------------------------
@@ -304,11 +322,12 @@ void main() {
       expect(find.textContaining('Password'), findsWidgets);
     });
 
-    testWidgets('contains text input fields', (tester) async {
+    testWidgets('contains text input fields including merged Username / Email', (tester) async {
       await tester.pumpWidget(buildAddPassword());
       await tester.pump();
 
       expect(find.byType(TextField), findsWidgets);
+      expect(find.text('Username / Email'), findsOneWidget);
     });
 
     testWidgets('category chips are present', (tester) async {
@@ -531,6 +550,17 @@ void main() {
       await tester.pump();
 
       expect(find.textContaining('Wallet'), findsWidgets);
+    });
+
+    testWidgets('renders empty state with vertically centered No cards found', (tester) async {
+      await tester.pumpWidget(buildWallet(cards: []));
+      await tester.pumpAndSettle();
+
+      final emptyText = find.text('No cards found');
+      expect(emptyText, findsOneWidget);
+      final center = tester.getCenter(emptyText);
+      final screenHeight = tester.view.physicalSize.height / tester.view.devicePixelRatio;
+      expect((center.dy - screenHeight / 2).abs(), lessThan(50));
     });
 
     testWidgets('renders All network filter chip', (tester) async {

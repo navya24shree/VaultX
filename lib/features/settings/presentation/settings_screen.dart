@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:vaultx/core/theme/app_theme.dart';
 import 'package:vaultx/core/theme/theme_provider.dart';
+import 'package:vaultx/core/widgets/expressive/expressive.dart';
 import 'package:vaultx/features/auth/presentation/providers/auth_session_provider.dart';
 import 'package:vaultx/features/settings/presentation/change_master_password_dialog.dart';
 import 'package:vaultx/features/settings/presentation/providers/auto_lock_provider.dart';
@@ -15,75 +16,6 @@ import 'package:vaultx/features/sync/presentation/sync_screen.dart';
 /// security preferences, data/sync options, and cryptographic wipe danger zone.
 class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({super.key});
-
-  void _openThemeDialog(BuildContext context, WidgetRef ref) {
-    HapticFeedback.lightImpact();
-    showDialog<void>(
-      context: context,
-      builder: (ctx) {
-        return Consumer(
-          builder: (context, ref, _) {
-            final themeMode = ref.watch(themeModeProvider);
-            final isDark = themeMode == ThemeMode.dark;
-            final dialogBg = isDark ? AppColors.darkCardSurface : AppColors.lightCardSurface;
-            final borderCol = isDark ? AppColors.darkBorder : AppColors.lightBorder;
-
-            return Dialog(
-              backgroundColor: dialogBg,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(24),
-                side: BorderSide(color: borderCol),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.all(24),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        const Text(
-                          'Appearance',
-                          style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
-                        ),
-                        IconButton(
-                          icon: const Icon(Icons.close_rounded, size: 20),
-                          onPressed: () => Navigator.of(ctx).pop(),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 16),
-                    _ThemeOptionTile(
-                      icon: Icons.dark_mode_rounded,
-                      title: 'Dark Mode',
-                      subtitle: 'OLED Obsidian Black (#020617)',
-                      isSelected: themeMode == ThemeMode.dark,
-                      onTap: () {
-                        HapticFeedback.selectionClick();
-                        ref.read(themeModeProvider.notifier).setDark();
-                      },
-                    ),
-                    const SizedBox(height: 10),
-                    _ThemeOptionTile(
-                      icon: Icons.light_mode_rounded,
-                      title: 'Light Mode',
-                      subtitle: 'Clean Slate Light (#F8FAFC)',
-                      isSelected: themeMode == ThemeMode.light,
-                      onTap: () {
-                        HapticFeedback.selectionClick();
-                        ref.read(themeModeProvider.notifier).setLight();
-                      },
-                    ),
-                  ],
-                ),
-              ),
-            );
-          },
-        );
-      },
-    );
-  }
 
   void _confirmWipe(BuildContext context, WidgetRef ref) {
     showDialog<void>(
@@ -354,28 +286,74 @@ class SettingsScreen extends ConsumerWidget {
 
               // SECTION: APPEARANCE
               const _SectionHeader(title: 'APPEARANCE'),
-              Material(
-                color: cardBg,
-                shape: RoundedRectangleBorder(
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                decoration: BoxDecoration(
+                  color: cardBg,
                   borderRadius: BorderRadius.circular(20),
-                  side: BorderSide(color: borderCol),
+                  border: Border.all(color: borderCol),
                 ),
-                clipBehavior: Clip.antiAlias,
-                child: ListTile(
-                  leading: Icon(
-                    isDark ? Icons.dark_mode_rounded : Icons.light_mode_rounded,
-                    color: AppColors.primaryBlue,
-                  ),
-                  title: const Text('Theme', style: TextStyle(fontWeight: FontWeight.w600)),
-                  subtitle: Text(
-                    isDark ? 'Dark Mode' : 'Light Mode',
-                    style: TextStyle(
-                      fontSize: 13,
-                      color: isDark ? AppColors.darkTextMuted : AppColors.lightTextMuted,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Icon(
+                          themeMode == ThemeMode.dark
+                              ? Icons.dark_mode_rounded
+                              : themeMode == ThemeMode.light
+                                  ? Icons.light_mode_rounded
+                                  : Icons.brightness_auto_rounded,
+                          color: AppColors.primaryBlue,
+                          size: 22,
+                        ),
+                        const SizedBox(width: 12),
+                        const Text(
+                          'Theme',
+                          style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700),
+                        ),
+                      ],
                     ),
-                  ),
-                  trailing: const Icon(Icons.chevron_right_rounded),
-                  onTap: () => _openThemeDialog(context, ref),
+                    const SizedBox(height: 14),
+                    ExpressiveSegmentedButton<ThemeMode>(
+                      items: const [
+                        ThemeMode.dark,
+                        ThemeMode.light,
+                      ],
+                      selectedItem: themeMode == ThemeMode.system ? ThemeMode.dark : themeMode,
+                      onSelected: (mode) {
+                        HapticFeedback.selectionClick();
+                        if (mode == ThemeMode.dark) {
+                          ref.read(themeModeProvider.notifier).setDark();
+                        } else {
+                          ref.read(themeModeProvider.notifier).setLight();
+                        }
+                      },
+                      itemBuilder: (context, mode, isSelected) {
+                        final (icon, label) = mode == ThemeMode.dark
+                            ? (Icons.dark_mode_rounded, 'Dark')
+                            : (Icons.light_mode_rounded, 'Light');
+                        final color = isSelected
+                            ? AppColors.primaryBlue
+                            : Theme.of(context).colorScheme.onSurfaceVariant;
+                        return Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(icon, size: 16, color: color),
+                            const SizedBox(width: 6),
+                            Text(
+                              label,
+                              style: TextStyle(
+                                fontSize: 13,
+                                fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
+                                color: color,
+                              ),
+                            ),
+                          ],
+                        );
+                      },
+                    ),
+                  ],
                 ),
               ),
               const SizedBox(height: 24),
@@ -607,28 +585,46 @@ class SettingsScreen extends ConsumerWidget {
                   onTap: () => _showAppInfoDialog(context, isDark),
                 ),
               ),
-              const SizedBox(height: 28),
+              const SizedBox(height: 24),
 
               // DANGER ZONE
               const _SectionHeader(title: 'DANGER ZONE'),
               Material(
-                color: AppColors.rose950.withAlpha(80),
+                color: isDark
+                    ? AppColors.rose950.withAlpha(80)
+                    : AppColors.rose500.withAlpha(18),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(20),
-                  side: BorderSide(color: AppColors.rose500.withAlpha(80)),
+                  side: BorderSide(
+                    color: AppColors.rose500.withAlpha(isDark ? 80 : 120),
+                  ),
                 ),
                 clipBehavior: Clip.antiAlias,
                 child: ListTile(
-                  leading: const Icon(Icons.delete_forever_rounded, color: AppColors.rose400),
-                  title: const Text(
+                  leading: Icon(
+                    Icons.delete_forever_rounded,
+                    color: isDark ? AppColors.rose400 : AppColors.rose500,
+                  ),
+                  title: Text(
                     'Wipe All Data',
-                    style: TextStyle(color: AppColors.rose400, fontWeight: FontWeight.w700),
+                    style: TextStyle(
+                      color: isDark ? AppColors.rose400 : AppColors.rose500,
+                      fontWeight: FontWeight.w700,
+                    ),
                   ),
-                  subtitle: const Text(
+                  subtitle: Text(
                     'Irreversible cryptographic erasure',
-                    style: TextStyle(color: Color(0xFFFFD1D1), fontSize: 12),
+                    style: TextStyle(
+                      color: isDark
+                          ? const Color(0xFFFFD1D1)
+                          : AppColors.rose500.withAlpha(180),
+                      fontSize: 12,
+                    ),
                   ),
-                  trailing: const Icon(Icons.warning_amber_rounded, color: AppColors.rose400),
+                  trailing: Icon(
+                    Icons.warning_amber_rounded,
+                    color: isDark ? AppColors.rose400 : AppColors.rose500,
+                  ),
                   onTap: () => _confirmWipe(context, ref),
                 ),
               ),
@@ -658,73 +654,6 @@ class _SectionHeader extends StatelessWidget {
           fontWeight: FontWeight.w700,
           letterSpacing: 1.0,
           color: isDark ? AppColors.darkTextMuted : AppColors.lightTextMuted,
-        ),
-      ),
-    );
-  }
-}
-
-class _ThemeOptionTile extends StatelessWidget {
-  final IconData icon;
-  final String title;
-  final String subtitle;
-  final bool isSelected;
-  final VoidCallback onTap;
-
-  const _ThemeOptionTile({
-    required this.icon,
-    required this.title,
-    required this.subtitle,
-    required this.isSelected,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final inputBg = isDark ? AppColors.darkInputSurface : AppColors.lightInputSurface;
-    final borderCol = isDark ? AppColors.darkBorder : AppColors.lightBorder;
-
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.all(14),
-        decoration: BoxDecoration(
-          color: isSelected ? AppColors.primaryBlue.withAlpha(30) : inputBg,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(
-            color: isSelected ? AppColors.primaryBlue : borderCol,
-            width: isSelected ? 2 : 1,
-          ),
-        ),
-        child: Row(
-          children: [
-            Icon(icon, color: isSelected ? AppColors.primaryBlue : null),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    title,
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: isSelected ? FontWeight.w700 : FontWeight.w600,
-                    ),
-                  ),
-                  Text(
-                    subtitle,
-                    style: TextStyle(
-                      fontSize: 11,
-                      color: isDark ? AppColors.darkTextMuted : AppColors.lightTextMuted,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            if (isSelected)
-              const Icon(Icons.check_circle_rounded, color: AppColors.primaryBlue, size: 20),
-          ],
         ),
       ),
     );

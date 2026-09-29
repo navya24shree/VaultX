@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:vaultx/core/theme/app_theme.dart';
@@ -327,46 +327,6 @@ class _EditPasswordScreenState extends ConsumerState<EditPasswordScreen> {
  ),
  ),
  const SizedBox(height: 18),
-
- // Security Banner
- Container(
- padding: const EdgeInsets.all(16),
- decoration: BoxDecoration(
- color: AppColors.emerald950.withAlpha(120),
- borderRadius: BorderRadius.circular(18),
- border: Border.all(color: AppColors.emerald500.withAlpha(80)),
- ),
- child: const Row(
- children: [
- Icon(Icons.verified_user_rounded, color: AppColors.emerald400, size: 24),
- SizedBox(width: 14),
- Expanded(
- child: Column(
- crossAxisAlignment: CrossAxisAlignment.start,
- children: [
- Text(
- 'Safe & Secure',
- style: TextStyle(
- fontSize: 14,
- fontWeight: FontWeight.w700,
- color: Color(0xFFD1FAE5),
- ),
- ),
- SizedBox(height: 2),
- Text(
- 'No leaks detected in known data breaches',
- style: TextStyle(
- fontSize: 12,
- color: Color(0xFFA7F3D0),
- ),
- ),
- ],
- ),
- ),
- ],
- ),
- ),
- const SizedBox(height: 20),
 
  // Details Group (Website & Notes)
  Container(

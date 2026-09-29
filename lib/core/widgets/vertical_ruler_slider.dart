@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:vaultx/core/theme/app_theme.dart';
+import 'package:vaultx/core/widgets/expressive/expressive_vertical_slider.dart';
 
 /// Tactile vertical ruler/ladder slider for setting password length (8 to 32 characters)
-/// with rung markers, glowing thumb, drag physics, and direct tap selection.
+/// powered by Material 3 Expressive motion physics, rung markers, glowing thumb,
+/// and floating lateral value badge.
 class VerticalRulerSlider extends StatelessWidget {
   final int value;
   final int min;
@@ -22,109 +22,12 @@ class VerticalRulerSlider extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    const width = 68.0;
-
-    return Semantics(
-      slider: true,
-      value: '$value characters',
-      increasedValue: '${(value + 1).clamp(min, max)} characters',
-      decreasedValue: '${(value - 1).clamp(min, max)} characters',
-      onIncrease: () {
-        if (value < max) onChanged(value + 1);
-      },
-      onDecrease: () {
-        if (value > min) onChanged(value - 1);
-      },
-      child: GestureDetector(
-        behavior: HitTestBehavior.opaque,
-        onVerticalDragUpdate: (details) {
-          final box = context.findRenderObject() as RenderBox?;
-          if (box != null && box.size.height > 0) {
-            final localPos = box.globalToLocal(details.globalPosition);
-            final h = box.size.height;
-            // Invert Y: top is max (32), bottom is min (8)
-            final fraction = (1.0 - (localPos.dy / h)).clamp(0.0, 1.0);
-            final newValue = (min + (fraction * (max - min))).round();
-            if (newValue != value) {
-              HapticFeedback.selectionClick();
-              onChanged(newValue);
-            }
-          }
-        },
-        onTapDown: (details) {
-          final box = context.findRenderObject() as RenderBox?;
-          if (box != null && box.size.height > 0) {
-            final h = box.size.height;
-            final fraction = (1.0 - (details.localPosition.dy / h)).clamp(0.0, 1.0);
-            final newValue = (min + (fraction * (max - min))).round();
-            if (newValue != value) {
-              HapticFeedback.selectionClick();
-              onChanged(newValue);
-            }
-          }
-        },
-        child: Container(
-          width: width,
-          height: height,
-          decoration: BoxDecoration(
-            color: isDark ? AppColors.darkInputSurface : AppColors.lightInputSurface,
-            borderRadius: BorderRadius.circular(22),
-            border: Border.all(
-              color: isDark ? AppColors.darkBorder : AppColors.lightBorder,
-              width: 1.2,
-            ),
-          ),
-          child: Stack(
-            alignment: Alignment.center,
-            children: [
-              // Rung Tick Marks
-              Column(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: List.generate(13, (index) {
-                  final isMajor = index % 3 == 0;
-                  return Container(
-                    height: 2,
-                    width: isMajor ? 24 : 12,
-                    decoration: BoxDecoration(
-                      color: isMajor
-                          ? (isDark ? Colors.white24 : Colors.black26)
-                          : (isDark ? Colors.white12 : Colors.black12),
-                      borderRadius: BorderRadius.circular(1),
-                    ),
-                  );
-                }),
-              ),
-
-              // Positioned Active Indicator Thumb (Medium-thick line)
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 10),
-                child: Align(
-                  alignment: Alignment(
-                    0.0,
-                    1.0 - (2.0 * ((value - min) / (max - min)).clamp(0.0, 1.0)),
-                  ),
-                  child: Container(
-                    width: 44,
-                    height: 6,
-                    decoration: BoxDecoration(
-                      color: AppColors.primaryBlue,
-                      borderRadius: BorderRadius.circular(3),
-                      boxShadow: [
-                        BoxShadow(
-                          color: AppColors.primaryBlue.withAlpha(140),
-                          blurRadius: 8,
-                          offset: const Offset(0, 1),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
+    return ExpressiveVerticalMotionSlider(
+      value: value,
+      min: min,
+      max: max,
+      onChanged: onChanged,
+      height: height,
     );
   }
 }

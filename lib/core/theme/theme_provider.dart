@@ -20,7 +20,9 @@ class ThemeModeNotifier extends StateNotifier<ThemeMode> {
       final mode = settings[_key] as String?;
       if (mode == 'light') {
         state = ThemeMode.light;
-      } else if (mode == 'dark') {
+      } else if (mode == 'system') {
+        state = ThemeMode.system;
+      } else {
         state = ThemeMode.dark;
       }
     } catch (_) {}
@@ -28,11 +30,17 @@ class ThemeModeNotifier extends StateNotifier<ThemeMode> {
 
   void setMode(ThemeMode mode) {
     state = mode;
-    _settingsStorage.writeSetting(_key, mode == ThemeMode.light ? 'light' : 'dark');
+    final val = mode == ThemeMode.light
+        ? 'light'
+        : mode == ThemeMode.system
+            ? 'system'
+            : 'dark';
+    _settingsStorage.writeSetting(_key, val);
   }
 
   void setDark() => setMode(ThemeMode.dark);
   void setLight() => setMode(ThemeMode.light);
+  void setSystem() => setMode(ThemeMode.system);
 
   void toggleTheme() {
     setMode(state == ThemeMode.dark ? ThemeMode.light : ThemeMode.dark);

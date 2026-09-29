@@ -2,6 +2,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:vaultx/core/theme/app_theme.dart';
+import 'package:vaultx/core/widgets/expressive/expressive.dart';
 import 'package:vaultx/core/widgets/vertical_ruler_slider.dart';
 
 /// Screen 5: Password Generator Screen
@@ -184,41 +185,22 @@ class _PasswordGeneratorScreenState extends State<PasswordGeneratorScreen> {
                       // Actions: Regenerate & Copy
                       Row(
                         children: [
-                          IconButton.filled(
-                            onPressed: () {
-                              HapticFeedback.selectionClick();
-                              _regenerate();
-                            },
-                            style: IconButton.styleFrom(
-                              backgroundColor: inputBg,
-                              foregroundColor: AppColors.primaryBlue,
-                              minimumSize: const Size(54, 54),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(27),
-                                side: BorderSide(color: borderCol),
-                              ),
-                            ),
+                          ExpressiveIconButton.filled(
+                            onPressed: _regenerate,
+                            size: ExpressiveIconSize.large,
+                            color: inputBg,
+                            foregroundColor: AppColors.primaryBlue,
+                            enableSpringRotation: true,
                             icon: const Icon(Icons.refresh_rounded, size: 24),
                             tooltip: 'Regenerate',
                           ),
                           const SizedBox(width: 12),
                           Expanded(
-                            child: ElevatedButton.icon(
+                            child: ExpressiveButton.filled(
                               onPressed: _copyToClipboard,
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: AppColors.primaryBlue,
-                                foregroundColor: Colors.white,
-                                minimumSize: const Size(44, 54),
-                                shape: const StadiumBorder(),
-                              ),
+                              size: ExpressiveButtonSize.large,
                               icon: const Icon(Icons.copy_rounded, size: 20),
-                              label: const Text(
-                                'Copy',
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w700,
-                                ),
-                              ),
+                              label: 'Copy',
                             ),
                           ),
                         ],
@@ -250,7 +232,8 @@ class _PasswordGeneratorScreenState extends State<PasswordGeneratorScreen> {
                 const SizedBox(height: 12),
 
                 // Dual Options Section (Toggles on Left, Vertical Ruler on Right)
-                IntrinsicHeight(
+                SizedBox(
+                  height: 270,
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
@@ -264,44 +247,52 @@ class _PasswordGeneratorScreenState extends State<PasswordGeneratorScreen> {
                           ),
                           child: Column(
                             children: [
-                              _ToggleTile(
-                                title: 'Uppercase',
-                                subtitle: 'A-Z',
-                                value: _useUpper,
-                                onChanged: (val) {
-                                  setState(() => _useUpper = val);
-                                  _regenerate();
-                                },
+                              Expanded(
+                                child: _ToggleTile(
+                                  title: 'Uppercase',
+                                  subtitle: 'A-Z',
+                                  value: _useUpper,
+                                  onChanged: (val) {
+                                    setState(() => _useUpper = val);
+                                    _regenerate();
+                                  },
+                                ),
                               ),
                               Divider(height: 1, color: borderCol),
-                              _ToggleTile(
-                                title: 'Lowercase',
-                                subtitle: 'a-z',
-                                value: _useLower,
-                                onChanged: (val) {
-                                  setState(() => _useLower = val);
-                                  _regenerate();
-                                },
+                              Expanded(
+                                child: _ToggleTile(
+                                  title: 'Lowercase',
+                                  subtitle: 'a-z',
+                                  value: _useLower,
+                                  onChanged: (val) {
+                                    setState(() => _useLower = val);
+                                    _regenerate();
+                                  },
+                                ),
                               ),
                               Divider(height: 1, color: borderCol),
-                              _ToggleTile(
-                                title: 'Numbers',
-                                subtitle: '0-9',
-                                value: _useNumbers,
-                                onChanged: (val) {
-                                  setState(() => _useNumbers = val);
-                                  _regenerate();
-                                },
+                              Expanded(
+                                child: _ToggleTile(
+                                  title: 'Numbers',
+                                  subtitle: '0-9',
+                                  value: _useNumbers,
+                                  onChanged: (val) {
+                                    setState(() => _useNumbers = val);
+                                    _regenerate();
+                                  },
+                                ),
                               ),
                               Divider(height: 1, color: borderCol),
-                              _ToggleTile(
-                                title: 'Symbols',
-                                subtitle: '!@#\$%^&*',
-                                value: _useSymbols,
-                                onChanged: (val) {
-                                  setState(() => _useSymbols = val);
-                                  _regenerate();
-                                },
+                              Expanded(
+                                child: _ToggleTile(
+                                  title: 'Symbols',
+                                  subtitle: '!@#\$%^&*',
+                                  value: _useSymbols,
+                                  onChanged: (val) {
+                                    setState(() => _useSymbols = val);
+                                    _regenerate();
+                                  },
+                                ),
                               ),
                             ],
                           ),
@@ -309,11 +300,12 @@ class _PasswordGeneratorScreenState extends State<PasswordGeneratorScreen> {
                       ),
                       const SizedBox(width: 14),
 
-                      // Vertical Ruler Ladder Slider (same height as options container)
+                      // Vertical Ruler Ladder Slider (fixed height matches SizedBox)
                       VerticalRulerSlider(
                         value: _length,
                         min: 8,
                         max: 32,
+                        height: 270,
                         onChanged: (val) {
                           setState(() => _length = val);
                           _regenerate();

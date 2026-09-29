@@ -1,8 +1,9 @@
-﻿import 'dart:math';
+import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:vaultx/core/theme/app_theme.dart';
+import 'package:vaultx/core/widgets/expressive/expressive.dart';
 import 'package:vaultx/core/widgets/swipe_to_create_slider.dart';
 import 'package:vaultx/features/vault/domain/vault_password_entry.dart';
 import 'package:vaultx/features/vault/presentation/providers/vault_passwords_provider.dart';
@@ -20,8 +21,7 @@ class AddPasswordScreen extends ConsumerStatefulWidget {
 
 class _AddPasswordScreenState extends ConsumerState<AddPasswordScreen> {
   final _titleController = TextEditingController();
-  final _usernameController = TextEditingController();
-  final _emailController = TextEditingController();
+  final _usernameOrEmailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _urlController = TextEditingController();
   final _notesController = TextEditingController();
@@ -90,8 +90,7 @@ class _AddPasswordScreenState extends ConsumerState<AddPasswordScreen> {
   @override
   void dispose() {
     _titleController.dispose();
-    _usernameController.dispose();
-    _emailController.dispose();
+    _usernameOrEmailController.dispose();
     _passwordController.dispose();
     _urlController.dispose();
     _notesController.dispose();
@@ -118,7 +117,7 @@ class _AddPasswordScreenState extends ConsumerState<AddPasswordScreen> {
 
   void _save() {
     final title = _titleController.text.trim();
-    final username = _usernameController.text.trim();
+    final usernameOrEmail = _usernameOrEmailController.text.trim();
     final password = _passwordController.text.trim();
 
     if (title.isEmpty || password.isEmpty) {
@@ -135,8 +134,8 @@ class _AddPasswordScreenState extends ConsumerState<AddPasswordScreen> {
     final newEntry = VaultPasswordEntry(
       id: 'vault-',
       title: title,
-      username: username.isNotEmpty ? username : 'User',
-      email: _emailController.text.trim(),
+      username: usernameOrEmail.isNotEmpty ? usernameOrEmail : 'User',
+      email: usernameOrEmail.contains('@') ? usernameOrEmail : '',
       password: password,
       category: _selectedCategory,
       websiteUrl: _urlController.text.trim(),
@@ -181,17 +180,12 @@ class _AddPasswordScreenState extends ConsumerState<AddPasswordScreen> {
         ),
         centerTitle: true,
         actions: [
-          TextButton(
-            onPressed: _save,
-            child: const Text(
-              'Save',
-              maxLines: 1,
-              softWrap: false,
-              style: TextStyle(
-                color: AppColors.primaryBlue,
-                fontSize: 16,
-                fontWeight: FontWeight.w700,
-              ),
+          Padding(
+            padding: const EdgeInsets.only(right: 12),
+            child: ExpressiveButton.filled(
+              onPressed: _save,
+              size: ExpressiveButtonSize.compact,
+              label: 'Save',
             ),
           ),
         ],
@@ -298,25 +292,13 @@ class _AddPasswordScreenState extends ConsumerState<AddPasswordScreen> {
                     ),
                     Divider(height: 1, color: borderCol),
                     TextField(
-                      controller: _usernameController,
-                      decoration: const InputDecoration(
-                        labelText: 'Username',
-                        hintText: 'e.g. alex.morgan',
-                        prefixIcon: Icon(Icons.person_outline_rounded, size: 20),
-                        filled: true,
-                        fillColor: Colors.transparent,
-                        border: InputBorder.none,
-                        contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-                      ),
-                    ),
-                    Divider(height: 1, color: borderCol),
-                    TextField(
-                      controller: _emailController,
+                      controller: _usernameOrEmailController,
                       keyboardType: TextInputType.emailAddress,
+                      autocorrect: false,
                       decoration: const InputDecoration(
-                        labelText: 'Email Address',
-                        hintText: 'e.g. alex@example.com',
-                        prefixIcon: Icon(Icons.mail_outline_rounded, size: 20),
+                        labelText: 'Username / Email',
+                        hintText: 'e.g. alex.morgan or alex@example.com',
+                        prefixIcon: Icon(Icons.person_outline_rounded, size: 20),
                         filled: true,
                         fillColor: Colors.transparent,
                         border: InputBorder.none,
@@ -331,12 +313,12 @@ class _AddPasswordScreenState extends ConsumerState<AddPasswordScreen> {
                         labelText: 'Password',
                         hintText: 'Enter or swipe below to generate',
                         prefixIcon: const Icon(Icons.key_rounded, size: 20),
-                        suffixIcon: IconButton(
-                          icon: Icon(
-                            _obscurePassword ? Icons.visibility_outlined : Icons.visibility_off_outlined,
-                            size: 20,
-                          ),
-                          onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
+                        suffixIcon: ExpressiveToggleIcon(
+                          isToggled: !_obscurePassword,
+                          firstIcon: Icons.visibility_off_rounded,
+                          secondIcon: Icons.visibility_rounded,
+                          tooltip: _obscurePassword ? 'Show password' : 'Hide password',
+                          onToggle: (val) => setState(() => _obscurePassword = !val),
                         ),
                         filled: true,
                         fillColor: Colors.transparent,
@@ -351,7 +333,7 @@ class _AddPasswordScreenState extends ConsumerState<AddPasswordScreen> {
 
               // Interactive Swipe to Create Slider
               SwipeToCreateSlider(
-                label: 'Swipe to Generate Strong Password',
+                label: 'Swipe to Generate Password',
                 onTrigger: _generateRandomPassword,
               ),
               const SizedBox(height: 20),

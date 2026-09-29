@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:vaultx/core/theme/app_theme.dart';
+import 'package:vaultx/core/widgets/expressive/expressive.dart';
 import 'package:vaultx/features/vault/domain/vault_password_entry.dart';
 import 'package:vaultx/features/vault/presentation/providers/vault_passwords_provider.dart';
 import 'package:vaultx/features/vault/presentation/add_password_screen.dart';
@@ -135,8 +136,13 @@ class _PasswordsVaultScreenState extends ConsumerState<PasswordsVaultScreen> {
     return Scaffold(
       body: SafeArea(
         bottom: false,
-        child: CustomScrollView(
-          slivers: [
+        child: Stack(
+          children: [
+            CustomScrollView(
+              physics: entries.isEmpty
+                  ? const NeverScrollableScrollPhysics()
+                  : const AlwaysScrollableScrollPhysics(),
+              slivers: [
             // Top App Bar
             SliverToBoxAdapter(
               child: Padding(
@@ -152,13 +158,8 @@ class _PasswordsVaultScreenState extends ConsumerState<PasswordsVaultScreen> {
                         letterSpacing: -0.5,
                       ),
                     ),
-                    IconButton.filled(
+                    ExpressiveIconButton.filled(
                       onPressed: _navigateToAdd,
-                      style: IconButton.styleFrom(
-                        backgroundColor: AppColors.primaryBlue,
-                        foregroundColor: Colors.white,
-                        minimumSize: const Size(44, 44),
-                      ),
                       icon: const Icon(Icons.add_rounded, size: 22),
                       tooltip: 'Add Password',
                     ),
@@ -288,48 +289,23 @@ class _PasswordsVaultScreenState extends ConsumerState<PasswordsVaultScreen> {
               ),
             ),
 
-            // Count Badge
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(20, 8, 20, 8),
-                child: Text(
-                  ' ',
-                  style: TextStyle(
-                    fontSize: 13,
-                    fontWeight: FontWeight.w600,
-                    color: isDark ? AppColors.darkTextMuted : AppColors.lightTextMuted,
+            if (entries.isNotEmpty) ...[
+              // Count Badge
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(20, 8, 20, 8),
+                  child: Text(
+                    ' ',
+                    style: TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                      color: isDark ? AppColors.darkTextMuted : AppColors.lightTextMuted,
+                    ),
                   ),
                 ),
               ),
-            ),
 
-            // Passwords List
-            if (entries.isEmpty)
-              SliverFillRemaining(
-                hasScrollBody: false,
-                child: Center(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(
-                        Icons.search_off_rounded,
-                        size: 48,
-                        color: isDark ? AppColors.darkTextMuted : AppColors.lightTextMuted,
-                      ),
-                      const SizedBox(height: 12),
-                      Text(
-                        'No passwords found',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                          color: isDark ? AppColors.darkTextMuted : AppColors.lightTextMuted,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              )
-            else
+              // Passwords List
               SliverPadding(
                 padding: const EdgeInsets.fromLTRB(20, 4, 20, 110),
                 sliver: SliverList(
@@ -461,10 +437,39 @@ class _PasswordsVaultScreenState extends ConsumerState<PasswordsVaultScreen> {
                   ),
                 ),
               ),
+            ],
           ],
         ),
-      ),
-    );
+        if (entries.isEmpty)
+          Positioned.fill(
+            child: IgnorePointer(
+              child: Center(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      Icons.search_off_rounded,
+                      size: 48,
+                      color: isDark ? AppColors.darkTextMuted : AppColors.lightTextMuted,
+                    ),
+                    const SizedBox(height: 12),
+                    Text(
+                      'No passwords found',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                        color: isDark ? AppColors.darkTextMuted : AppColors.lightTextMuted,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+      ],
+    ),
+  ),
+);
   }
 }
 
@@ -491,6 +496,14 @@ class _CredentialInspectionSheetState extends State<_CredentialInspectionSheet> 
         duration: const Duration(seconds: 2),
       ),
     );
+  }
+
+  String _formatDateTime(DateTime dt) {
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    final hour = dt.hour % 12 == 0 ? 12 : dt.hour % 12;
+    final minute = dt.minute.toString().padLeft(2, '0');
+    final period = dt.hour >= 12 ? 'PM' : 'AM';
+    return '${dt.day} ${months[dt.month - 1]} ${dt.year}, $hour:$minute $period';
   }
 
   @override
@@ -569,8 +582,8 @@ class _CredentialInspectionSheetState extends State<_CredentialInspectionSheet> 
                 ),
               ),
               IconButton(
-                icon: const Icon(Icons.edit_rounded, size: 20),
-                tooltip: 'Edit Credential',
+                icon: const Icon(Icons.info_outline_rounded, size: 20),
+                tooltip: 'Credential Info',
                 onPressed: () {
                   Navigator.of(context).pop();
                   Navigator.of(context).push(
@@ -757,6 +770,157 @@ class _CredentialInspectionSheetState extends State<_CredentialInspectionSheet> 
             const SizedBox(height: 10),
           ],
 
+          // Timestamps Section: Created & Edited Date & Time
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+            decoration: BoxDecoration(
+              color: inputBg,
+              borderRadius: BorderRadius.circular(14),
+            ),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Created',
+                        style: TextStyle(
+                          fontSize: 11,
+                          fontWeight: FontWeight.w500,
+                          color: isDark ? AppColors.darkTextMuted : AppColors.lightTextMuted,
+                        ),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        _formatDateTime(widget.entry.createdAt),
+                        style: TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w600,
+                          color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Container(
+                  width: 1,
+                  height: 28,
+                  color: borderCol,
+                  margin: const EdgeInsets.symmetric(horizontal: 8),
+                ),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Edited',
+                        style: TextStyle(
+                          fontSize: 11,
+                          fontWeight: FontWeight.w500,
+                          color: isDark ? AppColors.darkTextMuted : AppColors.lightTextMuted,
+                        ),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        _formatDateTime(widget.entry.updatedAt),
+                        style: TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w600,
+                          color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 16),
+
+          // Delete Password Button
+          Consumer(
+            builder: (context, ref, _) {
+              return Material(
+                color: isDark
+                    ? AppColors.rose950.withAlpha(80)
+                    : AppColors.rose500.withAlpha(18),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                  side: BorderSide(
+                    color: AppColors.rose500.withAlpha(isDark ? 80 : 120),
+                  ),
+                ),
+                clipBehavior: Clip.antiAlias,
+                child: InkWell(
+                  onTap: () {
+                    HapticFeedback.mediumImpact();
+                    showDialog<void>(
+                      context: context,
+                      builder: (ctx) => AlertDialog(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        title: const Text(
+                          'Delete Password?',
+                          style: TextStyle(fontWeight: FontWeight.w700),
+                        ),
+                        content: Text(
+                          'This will permanently remove "${widget.entry.title}" from your vault.',
+                        ),
+                        actions: [
+                          TextButton(
+                            onPressed: () => Navigator.of(ctx).pop(),
+                            child: const Text('Cancel'),
+                          ),
+                          FilledButton(
+                            style: FilledButton.styleFrom(
+                              backgroundColor: AppColors.rose500,
+                              foregroundColor: Colors.white,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                            ),
+                            onPressed: () {
+                              ref
+                                  .read(vaultPasswordsProvider.notifier)
+                                  .deletePassword(widget.entry.id);
+                              Navigator.of(ctx).pop();
+                              Navigator.of(context).pop();
+                              HapticFeedback.heavyImpact();
+                            },
+                            child: const Text('Delete'),
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.delete_outline_rounded,
+                          size: 18,
+                          color: isDark ? AppColors.rose400 : AppColors.rose500,
+                        ),
+                        const SizedBox(width: 8),
+                        Text(
+                          'Delete Password',
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w700,
+                            color: isDark ? AppColors.rose400 : AppColors.rose500,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              );
+            },
+          ),
         ],
       ),
     );
